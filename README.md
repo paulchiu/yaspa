@@ -17,3 +17,10 @@ needing to think too much about the REST API.
 - Work with native models where possible
 - Promises first, embrace async support in Guzzle
 
+## To do
+
+- [ ] Implement [authentication][sauth]
+- [ ] Implement [api call limit throtling][acl]
+
+[sauth]: https://help.shopify.com/api/getting-started/authentication
+[acl]: https://help.shopify.com/api/getting-started/api-call-limit
