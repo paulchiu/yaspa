@@ -1,19 +1,31 @@
 {
     "name": "paulchiu/yaspa",
     "description": "Yet Another Shopify PHP API",
+    "keywords": ["shopify", "api", "client"],
     "type": "library",
     "require": {
+        "php": ">=7.1",
         "guzzlehttp/guzzle": "~6.3"
     },
     "require-dev": {
         "phpunit/phpunit": "~6.2"
     },
-    "license": "LICENSE",
+    "license": "MIT",
     "authors": [
         {
             "name": "Paul Chiu",
             "email": "paulchiu@gmail.com"
         }
     ],
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "Yaspa\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Yaspa\\Tests\\": "tests/"
+        }
+    }
 }

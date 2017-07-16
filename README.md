@@ -12,6 +12,8 @@ needing to think too much about the REST API.
 
 ## Project objectives
 
+- Be truthful to the original API, do not rename, restructure, or otherwise modify terms where possible
 - Offer different levels of abstraction
 - Work with native models where possible
+- Promises first, embrace async support in Guzzle
 
