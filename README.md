@@ -1,0 +1,17 @@
+# Yet Another Shopify PHP API (yaspa)
+
+## Purpose
+
+Most Shopify APIs appear to be thin wrappers around Guzzle that makes things
+slightly more convenient but still makes it feel like you are interacting with a
+REST API.
+
+The goal of this project is to go one step beyond and provide something closer
+to a SDK whereby the library offers everything through PHP without the developer
+needing to think too much about the REST API.
+
+## Project objectives
+
+- Offer different levels of abstraction
+- Work with native models where possible
+
