@@ -1,0 +1,19 @@
+{
+    "name": "paulchiu/yaspa",
+    "description": "Yet Another Shopify PHP API",
+    "type": "library",
+    "require": {
+        "guzzlehttp/guzzle": "~6.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~6.2"
+    },
+    "license": "LICENSE",
+    "authors": [
+        {
+            "name": "Paul Chiu",
+            "email": "paulchiu@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev"
+}
