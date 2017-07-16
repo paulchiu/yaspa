@@ -20,7 +20,8 @@ needing to think too much about the REST API.
 ## To do
 
 - [ ] Implement [authentication][sauth]
-- [ ] Implement [api call limit throtling][acl]
+- [ ] Implement [api call limit throtling][acl], need to utilise a global [cache][pcache]
 
 [sauth]: https://help.shopify.com/api/getting-started/authentication
 [acl]: https://help.shopify.com/api/getting-started/api-call-limit
+[pcache]: http://www.php-cache.com/en/latest/
