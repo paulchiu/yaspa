@@ -8,14 +8,14 @@ use Yaspa\Responses\StatusCodes;
 
 class StatusCodesTest extends TestCase
 {
-    public function testFindReason()
+    public function testCanFindReason()
     {
         $instance = new StatusCodes();
         $result = $instance->findReason(200);
         $this->assertEquals(StatusCodes::DEFINITIONS['200'], $result);
     }
 
-    public function testFindReasonWhereNotFound()
+    public function testThrowsExceptionWhenCannotFindReason()
     {
         $this->expectException(Exceptions\StatusCodeDefinitionNotFoundException::class);
         $instance = new StatusCodes();
