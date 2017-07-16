@@ -1,5 +1,7 @@
 # Yet Another Shopify PHP API (yaspa)
 
+[![CircleCI](https://circleci.com/gh/paulchiu/yaspa/tree/master.svg?style=svg)](https://circleci.com/gh/paulchiu/yaspa/tree/master)
+
 ## Purpose
 
 Most Shopify APIs appear to be thin wrappers around Guzzle that makes things
