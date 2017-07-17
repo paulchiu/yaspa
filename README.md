@@ -22,8 +22,13 @@ needing to think too much about the REST API.
 ## To do
 
 - [ ] Implement [authentication][sauth]
+    - [ ] Model [redirect parameters][rparam]
+    - [ ] Implement [confirm installation][cinst] class with [HMAC verification][hmac]
 - [ ] Implement [api call limit throtling][acl] through custom pool [pool][gpool]
 
 [sauth]: https://help.shopify.com/api/getting-started/authentication
 [acl]: https://help.shopify.com/api/getting-started/api-call-limit
 [gpool]: http://docs.guzzlephp.org/en/stable/quickstart.html#concurrent-requests
+[rparam]: https://help.shopify.com/api/getting-started/authentication/oauth#verification
+[cinst]: https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
+[hmac]: http://php.net/manual/en/function.hash-hmac.php
