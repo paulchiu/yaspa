@@ -19,6 +19,19 @@ needing to think too much about the REST API.
 - Work with native models where possible
 - Promises first, embrace async support in Guzzle
 
+## Manual testing
+
+- Fill out `test-credentials.json`; a template is available in `project-root/test-credentials.example.json`
+- Make public the contents of `tests/Manual`
+
+### Available manual testing routes
+
+The following assumes all files are hosted on `http://localhost/`
+
+|Route|Tests|
+|-----|-----|
+|`/oauth/authorize-prompt.php`|Enables clicking and viewing results of a app OAuth authorization request from the app installer's perspective|
+
 ## To do
 
 - [ ] Implement [authentication][sauth]
