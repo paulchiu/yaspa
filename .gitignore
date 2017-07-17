@@ -2,6 +2,9 @@
 
 .idea
 composer.lock
+phpunit.xml
+test-credentials.json
+htdocs
 
 # Created by GitHub
 
