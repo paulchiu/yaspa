@@ -22,8 +22,8 @@ needing to think too much about the REST API.
 ## To do
 
 - [ ] Implement [authentication][sauth]
-- [ ] Implement [api call limit throtling][acl], need to utilise a global [cache][pcache]
+- [ ] Implement [api call limit throtling][acl] through custom pool [pool][gpool]
 
 [sauth]: https://help.shopify.com/api/getting-started/authentication
 [acl]: https://help.shopify.com/api/getting-started/api-call-limit
-[pcache]: http://www.php-cache.com/en/latest/
+[gpool]: http://docs.guzzlephp.org/en/stable/quickstart.html#concurrent-requests
