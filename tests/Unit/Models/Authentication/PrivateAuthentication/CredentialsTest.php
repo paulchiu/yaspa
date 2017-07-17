@@ -13,7 +13,7 @@ class CredentialsTest extends TestCase
         $this->assertNull($credentials->getApiKey());
     }
 
-    public function testCanRetreiveCredential()
+    public function testCanRetrieveCredential()
     {
         $credentials = new Credentials();
         $credentials
