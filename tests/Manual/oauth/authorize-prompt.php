@@ -13,6 +13,7 @@ $oAuthCredentials
 $redirectUri = (new Yaspa\OAuth\AuthorizePrompt($testCredentials->shopifyAppApi->redirectUri))
     ->withShop($testCredentials->shopifyShop->myShopifySubdomainName)
     ->withApiKey($oAuthCredentials->getApiKey())
+    ->withNonce('foo')
     ->withReadCustomersScope()
     ->withWriteCustomersScope()
     ->withOfflineAccess()

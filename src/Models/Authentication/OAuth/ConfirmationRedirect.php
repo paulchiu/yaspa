@@ -5,6 +5,10 @@ namespace Yaspa\Models\Authentication\OAuth;
 /**
  * Class ConfirmationRedirect
  * @package Yaspa\Models\Authentication\OAuth
+ * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
+ *
+ * This model represents the data returned by Shopify once a shop has confirmed an OAuth grant and is modelled
+ * on the pattern of https://example.org/some/redirect/uri?code={authorization_code}&hmac=da9d83c171400a41f8db91a950508985&timestamp=1409617544&state={nonce}&shop={hostname}
  */
 class ConfirmationRedirect
 {
@@ -14,6 +18,8 @@ class ConfirmationRedirect
     protected $hmac;
     /** @var string $shop */
     protected $shop;
+    /** @var string $state This is the nonce returned by Shopify */
+    protected $state;
     /** @var string $timestamp */
     protected $timestamp;
 
@@ -66,6 +72,23 @@ class ConfirmationRedirect
     public function setShop(string $shop): ConfirmationRedirect
     {
         $this->shop = $shop;
+        return $this;
+    }
+    /**
+     * @return string
+     */
+    public function getState():? string
+    {
+        return $this->state;
+    }
+
+    /**
+     * @param string $state
+     * @return ConfirmationRedirect
+     */
+    public function setState(string $state): ConfirmationRedirect
+    {
+        $this->state = $state;
         return $this;
     }
     /**

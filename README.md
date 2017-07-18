@@ -35,7 +35,7 @@ The following assumes all files are hosted on `http://localhost/`
 ## To do
 
 - [ ] Implement [authentication][sauth]
-    - [ ] Model [redirect parameters][rparam]
+    - [x] Model [redirect parameters][rparam]
     - [ ] Implement [confirm installation][cinst] class with [HMAC verification][hmac]
 - [ ] Implement [api call limit throtling][acl] through custom pool [pool][gpool]
 

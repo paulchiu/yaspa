@@ -2,8 +2,8 @@
 
 namespace Yaspa\Tests\Unit\OAuth;
 
-use Yaspa\OAuth\AuthorizePrompt;
 use PHPUnit\Framework\TestCase;
+use Yaspa\OAuth\AuthorizePrompt;
 
 class AuthorizePromptTest extends TestCase
 {
