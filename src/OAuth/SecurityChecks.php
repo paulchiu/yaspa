@@ -46,9 +46,10 @@ class SecurityChecks
     }
 
     /**
-     * Confirms HMAC is valid utilising instructions described by Shopify.
+     * Confirms the returned HMAC matches our independently generated one.
      *
-     * @see https://help.shopify.com/api/getting-started/authentication/oauth#verification
+     * This is just a convenience function for self::generateHmac
+     *
      * @param ConfirmationRedirect $confirmationRedirect
      * @param Credentials $credentials
      * @return bool
@@ -57,6 +58,26 @@ class SecurityChecks
         ConfirmationRedirect $confirmationRedirect,
         Credentials $credentials
     ): bool {
+        $untrustedHmac = $confirmationRedirect->getHmac();
+        $trustedHmac = $this->generateHmac($confirmationRedirect, $credentials);
+
+        return $untrustedHmac === $trustedHmac;
+    }
+
+    /**
+     * Generates a HMAC value based on Shopify's instructions.
+     *
+     * Please note that this method is tested through self::hmacIsValid
+     *
+     * @see https://help.shopify.com/api/getting-started/authentication/oauth#verification
+     * @param ConfirmationRedirect $confirmationRedirect
+     * @param Credentials $credentials
+     * @return string
+     */
+    public function generateHmac(
+        ConfirmationRedirect $confirmationRedirect,
+        Credentials $credentials
+    ): string {
         $queryString = http_build_query([
             'code' => $confirmationRedirect->getCode(),
             'shop' => $confirmationRedirect->getShop(),
@@ -64,9 +85,8 @@ class SecurityChecks
             'timestamp' => $confirmationRedirect->getTimestamp(),
         ]);
 
-        $untrustedHmac = $confirmationRedirect->getHmac();
-        $trustedHmac = hash_hmac(self::HMAC_ALGORITHM, $queryString, $credentials->getApiSecretKey());
+        $hmac = hash_hmac(self::HMAC_ALGORITHM, $queryString, $credentials->getApiSecretKey());
 
-        return $untrustedHmac === $trustedHmac;
+        return $hmac;
     }
 }
