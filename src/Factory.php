@@ -2,9 +2,10 @@
 
 namespace Yaspa;
 
+use GuzzleHttp;
+use UnexpectedValueException;
 use Yaspa\OAuth;
 use Yaspa\Transformers;
-use UnexpectedValueException;
 
 /**
  * Class Factory
@@ -20,20 +21,26 @@ class Factory
     protected static $constructors;
 
     /**
+     * Make a instance of a service class.
+     *
      * @param string $className
      * @return mixed
+     * @throws UnexpectedValueException When a service class constructor hasn't been defined
      */
     public static function make(string $className)
     {
+        // Constructors is a singleton array
         if (is_null(self::$constructors)) {
             self::$constructors = self::makeConstructors();
         }
 
+        // If we don't know how to create a given class, throw exception
         if (!isset(self::$constructors[$className])) {
             $message = sprintf('Cannot make a new instance of class: %s', $className);
             throw new UnexpectedValueException($message);
         }
 
+        // Otherwise, create an instance of the requested class
         return call_user_func(self::$constructors[$className]);
     }
 
@@ -49,8 +56,12 @@ class Factory
     protected static function makeConstructors(): array
     {
         return [
+            GuzzleHttp\Client::class => function () {
+                return new GuzzleHttp\Client();
+            },
             OAuth\ConfirmInstallation::class => function () {
                 return new OAuth\ConfirmInstallation(
+                    self::make(GuzzleHttp\Client::class),
                     self::make(OAuth\SecurityChecks::class),
                     self::make(Transformers\Authentication\OAuth\ConfirmationRedirect::class)
                 );

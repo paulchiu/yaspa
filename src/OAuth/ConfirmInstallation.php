@@ -4,10 +4,11 @@ namespace Yaspa\OAuth;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
+use GuzzleHttp\RequestOptions;
 use Yaspa\Models\Authentication\OAuth\ConfirmationRedirect;
 use Yaspa\Models\Authentication\OAuth\Credentials;
 use Yaspa\OAuth\Exceptions\FailedSecurityChecksException;
-use Yaspa\Transformers\OAuth\ConfirmationRedirect as ConfirmationRedirectTransformer;
+use Yaspa\Transformers\Authentication\OAuth\ConfirmationRedirect as ConfirmationRedirectTransformer;
 
 /**
  * Class ConfirmInstallation
@@ -18,6 +19,10 @@ use Yaspa\Transformers\OAuth\ConfirmationRedirect as ConfirmationRedirectTransfo
  */
 class ConfirmInstallation
 {
+    const REQUEST_PERMANENT_ACCESS_TOKEN_HEADERS = ['accepts' => 'application/json'];
+
+    /** @var Client $httpClient */
+    protected $httpClient;
     /** @var SecurityChecks $securityChecks */
     protected $securityChecks;
     /** @var ConfirmationRedirectTransformer $confirmationRedirectTransformer */
@@ -25,13 +30,16 @@ class ConfirmInstallation
 
     /**
      * ConfirmInstallation constructor.
+     * @param Client $httpClient
      * @param SecurityChecks $securityChecks
      * @param ConfirmationRedirectTransformer $confirmationRedirectTransformer
      */
     public function __construct(
+        Client $httpClient,
         SecurityChecks $securityChecks,
         ConfirmationRedirectTransformer $confirmationRedirectTransformer
     ) {
+        $this->httpClient = $httpClient;
         $this->securityChecks = $securityChecks;
         $this->confirmationRedirectTransformer = $confirmationRedirectTransformer;
     }
@@ -78,9 +86,9 @@ class ConfirmInstallation
         $requestBody = $this->confirmationRedirectTransformer->toRequestAccessTokenPostBody($confirmationRedirect, $credentials);
 
         // Create code exchange request
-        $guzzle = new Client();
-        return $guzzle->postAsync($requestUri, [
-            'json' => $requestBody,
+        return $this->httpClient->postAsync($requestUri, [
+            RequestOptions::HEADERS => self::REQUEST_PERMANENT_ACCESS_TOKEN_HEADERS,
+            RequestOptions::MULTIPART => $requestBody,
         ]);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Yaspa\Transformers\OAuth;
+namespace Yaspa\Transformers\Authentication\OAuth;
 
 use GuzzleHttp\Psr7\Uri;
 use Yaspa\Models\Authentication\OAuth\ConfirmationRedirect as ConfirmationRedirectModel;
@@ -22,7 +22,6 @@ class ConfirmationRedirect
      * @return Uri
      */
     public function toRequestAccessTokenUri(ConfirmationRedirectModel $confirmationRedirect): Uri {
-        // Prepare parameters
         $baseUri = sprintf(self::REQUEST_ACCESS_TOKEN_URI_TEMPLATE, $confirmationRedirect->getShop());
 
         return new Uri($baseUri);
@@ -32,6 +31,7 @@ class ConfirmationRedirect
      * Generates the POST body content for a request access token request.
      *
      * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
+     * @see http://docs.guzzlephp.org/en/stable/request-options.html#multipart
      * @param ConfirmationRedirectModel $confirmationRedirect
      * @param CredentialsModel $credentials
      * @return array
@@ -39,11 +39,20 @@ class ConfirmationRedirect
     public function toRequestAccessTokenPostBody(
         ConfirmationRedirectModel $confirmationRedirect,
         CredentialsModel $credentials
-    ) {
+    ): array {
         return [
-            'client_id' => $credentials->getApiKey(),
-            'client_secret' => $credentials->getApiSecretKey(),
-            'code' => $confirmationRedirect->getCode(),
+            [
+                'name' => 'client_id',
+                'contents' => $credentials->getApiKey(),
+            ],
+            [
+                'name' => 'client_secret',
+                'contents' => $credentials->getApiSecretKey(),
+            ],
+            [
+                'name' => 'code',
+                'contents' => $confirmationRedirect->getCode(),
+            ],
         ];
     }
 }
