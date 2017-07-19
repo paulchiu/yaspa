@@ -12,30 +12,55 @@ use UnexpectedValueException;
  *
  * Factory class for all Yaspa service classes.
  *
- * Models are expected to be created using 'new' as they should have no dependencies.
+ * Model instances are expected to be created using 'new' as they should have no dependencies.
  */
 class Factory
 {
+    /** @var callable[] $constructors */
+    protected static $constructors;
+
     /**
-     * @todo Annotate using https://confluence.jetbrains.com/display/PhpStorm/PhpStorm+Advanced+Metadata
      * @param string $className
      * @return mixed
      */
     public static function make(string $className)
     {
-        switch ($className) {
-            case OAuth\ConfirmInstallation::class:
+        if (is_null(self::$constructors)) {
+            self::$constructors = self::makeConstructors();
+        }
+
+        if (!isset(self::$constructors[$className])) {
+            $message = sprintf('Cannot make a new instance of class: %s', $className);
+            throw new UnexpectedValueException($message);
+        }
+
+        return call_user_func(self::$constructors[$className]);
+    }
+
+    /**
+     * Create constructors.
+     *
+     * This is effectively the master service definition list.
+     *
+     * Remember to annotate in `.phpstorm.meta.php/Factory.meta.php` as well.
+     *
+     * @return callable[]
+     */
+    protected static function makeConstructors(): array
+    {
+        return [
+            OAuth\ConfirmInstallation::class => function () {
                 return new OAuth\ConfirmInstallation(
                     self::make(OAuth\SecurityChecks::class),
                     self::make(Transformers\Authentication\OAuth\ConfirmationRedirect::class)
                 );
-            case OAuth\SecurityChecks::class:
+            },
+            OAuth\SecurityChecks::class => function () {
                 return new OAuth\SecurityChecks();
-            case Transformers\Authentication\OAuth\ConfirmationRedirect::class:
+            },
+            Transformers\Authentication\OAuth\ConfirmationRedirect::class => function () {
                 return new Transformers\Authentication\OAuth\ConfirmationRedirect();
-            default:
-                $message = sprintf('Cannot make a new instance of class: %s', $className);
-                throw new UnexpectedValueException($message);
-        }
+            },
+        ];
     }
 }
