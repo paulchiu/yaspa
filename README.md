@@ -35,10 +35,10 @@ The following assumes all files are hosted on `http://localhost/`
 ## To do
 
 - [ ] Implement [authentication][sauth]
-    - [x] Model [redirect parameters][rparam]
     - [ ] Implement [confirm installation][cinst] class with [HMAC verification][hmac]
-        - [ ] Create factory class
-        - [ ] Write tests for `asyncRequestPermanentAccessToken`
+        - [ ] Write manual test for request access token
+        - [ ] Write unit tests for `asyncRequestPermanentAccessToken`
+        - [ ] Model access tokens, online and offline
 - [ ] Implement [api call limit throtling][acl] through custom pool [pool][gpool]
 
 [sauth]: https://help.shopify.com/api/getting-started/authentication
