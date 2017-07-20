@@ -69,6 +69,14 @@ class Factory
             OAuth\SecurityChecks::class => function () {
                 return new OAuth\SecurityChecks();
             },
+            Transformers\Authentication\OAuth\AccessToken::class => function () {
+                return new Transformers\Authentication\OAuth\AccessToken(
+                    self::make(Transformers\Authentication\OAuth\AssociatedUser::class)
+                );
+            },
+            Transformers\Authentication\OAuth\AssociatedUser::class => function () {
+                return new Transformers\Authentication\OAuth\AssociatedUser();
+            },
             Transformers\Authentication\OAuth\ConfirmationRedirect::class => function () {
                 return new Transformers\Authentication\OAuth\ConfirmationRedirect();
             },

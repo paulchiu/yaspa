@@ -20,7 +20,7 @@ $redirectUri = (new Yaspa\OAuth\AuthorizePrompt($testApp->redirectUri))
     ->withNonce('foo')
     ->withWriteCustomersScope()
     ->withWriteOrdersScope()
-    ->withOfflineAccess()
+    ->withOnlineAccess()
     ->toUri()
     ->__toString();
 ?>

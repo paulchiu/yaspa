@@ -49,15 +49,11 @@ The following assumes all files are hosted on `http://localhost/`
 
 - [ ] Implement [authentication][sauth]
     - [ ] Implement [confirm installation][cinst] class with [HMAC verification][hmac]
-        - [ ] Model access tokens, online and offline
-        - [ ] Utilise [middleware][gmw] to transform token responses into models
         - [ ] Write unit tests for `asyncRequestPermanentAccessToken`
 - [ ] Implement [api call limit throtling][acl] through custom pool [pool][gpool]
 
 [sauth]: https://help.shopify.com/api/getting-started/authentication
 [acl]: https://help.shopify.com/api/getting-started/api-call-limit
 [gpool]: http://docs.guzzlephp.org/en/stable/quickstart.html#concurrent-requests
-[rparam]: https://help.shopify.com/api/getting-started/authentication/oauth#verification
 [cinst]: https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
 [hmac]: http://php.net/manual/en/function.hash-hmac.php
-[gmw]: http://docs.guzzlephp.org/en/stable/handlers-and-middleware.html
