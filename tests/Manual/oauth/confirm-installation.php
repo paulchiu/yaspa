@@ -22,8 +22,7 @@ $confirmation = $confirmationRedirectTransformer->fromArray($_GET);
 
 // Get access token
 $nonce = 'foo';
-$response = $confirmInstallation->requestPermanentAccessToken($confirmation, $oAuthCredentials, $nonce);
-$accessToken = $accessTokenTransformer->fromResponse($response);
+$accessToken = $confirmInstallation->requestPermanentAccessToken($confirmation, $oAuthCredentials, $nonce);
 
 // Output access key
 echo '<pre>';

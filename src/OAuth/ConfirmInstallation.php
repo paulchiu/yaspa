@@ -5,11 +5,12 @@ namespace Yaspa\OAuth;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Promise\PromiseInterface;
-use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\RequestOptions;
+use Yaspa\Models\Authentication\OAuth\AccessToken;
 use Yaspa\Models\Authentication\OAuth\ConfirmationRedirect;
 use Yaspa\Models\Authentication\OAuth\Credentials;
 use Yaspa\OAuth\Exceptions\FailedSecurityChecksException;
+use Yaspa\Transformers\Authentication\OAuth\AccessToken as AccessTokenTransformer;
 use Yaspa\Transformers\Authentication\OAuth\ConfirmationRedirect as ConfirmationRedirectTransformer;
 
 /**
@@ -29,40 +30,48 @@ class ConfirmInstallation
     protected $securityChecks;
     /** @var ConfirmationRedirectTransformer $confirmationRedirectTransformer */
     protected $confirmationRedirectTransformer;
+    /** @var AccessTokenTransformer $accessTokenTransformer */
+    protected $accessTokenTransformer;
 
     /**
      * ConfirmInstallation constructor.
+     *
      * @param Client $httpClient
      * @param SecurityChecks $securityChecks
      * @param ConfirmationRedirectTransformer $confirmationRedirectTransformer
+     * @param AccessTokenTransformer $accessTokenTransformer
      */
     public function __construct(
         Client $httpClient,
         SecurityChecks $securityChecks,
-        ConfirmationRedirectTransformer $confirmationRedirectTransformer
+        ConfirmationRedirectTransformer $confirmationRedirectTransformer,
+        AccessTokenTransformer $accessTokenTransformer
     ) {
         $this->httpClient = $httpClient;
         $this->securityChecks = $securityChecks;
         $this->confirmationRedirectTransformer = $confirmationRedirectTransformer;
+        $this->accessTokenTransformer = $accessTokenTransformer;
     }
 
     /**
      * @param ConfirmationRedirect $confirmationRedirect
      * @param Credentials $credentials
-     * @param string|null $nonce
-     * @return Response
+     * @param null|string $nonce
+     * @return AccessToken
      * @throws ClientException
      */
     public function requestPermanentAccessToken(
         ConfirmationRedirect $confirmationRedirect,
         Credentials $credentials,
         ?string $nonce = null
-    ): Response {
-        return $this->asyncRequestPermanentAccessToken(
+    ): AccessToken {
+        $response = $this->asyncRequestPermanentAccessToken(
             $confirmationRedirect,
             $credentials,
             $nonce
         )->wait();
+
+        return $this->accessTokenTransformer->fromResponse($response);
     }
 
     /**

@@ -63,7 +63,8 @@ class Factory
                 return new OAuth\ConfirmInstallation(
                     self::make(GuzzleHttp\Client::class),
                     self::make(OAuth\SecurityChecks::class),
-                    self::make(Transformers\Authentication\OAuth\ConfirmationRedirect::class)
+                    self::make(Transformers\Authentication\OAuth\ConfirmationRedirect::class),
+                    self::make(Transformers\Authentication\OAuth\AccessToken::class)
                 );
             },
             OAuth\SecurityChecks::class => function () {
