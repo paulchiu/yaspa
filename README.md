@@ -21,15 +21,20 @@ needing to think too much about the REST API.
 
 ## Manual testing
 
+To perform manual testing, publish the contents of `tests/Manual` on a web server. For example,
+on [Devilbox][dbox] one would create a symlink called `htdoc` in the project root to `tests/Manual`.
+
+[dbox]: http://devilbox.org/
+
 ### Test OAuth token request
 
 - Set up Shopify app, add redirect whitelist for `http://httpbin.org/anything`
 - Fill out `test-config.json`; a template is available in `project-root/test-config.example.json`
 - Make public the contents of `tests/Manual`
-- Visit `http://localhost/authorize-prompt.php`
+- Visit `http://localhost/oauth/authorize-prompt.php`
 - Click link to authorize
 - Copy the request parameters
-- Visit `http://localhost/confirm-installation.php?[copied request parameters]`
+- Visit `http://localhost/oauth/confirm-installation.php?[copied request parameters]`
 - The access token should be shown
 
 ### Available manual testing routes
@@ -44,8 +49,9 @@ The following assumes all files are hosted on `http://localhost/`
 
 - [ ] Implement [authentication][sauth]
     - [ ] Implement [confirm installation][cinst] class with [HMAC verification][hmac]
-        - [ ] Write unit tests for `asyncRequestPermanentAccessToken`
         - [ ] Model access tokens, online and offline
+        - [ ] Utilise [middleware][gmw] to transform token responses into models
+        - [ ] Write unit tests for `asyncRequestPermanentAccessToken`
 - [ ] Implement [api call limit throtling][acl] through custom pool [pool][gpool]
 
 [sauth]: https://help.shopify.com/api/getting-started/authentication
@@ -54,3 +60,4 @@ The following assumes all files are hosted on `http://localhost/`
 [rparam]: https://help.shopify.com/api/getting-started/authentication/oauth#verification
 [cinst]: https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
 [hmac]: http://php.net/manual/en/function.hash-hmac.php
+[gmw]: http://docs.guzzlephp.org/en/stable/handlers-and-middleware.html
