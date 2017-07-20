@@ -45,6 +45,36 @@ class Factory
     }
 
     /**
+     * Inject a replacement value for a given class name constructor. Used for testing.
+     *
+     * @param string $className
+     * @param $replacement
+     */
+    public static function inject(string $className, $replacement)
+    {
+        // Constructors is a singleton array
+        if (is_null(self::$constructors)) {
+            self::$constructors = self::makeConstructors();
+        }
+
+        // Simple permanent constructor setting if no constructors exist
+        if (!isset(self::$constructors[$className])) {
+            self::$constructors[$className] = function () use ($replacement) {
+                return $replacement;
+            };
+            return;
+        }
+
+        // One-time replacement
+        $original = self::$constructors[$className];
+        self::$constructors[$className] = function () use ($className, $original, $replacement) {
+            // Re-inject original constructor then return replacement
+            self::$constructors[$className] = $original;
+            return $replacement;
+        };
+    }
+
+    /**
      * Create constructors.
      *
      * This is effectively the master service definition list.

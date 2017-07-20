@@ -2,6 +2,7 @@
 
 namespace Yaspa\Tests\Unit;
 
+use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
 use UnexpectedValueException;
 use Yaspa\Factory;
@@ -19,5 +20,21 @@ class FactoryTest extends TestCase
     {
         $this->expectException(UnexpectedValueException::class);
         Factory::make('foo');
+    }
+
+    public function testCanInjectAndReturnsToNormal()
+    {
+        // Test before inject
+        $instance = Factory::make(Client::class);
+        $this->assertInstanceOf(Client::class, $instance);
+
+        // Test after inject
+        Factory::inject(Client::class, 'foo');
+        $instance = Factory::make(Client::class);
+        $this->assertEquals('foo', $instance);
+
+        // Test after injection used
+        $instance = Factory::make(Client::class);
+        $this->assertInstanceOf(Client::class, $instance);
     }
 }

@@ -19,6 +19,8 @@ use Yaspa\Transformers\Authentication\OAuth\ConfirmationRedirect as Confirmation
  * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
  *
  * Provides functionality defined in OAuth confirmation documentation.
+ *
+ * For an example of how this should be used, see `tests/Manual/oauth/confirm-installation.php`
  */
 class ConfirmInstallation
 {
