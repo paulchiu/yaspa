@@ -48,28 +48,27 @@ class Factory
      * Inject a replacement value for a given class name constructor. Used for testing.
      *
      * @param string $className
-     * @param $replacement
+     * @param mixed $replacement
+     * @param int $callsToLive The number of makes the replacement should be used for
      */
-    public static function inject(string $className, $replacement)
+    public static function inject(string $className, $replacement, int $callsToLive = 1)
     {
         // Constructors is a singleton array
         if (is_null(self::$constructors)) {
             self::$constructors = self::makeConstructors();
         }
 
-        // Simple permanent constructor setting if no constructors exist
-        if (!isset(self::$constructors[$className])) {
-            self::$constructors[$className] = function () use ($replacement) {
-                return $replacement;
-            };
-            return;
-        }
-
-        // One-time replacement
-        $original = self::$constructors[$className];
-        self::$constructors[$className] = function () use ($className, $original, $replacement) {
-            // Re-inject original constructor then return replacement
+        // Constructor replacement
+        $original = self::$constructors[$className] ?? null;
+        self::$constructors[$className] = function () use ($className, $original, $replacement, $callsToLive) {
+            // Re-inject original constructor
             self::$constructors[$className] = $original;
+
+            // If we still have more calls to go, re-inject
+            if ($callsToLive > 1) {
+                self::inject($className, $replacement, $callsToLive - 1);
+            }
+
             return $replacement;
         };
     }

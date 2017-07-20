@@ -37,4 +37,45 @@ class FactoryTest extends TestCase
         $instance = Factory::make(Client::class);
         $this->assertInstanceOf(Client::class, $instance);
     }
+
+    public function testCanInjectAndReturnsToNormalWithCallsToLive()
+    {
+        // Test before inject
+        $instance = Factory::make(Client::class);
+        $this->assertInstanceOf(Client::class, $instance);
+
+        // Test after inject
+        Factory::inject(Client::class, 'foo', 2);
+        $instance = Factory::make(Client::class);
+        $this->assertEquals('foo', $instance);
+
+        $instance = Factory::make(Client::class);
+        $this->assertEquals('foo', $instance);
+
+        // Test after injection used
+        $instance = Factory::make(Client::class);
+        $this->assertInstanceOf(Client::class, $instance);
+    }
+
+    public function testCanInjectUndefinedClass()
+    {
+        // Test before inject
+        try {
+            Factory::make('foo');
+        } catch (UnexpectedValueException $e) {
+            $this->assertInstanceOf(UnexpectedValueException::class, $e);
+        }
+
+        // Test after inject
+        Factory::inject('foo', 'bar');
+        $instance = Factory::make('foo');
+        $this->assertEquals('bar', $instance);
+
+        // Test after injection used
+        try {
+            Factory::make('foo');
+        } catch (UnexpectedValueException $e) {
+            $this->assertInstanceOf(UnexpectedValueException::class, $e);
+        }
+    }
 }
