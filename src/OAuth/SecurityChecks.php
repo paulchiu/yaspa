@@ -25,7 +25,7 @@ class SecurityChecks
      * @param string $nonce
      * @return bool
      */
-    public function nonceIsSame(ConfirmationRedirect $confirmationRedirect, string $nonce): bool
+    public function nonceIsSame(ConfirmationRedirect $confirmationRedirect, ?string $nonce): bool
     {
         $nonceEqualsState = $confirmationRedirect->getState() === $nonce;
         $bothEmpty = empty($confirmationRedirect->getState()) && empty($nonce);

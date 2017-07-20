@@ -25,8 +25,6 @@ class SecurityChecksTest extends TestCase
 
     public function testCantDetermineUnsetNonceIsTheSame()
     {
-        $this->expectException(TypeError::class);
-
         // Create fixtures
         $confirmation = new ConfirmationRedirect();
         $nonce = null;
@@ -47,6 +45,44 @@ class SecurityChecksTest extends TestCase
         $instance = new SecurityChecks();
         $result = $instance->nonceIsSame($confirmation, $nonce);
         $this->assertTrue($result);
+    }
+
+    public function testCantDetermineNonceIsNotTheSame()
+    {
+        // Create fixtures
+        $confirmation = new ConfirmationRedirect();
+        $confirmation->setState('foo');
+        $nonce = 'bar';
+
+        // Test method
+        $instance = new SecurityChecks();
+        $result = $instance->nonceIsSame($confirmation, $nonce);
+        $this->assertFalse($result);
+    }
+
+    public function testCantDetermineNonceIsNotTheSameWhenRequestNoNonce()
+    {
+        // Create fixtures
+        $confirmation = new ConfirmationRedirect();
+        $confirmation->setState('foo');
+        $nonce = null;
+
+        // Test method
+        $instance = new SecurityChecks();
+        $result = $instance->nonceIsSame($confirmation, $nonce);
+        $this->assertFalse($result);
+    }
+
+    public function testCantDetermineNonceIsNotTheSameWhenResponseNoNonce()
+    {
+        // Create fixtures
+        $confirmation = new ConfirmationRedirect();
+        $nonce = 'bar';
+
+        // Test method
+        $instance = new SecurityChecks();
+        $result = $instance->nonceIsSame($confirmation, $nonce);
+        $this->assertFalse($result);
     }
 
     public function testCanClassifyCorrectHostname()

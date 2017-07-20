@@ -40,6 +40,7 @@ class ConfirmationRedirect
         $this->code = $code;
         return $this;
     }
+
     /**
      * @return string
      */
@@ -57,6 +58,7 @@ class ConfirmationRedirect
         $this->hmac = $hmac;
         return $this;
     }
+
     /**
      * @return string
      */
@@ -74,6 +76,7 @@ class ConfirmationRedirect
         $this->shop = $shop;
         return $this;
     }
+
     /**
      * @return string
      */
@@ -83,14 +86,15 @@ class ConfirmationRedirect
     }
 
     /**
-     * @param string $state
+     * @param string|null $state
      * @return ConfirmationRedirect
      */
-    public function setState(string $state): ConfirmationRedirect
+    public function setState(?string $state): ConfirmationRedirect
     {
         $this->state = $state;
         return $this;
     }
+
     /**
      * @return string
      */

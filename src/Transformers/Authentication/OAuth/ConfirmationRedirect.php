@@ -13,6 +13,13 @@ use Yaspa\Models\Authentication\OAuth\Credentials as CredentialsModel;
 class ConfirmationRedirect
 {
     const REQUEST_ACCESS_TOKEN_URI_TEMPLATE = 'https://%s/admin/oauth/access_token';
+    const EXPECTED_REDIRECT_PARAMETERS = [
+        'code' => '',
+        'shop' => '',
+        'state' => null,
+        'timestamp' => '',
+        'hmac' => '',
+    ];
 
     /**
      * Generates a request access token URI from a confirmation redirect response.
@@ -54,5 +61,27 @@ class ConfirmationRedirect
                 'contents' => $confirmationRedirect->getCode(),
             ],
         ];
+    }
+
+    /**
+     * Parse an array of confirmation redirect values. This will usually be
+     * the GET parameters sent by Shopify as described in their guide.
+     *
+     * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
+     * @param array $redirectParameters
+     * @return ConfirmationRedirectModel
+     */
+    public function fromArray(array $redirectParameters): ConfirmationRedirectModel
+    {
+        $fullSetRedirectParameters = array_replace(self::EXPECTED_REDIRECT_PARAMETERS, $redirectParameters);
+
+        $confirmationRedirect = (new ConfirmationRedirectModel())
+            ->setCode($fullSetRedirectParameters['code'])
+            ->setShop($fullSetRedirectParameters['shop'])
+            ->setState($fullSetRedirectParameters['state'])
+            ->setTimestamp($fullSetRedirectParameters['timestamp'])
+            ->setHmac($fullSetRedirectParameters['hmac']);
+
+        return $confirmationRedirect;
     }
 }

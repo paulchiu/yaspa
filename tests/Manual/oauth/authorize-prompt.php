@@ -2,20 +2,24 @@
 
 require_once __DIR__.'/../../bootstrap.php';
 
-$pathToTestCredentials = __DIR__.'/../../../test-credentials.json';
-$testCredentials = json_decode(file_get_contents($pathToTestCredentials));
+// Get test config and initialise test data
+$testConfig = new Yaspa\Tests\Utils\Config();
+$testApp = $testConfig->get('shopifyAppApi');
+$testShop = $testConfig->get('shopifyShop');
 
+// Get OAuth credentials for the test app
 $oAuthCredentials = new Yaspa\Models\Authentication\OAuth\Credentials();
 $oAuthCredentials
-    ->setApiKey($testCredentials->shopifyAppApi->key)
-    ->setApiSecretKey($testCredentials->shopifyAppApi->secretKey);
+    ->setApiKey($testApp->key)
+    ->setApiSecretKey($testApp->secretKey);
 
-$redirectUri = (new Yaspa\OAuth\AuthorizePrompt($testCredentials->shopifyAppApi->redirectUri))
-    ->withShop($testCredentials->shopifyShop->myShopifySubdomainName)
+// Prepare app installation URI
+$redirectUri = (new Yaspa\OAuth\AuthorizePrompt($testApp->redirectUri))
+    ->withShop($testShop->myShopifySubdomainName)
     ->withApiKey($oAuthCredentials->getApiKey())
     ->withNonce('foo')
-    ->withReadCustomersScope()
     ->withWriteCustomersScope()
+    ->withWriteOrdersScope()
     ->withOfflineAccess()
     ->toUri()
     ->__toString();

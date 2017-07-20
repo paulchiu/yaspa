@@ -3,7 +3,9 @@
 namespace Yaspa\OAuth;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Promise\PromiseInterface;
+use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\RequestOptions;
 use Yaspa\Models\Authentication\OAuth\ConfirmationRedirect;
 use Yaspa\Models\Authentication\OAuth\Credentials;
@@ -48,16 +50,35 @@ class ConfirmInstallation
      * @param ConfirmationRedirect $confirmationRedirect
      * @param Credentials $credentials
      * @param string|null $nonce
+     * @return Response
+     * @throws ClientException
+     */
+    public function requestPermanentAccessToken(
+        ConfirmationRedirect $confirmationRedirect,
+        Credentials $credentials,
+        ?string $nonce = null
+    ): Response {
+        return $this->asyncRequestPermanentAccessToken(
+            $confirmationRedirect,
+            $credentials,
+            $nonce
+        )->wait();
+    }
+
+    /**
+     * @param ConfirmationRedirect $confirmationRedirect
+     * @param Credentials $credentials
+     * @param string|null $nonce
      * @return PromiseInterface
      * @throws FailedSecurityChecksException
      */
     public function asyncRequestPermanentAccessToken(
         ConfirmationRedirect $confirmationRedirect,
         Credentials $credentials,
-        string $nonce = null
+        ?string $nonce = null
     ): PromiseInterface {
         // Perform security checks
-        if ($nonce && !$this->securityChecks->nonceIsSame($confirmationRedirect, $nonce)) {
+        if (!$this->securityChecks->nonceIsSame($confirmationRedirect, $nonce)) {
             throw new FailedSecurityChecksException(
                 'nonce',
                 $nonce,
