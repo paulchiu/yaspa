@@ -48,6 +48,7 @@ The following assumes all files are hosted on `http://localhost/`
 ## To do
 
 - [ ] Implement [authentication][sauth]
+    - [ ] Complete `src/Authentication/OAuth/DelegateAccess.php` with tests
 - [ ] Implement [api call limit throtling][acl] through custom pool [pool][gpool]
 
 [sauth]: https://help.shopify.com/api/getting-started/authentication

@@ -71,4 +71,17 @@ class AccessToken
 
         return $accessToken;
     }
+
+    /**
+     * Returns a Shopify specified header array that can be used as part of Guzzle request options.
+     *
+     * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-4-making-authenticated-requests
+     * @see http://docs.guzzlephp.org/en/stable/request-options.html#headers
+     * @param AccessTokenModel $accessToken
+     * @return array
+     */
+    public function toAuthenticatedRequestHeader(AccessTokenModel $accessToken): array
+    {
+        return ['X-Shopify-Access-Token' => $accessToken->getAccessToken()];
+    }
 }

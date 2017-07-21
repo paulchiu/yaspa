@@ -96,6 +96,9 @@ class Factory
                     self::make(Transformers\Authentication\OAuth\AccessToken::class)
                 );
             },
+            Authentication\OAuth\Scopes::class => function () {
+                return new Authentication\OAuth\Scopes();
+            },
             Authentication\OAuth\SecurityChecks::class => function () {
                 return new Authentication\OAuth\SecurityChecks();
             },
