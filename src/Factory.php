@@ -36,7 +36,7 @@ class Factory
 
         // If we don't know how to create a given class, throw exception
         if (!isset(self::$constructors[$className])) {
-            $message = sprintf('Cannot make a new instance of class: %s', $className);
+            $message = sprintf('Cannot make a new instance of class %s as it is not defined', $className);
             throw new UnexpectedValueException($message);
         }
 
@@ -88,6 +88,11 @@ class Factory
             GuzzleHttp\Client::class => function () {
                 return new GuzzleHttp\Client();
             },
+            Authentication\OAuth\AuthorizePrompt::class => function () {
+                return new Authentication\OAuth\AuthorizePrompt(
+                    self::make(Transformers\Authentication\OAuth\Scopes::class)
+                );
+            },
             Authentication\OAuth\ConfirmInstallation::class => function () {
                 return new Authentication\OAuth\ConfirmInstallation(
                     self::make(GuzzleHttp\Client::class),
@@ -112,6 +117,9 @@ class Factory
             },
             Transformers\Authentication\OAuth\ConfirmationRedirect::class => function () {
                 return new Transformers\Authentication\OAuth\ConfirmationRedirect();
+            },
+            Transformers\Authentication\OAuth\Scopes::class => function () {
+                return new Transformers\Authentication\OAuth\Scopes();
             },
         ];
     }

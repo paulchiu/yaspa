@@ -18,11 +18,12 @@ $scopes = Yaspa\Factory::make(Yaspa\Authentication\OAuth\Scopes::class)
     ->withWriteCustomers()
     ->withWriteOrders();
 
-$redirectUri = (new Yaspa\Authentication\OAuth\AuthorizePrompt($testApp->redirectUri))
+$redirectUri = Yaspa\Factory::make(Yaspa\Authentication\OAuth\AuthorizePrompt::class)
     ->withShop($testShop->myShopifySubdomainName)
     ->withApiKey($oAuthCredentials->getApiKey())
     ->withNonce('foo')
     ->withScopes($scopes)
+    ->withRedirectUri($testApp->redirectUri)
     ->withOfflineAccess()
     ->toUri()
     ->__toString();

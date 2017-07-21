@@ -3,6 +3,8 @@
 namespace Yaspa\Authentication\OAuth;
 
 use GuzzleHttp\Psr7\Uri;
+use Yaspa\Authentication\OAuth\Exceptions\MissingRequiredParameterException;
+use Yaspa\Transformers\Authentication\OAuth\Scopes as ScopesTransformer;
 
 /**
  * Class AuthorizePrompt
@@ -50,20 +52,30 @@ class AuthorizePrompt
     /** @var string $option Contains value "per-user" if the access mode is online, defaults to blank for offline */
     protected $option;
 
+    /** @var ScopesTransformer $scopesTransformer */
+    protected $scopesTransformer;
+
     /**
      * AuthorizePrompt constructor.
-     * @param string $redirectUri Included in constructor as it is a required parameter.
+     *
+     * @param ScopesTransformer $scopesTransformer
      */
-    public function __construct(string $redirectUri)
+    public function __construct(ScopesTransformer $scopesTransformer)
     {
-        $this->redirectUri = $redirectUri;
+        $this->scopesTransformer = $scopesTransformer;
     }
 
     /**
      * @return Uri
+     * @throws MissingRequiredParameterException
      */
     public function toUri(): Uri
     {
+        // Check requirements
+        if (empty($this->redirectUri)) {
+            throw new MissingRequiredParameterException('redirectUri');
+        }
+
         // Compute URI values
         $baseUri = sprintf(self::URI_TEMPLATE, $this->shop);
         $scope = ($this->scopes) ? implode(',', $this->scopes->getRequested()) : null;
@@ -115,6 +127,18 @@ class AuthorizePrompt
     {
         $new = clone $this;
         $new->scopes = $scopes;
+
+        return $new;
+    }
+
+    /**
+     * @param string $redirectUri
+     * @return AuthorizePrompt
+     */
+    public function withRedirectUri(string $redirectUri): AuthorizePrompt
+    {
+        $new = clone $this;
+        $new->redirectUri = $redirectUri;
 
         return $new;
     }

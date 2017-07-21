@@ -20,11 +20,12 @@ class AuthorizePromptTest extends TestCase
             ->withReadContent()
             ->withReadAnalytics();
 
-        $instance = (new AuthorizePrompt('http://foo.example.com'))
+        $instance = Factory::make(AuthorizePrompt::class)
             ->withShop('bar')
             ->withApiKey('baz')
             ->withNonce('qux')
             ->withScopes($scopes)
+            ->withRedirectUri('http://foo.example.com')
             ->withOnlineAccess();
         $result = urldecode($instance->toUri()->__toString());
         $this->assertEquals($expectedUri, $result);
