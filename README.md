@@ -48,8 +48,6 @@ The following assumes all files are hosted on `http://localhost/`
 ## To do
 
 - [ ] Implement [authentication][sauth]
-    - [ ] Implement [confirm installation][cinst] class with [HMAC verification][hmac]
-        - [ ] Write unit tests for `asyncRequestPermanentAccessToken`
 - [ ] Implement [api call limit throtling][acl] through custom pool [pool][gpool]
 
 [sauth]: https://help.shopify.com/api/getting-started/authentication
