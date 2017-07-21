@@ -60,9 +60,10 @@ To run integration tests, execute:
 
 - [ ] Implement [authentication][sauth]
     - [ ] Complete `src/Authentication/OAuth/DelegateAccess.php` with tests
-    - [ ] Refactor code to bundle together OAuth related classes.
+    - [ ] Refactor code to bundle together OAuth related classes; combine functions into a Client class
     - [ ] Parse returned scopes as scope builder
     - [ ] Move manual tests to examples
+    - [ ] Clean up docs and create docs folder
 - [ ] Implement [api call limit throtling][acl] through custom pool [pool][gpool]
 
 [sauth]: https://help.shopify.com/api/getting-started/authentication
