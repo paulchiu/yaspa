@@ -24,7 +24,7 @@ use Yaspa\Transformers\Authentication\OAuth\ConfirmationRedirect as Confirmation
  */
 class ConfirmInstallation
 {
-    const REQUEST_PERMANENT_ACCESS_TOKEN_HEADERS = ['accepts' => 'application/json'];
+    const REQUEST_PERMANENT_ACCESS_TOKEN_HEADERS = ['Accept' => 'application/json'];
 
     /** @var Client $httpClient */
     protected $httpClient;

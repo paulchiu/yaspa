@@ -45,10 +45,22 @@ The following assumes all files are hosted on `http://localhost/`
 |-----|-----|
 |`/oauth/authorize-prompt.php`|Enables clicking and viewing results of a app OAuth authorization request from the app installer's perspective|
 
+## Integration testing
+
+Please note that similar to manual testing, integration tests requires `test-configuration.json`
+to exist.
+
+To run integration tests, execute:
+
+```
+./vendor/bin/phpunit --group=integration
+```
+
 ## To do
 
 - [ ] Implement [authentication][sauth]
     - [ ] Complete `src/Authentication/OAuth/DelegateAccess.php` with tests
+    - [ ] Refactor code to bundle together OAuth related classes.
 - [ ] Implement [api call limit throtling][acl] through custom pool [pool][gpool]
 
 [sauth]: https://help.shopify.com/api/getting-started/authentication

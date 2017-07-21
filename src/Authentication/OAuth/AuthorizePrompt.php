@@ -78,7 +78,7 @@ class AuthorizePrompt
 
         // Compute URI values
         $baseUri = sprintf(self::URI_TEMPLATE, $this->shop);
-        $scope = ($this->scopes) ? implode(',', $this->scopes->getRequested()) : null;
+        $scope = ($this->scopes) ? $this->scopesTransformer->toCommaSeparatedList($this->scopes) : null;
 
         // Create URI query
         $query = http_build_query([

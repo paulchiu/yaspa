@@ -101,6 +101,13 @@ class Factory
                     self::make(Transformers\Authentication\OAuth\AccessToken::class)
                 );
             },
+            Authentication\OAuth\DelegateAccess::class => function () {
+                return new Authentication\OAuth\DelegateAccess(
+                    self::make(GuzzleHttp\Client::class),
+                    self::make(Transformers\Authentication\OAuth\AccessToken::class),
+                    self::make(Transformers\Authentication\OAuth\Scopes::class)
+                );
+            },
             Authentication\OAuth\Scopes::class => function () {
                 return new Authentication\OAuth\Scopes();
             },

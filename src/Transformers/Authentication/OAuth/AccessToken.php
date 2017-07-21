@@ -33,7 +33,8 @@ class AccessToken
      */
     public function fromResponse(ResponseInterface $response): AccessTokenModel
     {
-        $stdClass = json_decode($response->getBody()->getContents());
+        $responseContents = $response->getBody()->getContents();
+        $stdClass = json_decode($responseContents);
         return $this->fromShopifyJsonAccessToken($stdClass);
     }
 
