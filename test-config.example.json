@@ -5,6 +5,7 @@
     "secretKey": "App API secret key provided by Shopify, for example: 59c...07f"
   },
   "shopifyShop": {
-    "myShopifySubdomainName": "Shopify subdomain for your store, if you access foo.myshopify.com/admin then use: foo"
+    "myShopifySubdomainName": "Shopify subdomain for your store, if you access foo.myshopify.com/admin then use: foo",
+    "oAuthAccessToken": "OAuth access token for the store held by your app, for example: a19...546a"
   }
 }

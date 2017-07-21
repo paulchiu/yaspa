@@ -5,8 +5,8 @@ namespace Yaspa\Tests\Unit;
 use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
 use UnexpectedValueException;
+use Yaspa\Authentication\OAuth\ConfirmInstallation;
 use Yaspa\Factory;
-use Yaspa\OAuth\ConfirmInstallation;
 
 class FactoryTest extends TestCase
 {

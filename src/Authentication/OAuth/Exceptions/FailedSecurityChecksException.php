@@ -1,6 +1,6 @@
 <?php
 
-namespace Yaspa\OAuth\Exceptions;
+namespace Yaspa\Authentication\OAuth\Exceptions;
 
 use Exception;
 use Throwable;

@@ -10,11 +10,11 @@ use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
+use Yaspa\Authentication\OAuth\ConfirmInstallation;
 use Yaspa\Factory;
 use Yaspa\Models\Authentication\OAuth\AccessToken;
 use Yaspa\Models\Authentication\OAuth\ConfirmationRedirect;
 use Yaspa\Models\Authentication\OAuth\Credentials;
-use Yaspa\OAuth\ConfirmInstallation;
 
 class ConfirmInstallationTest extends TestCase
 {

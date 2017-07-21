@@ -9,7 +9,7 @@ $testApp = $testConfig->get('shopifyAppApi');
 // Get other dependencies
 $confirmationRedirectTransformer = Yaspa\Factory::make(Yaspa\Transformers\Authentication\OAuth\ConfirmationRedirect::class);
 $accessTokenTransformer = Yaspa\Factory::make(Yaspa\Transformers\Authentication\OAuth\AccessToken::class);
-$confirmInstallation = Yaspa\Factory::make(Yaspa\OAuth\ConfirmInstallation::class);
+$confirmInstallation = Yaspa\Factory::make(Yaspa\Authentication\OAuth\ConfirmInstallation::class);
 
 // Get OAuth credentials for the test app
 $oAuthCredentials = new Yaspa\Models\Authentication\OAuth\Credentials();

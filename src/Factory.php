@@ -4,7 +4,7 @@ namespace Yaspa;
 
 use GuzzleHttp;
 use UnexpectedValueException;
-use Yaspa\OAuth;
+use Yaspa\Authentication;
 use Yaspa\Transformers;
 
 /**
@@ -88,16 +88,16 @@ class Factory
             GuzzleHttp\Client::class => function () {
                 return new GuzzleHttp\Client();
             },
-            OAuth\ConfirmInstallation::class => function () {
-                return new OAuth\ConfirmInstallation(
+            Authentication\OAuth\ConfirmInstallation::class => function () {
+                return new Authentication\OAuth\ConfirmInstallation(
                     self::make(GuzzleHttp\Client::class),
-                    self::make(OAuth\SecurityChecks::class),
+                    self::make(Authentication\OAuth\SecurityChecks::class),
                     self::make(Transformers\Authentication\OAuth\ConfirmationRedirect::class),
                     self::make(Transformers\Authentication\OAuth\AccessToken::class)
                 );
             },
-            OAuth\SecurityChecks::class => function () {
-                return new OAuth\SecurityChecks();
+            Authentication\OAuth\SecurityChecks::class => function () {
+                return new Authentication\OAuth\SecurityChecks();
             },
             Transformers\Authentication\OAuth\AccessToken::class => function () {
                 return new Transformers\Authentication\OAuth\AccessToken(

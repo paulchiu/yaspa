@@ -1,6 +1,6 @@
 <?php
 
-namespace Yaspa\OAuth;
+namespace Yaspa\Authentication\OAuth;
 
 use Yaspa\Models\Authentication\OAuth\ConfirmationRedirect;
 use Yaspa\Models\Authentication\OAuth\Credentials;

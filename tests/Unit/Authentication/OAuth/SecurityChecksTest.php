@@ -3,9 +3,9 @@
 namespace Yaspa\Tests\Unit\OAuth;
 
 use PHPUnit\Framework\TestCase;
+use Yaspa\Authentication\OAuth\SecurityChecks;
 use Yaspa\Models\Authentication\OAuth\ConfirmationRedirect;
 use Yaspa\Models\Authentication\OAuth\Credentials;
-use Yaspa\OAuth\SecurityChecks;
 
 class SecurityChecksTest extends TestCase
 {

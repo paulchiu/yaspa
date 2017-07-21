@@ -14,7 +14,7 @@ $oAuthCredentials
     ->setApiSecretKey($testApp->secretKey);
 
 // Prepare app installation URI
-$redirectUri = (new Yaspa\OAuth\AuthorizePrompt($testApp->redirectUri))
+$redirectUri = (new Yaspa\Authentication\OAuth\AuthorizePrompt($testApp->redirectUri))
     ->withShop($testShop->myShopifySubdomainName)
     ->withApiKey($oAuthCredentials->getApiKey())
     ->withNonce('foo')

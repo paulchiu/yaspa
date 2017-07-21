@@ -1,15 +1,15 @@
 <?php
 
-namespace Yaspa\OAuth;
+namespace Yaspa\Authentication\OAuth;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\RequestOptions;
+use Yaspa\Authentication\OAuth\Exceptions\FailedSecurityChecksException;
 use Yaspa\Models\Authentication\OAuth\AccessToken;
 use Yaspa\Models\Authentication\OAuth\ConfirmationRedirect;
 use Yaspa\Models\Authentication\OAuth\Credentials;
-use Yaspa\OAuth\Exceptions\FailedSecurityChecksException;
 use Yaspa\Transformers\Authentication\OAuth\AccessToken as AccessTokenTransformer;
 use Yaspa\Transformers\Authentication\OAuth\ConfirmationRedirect as ConfirmationRedirectTransformer;
 
