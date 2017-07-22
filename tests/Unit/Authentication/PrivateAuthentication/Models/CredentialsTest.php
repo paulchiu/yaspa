@@ -1,6 +1,6 @@
 <?php
 
-namespace Yaspa\Tests\Unit\Models\Authentication\PrivateAuthentication;
+namespace Yaspa\Tests\Unit\Authentication\PrivateAuthentication\Models;
 
 use PHPUnit\Framework\TestCase;
 use Yaspa\Authentication\PrivateAuthentication\Models\Credentials;

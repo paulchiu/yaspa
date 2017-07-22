@@ -1,6 +1,6 @@
 <?php
 
-namespace Yaspa\Tests\Unit\OAuth;
+namespace Yaspa\Tests\Unit\Authentication\OAuth;
 
 use PHPUnit\Framework\TestCase;
 use Yaspa\Authentication\OAuth\SecurityChecks;

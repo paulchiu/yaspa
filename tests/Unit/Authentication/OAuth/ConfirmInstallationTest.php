@@ -1,6 +1,6 @@
 <?php
 
-namespace Yaspa\Tests\OAuth;
+namespace Yaspa\Tests\Unit\Authentication\OAuth;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
