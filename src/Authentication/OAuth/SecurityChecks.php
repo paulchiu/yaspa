@@ -2,8 +2,10 @@
 
 namespace Yaspa\Authentication\OAuth;
 
+use Yaspa\Authentication\OAuth\Exceptions\FailedSecurityChecksException;
 use Yaspa\Authentication\OAuth\Models\AuthorizationCode;
 use Yaspa\Authentication\OAuth\Models\Credentials;
+use Yaspa\Authentication\OAuth\Models\SecurityCheckResult;
 
 /**
  * Class SecurityChecks
@@ -16,6 +18,52 @@ class SecurityChecks
 {
     const VALID_HOSTNAME_REGEX = '/^[a-zA-Z0-9-.]+.myshopify.com$/';
     const HMAC_ALGORITHM = 'sha256';
+
+    /**
+     * @param AuthorizationCode $authorizationCode
+     * @param Credentials $credentials
+     * @param null|string $nonce
+     * @return SecurityCheckResult
+     */
+    public function checkAuthorizationCode(
+        AuthorizationCode $authorizationCode,
+        Credentials $credentials,
+        ?string $nonce = null
+    ): SecurityCheckResult {
+        // Prepare result
+        $result = new SecurityCheckResult(false);
+
+        // Perform security checks
+        if (!$this->nonceIsSame($authorizationCode, $nonce)) {
+            $result->setFailureException(new FailedSecurityChecksException(
+                'nonce',
+                $nonce,
+                $authorizationCode->getState()
+            ));
+        }
+
+        if (!$this->hostnameIsValid($authorizationCode)) {
+            $result->setFailureException(new FailedSecurityChecksException(
+                'shop',
+                'match for pattern '.SecurityChecks::VALID_HOSTNAME_REGEX,
+                $authorizationCode->getShop()
+            ));
+        }
+
+        if (!$this->hmacIsValid($authorizationCode, $credentials)) {
+            $result->setFailureException(new FailedSecurityChecksException(
+                'hmac',
+                $this->generateHmac($authorizationCode, $credentials),
+                $authorizationCode->getHmac()
+            ));
+        }
+
+        // Determine whether the code has passed
+        $result->setPassed(empty($result->getFailureException()));
+
+        // Return result
+        return $result;
+    }
 
     /**
      * Ensure the provided nonce is the same one that your application provided to Shopify during the Step 2: Asking

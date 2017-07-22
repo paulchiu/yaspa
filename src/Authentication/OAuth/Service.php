@@ -97,29 +97,16 @@ class Service
         Credentials $credentials,
         ?string $nonce = null
     ): PromiseInterface {
-        // Perform security checks
-        if (!$this->securityChecks->nonceIsSame($authorizationCode, $nonce)) {
-            throw new FailedSecurityChecksException(
-                'nonce',
-                $nonce,
-                $authorizationCode->getState()
-            );
-        }
+        // Security check authorization code
+        $securityCheckResult = $this->securityChecks->checkAuthorizationCode(
+            $authorizationCode,
+            $credentials,
+            $nonce
+        );
 
-        if (!$this->securityChecks->hostnameIsValid($authorizationCode)) {
-            throw new FailedSecurityChecksException(
-                'shop',
-                'match for pattern '.SecurityChecks::VALID_HOSTNAME_REGEX,
-                $authorizationCode->getShop()
-            );
-        }
-
-        if (!$this->securityChecks->hmacIsValid($authorizationCode, $credentials)) {
-            throw new FailedSecurityChecksException(
-                'hmac',
-                $this->securityChecks->generateHmac($authorizationCode, $credentials),
-                $authorizationCode->getHmac()
-            );
+        // If didn't pass security check, throw failure exception
+        if (!$securityCheckResult->passed()) {
+            throw $securityCheckResult->getFailureException();
         }
 
         // Prepare request parameters

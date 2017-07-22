@@ -3,12 +3,105 @@
 namespace Yaspa\Tests\Unit\Authentication\OAuth;
 
 use PHPUnit\Framework\TestCase;
+use Yaspa\Authentication\OAuth\Exceptions\FailedSecurityChecksException;
 use Yaspa\Authentication\OAuth\SecurityChecks;
 use Yaspa\Authentication\OAuth\Models\AuthorizationCode;
 use Yaspa\Authentication\OAuth\Models\Credentials;
 
 class SecurityChecksTest extends TestCase
 {
+    public function testCanCheckPassingAuthorizationCode()
+    {
+        // Create fixtures
+        $authorizationCode = new AuthorizationCode();
+        $authorizationCode
+            ->setCode('foo')
+            ->setShop('bar.myshopify.com')
+            ->setState('baz')
+            ->setTimestamp('1500366499')
+            ->setHmac('9d50babc816b055481484ad40665c5e84d71bcbf6d008a72dcf4b523c391616c');
+
+        $credentials = new Credentials();
+        $credentials->setApiSecretKey('qux');
+
+        $nonce = 'baz';
+
+        // Test method
+        $instance = new SecurityChecks();
+        $result = $instance->checkAuthorizationCode($authorizationCode, $credentials, $nonce);
+        $this->assertTrue($result->passed());
+        $this->assertEmpty($result->getFailureException());
+    }
+
+    public function testCanFailAuthorizationCodeOnBadNonce()
+    {
+        // Create fixtures
+        $authorizationCode = new AuthorizationCode();
+        $authorizationCode
+            ->setCode('foo')
+            ->setShop('bar.myshopify.com')
+            ->setState('baz')
+            ->setTimestamp('1500366499')
+            ->setHmac('9d50babc816b055481484ad40665c5e84d71bcbf6d008a72dcf4b523c391616c');
+
+        $credentials = new Credentials();
+        $credentials->setApiSecretKey('qux');
+
+        $nonce = 'not-baz';
+
+        // Test method
+        $instance = new SecurityChecks();
+        $result = $instance->checkAuthorizationCode($authorizationCode, $credentials, $nonce);
+        $this->assertFalse($result->passed());
+        $this->assertInstanceOf(FailedSecurityChecksException::class, $result->getFailureException());
+    }
+
+    public function testCanFailAuthorizationCodeOnInvalidHostname()
+    {
+        // Create fixtures
+        $authorizationCode = new AuthorizationCode();
+        $authorizationCode
+            ->setCode('foo')
+            ->setShop('bar.not-myshopify.com')
+            ->setState('baz')
+            ->setTimestamp('1500366499')
+            ->setHmac('9d50babc816b055481484ad40665c5e84d71bcbf6d008a72dcf4b523c391616c');
+
+        $credentials = new Credentials();
+        $credentials->setApiSecretKey('qux');
+
+        $nonce = 'baz';
+
+        // Test method
+        $instance = new SecurityChecks();
+        $result = $instance->checkAuthorizationCode($authorizationCode, $credentials, $nonce);
+        $this->assertFalse($result->passed());
+        $this->assertInstanceOf(FailedSecurityChecksException::class, $result->getFailureException());
+    }
+
+    public function testCanFailAuthorizationCodeOnInvalidHmac()
+    {
+        // Create fixtures
+        $authorizationCode = new AuthorizationCode();
+        $authorizationCode
+            ->setCode('foo')
+            ->setShop('bar.myshopify.com')
+            ->setState('baz')
+            ->setTimestamp('1500366499')
+            ->setHmac('invalid-hmac');
+
+        $credentials = new Credentials();
+        $credentials->setApiSecretKey('qux');
+
+        $nonce = 'baz';
+
+        // Test method
+        $instance = new SecurityChecks();
+        $result = $instance->checkAuthorizationCode($authorizationCode, $credentials, $nonce);
+        $this->assertFalse($result->passed());
+        $this->assertInstanceOf(FailedSecurityChecksException::class, $result->getFailureException());
+    }
+
     public function testCanDetermineNonceIsTheSame()
     {
         // Create fixtures
@@ -123,8 +216,8 @@ class SecurityChecksTest extends TestCase
     public function testCanValidateHmac()
     {
         // Create fixtures
-        $confirmation = new AuthorizationCode();
-        $confirmation
+        $authorizationCode = new AuthorizationCode();
+        $authorizationCode
             ->setCode('foo')
             ->setShop('bar.myshopify.com')
             ->setState('baz')
@@ -136,15 +229,15 @@ class SecurityChecksTest extends TestCase
 
         // Test method
         $instance = new SecurityChecks();
-        $result = $instance->hmacIsValid($confirmation, $credentials);
+        $result = $instance->hmacIsValid($authorizationCode, $credentials);
         $this->assertTrue($result);
     }
 
     public function testCanValidateHmacWithoutState()
     {
         // Create fixtures; this is taken directly from Shopify's example
-        $confirmation = new AuthorizationCode();
-        $confirmation
+        $authorizationCode = new AuthorizationCode();
+        $authorizationCode
             ->setCode('0907a61c0c8d55e99db179b68161bc00')
             ->setShop('some-shop.myshopify.com')
             ->setTimestamp('1337178173')
@@ -155,15 +248,15 @@ class SecurityChecksTest extends TestCase
 
         // Test method
         $instance = new SecurityChecks();
-        $result = $instance->hmacIsValid($confirmation, $credentials);
+        $result = $instance->hmacIsValid($authorizationCode, $credentials);
         $this->assertTrue($result);
     }
 
     public function testCanInvalidateHmac()
     {
         // Create fixtures; this is taken directly from Shopify's example
-        $confirmation = new AuthorizationCode();
-        $confirmation
+        $authorizationCode = new AuthorizationCode();
+        $authorizationCode
             ->setCode('0907a61c0c8d55e99db179b68161bc00')
             ->setShop('some-shop.myshopify.com')
             ->setTimestamp('1337178173')
@@ -174,7 +267,7 @@ class SecurityChecksTest extends TestCase
 
         // Test method
         $instance = new SecurityChecks();
-        $result = $instance->hmacIsValid($confirmation, $credentials);
+        $result = $instance->hmacIsValid($authorizationCode, $credentials);
         $this->assertFalse($result);
     }
 }
