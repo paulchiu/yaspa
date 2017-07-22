@@ -100,17 +100,11 @@ class Factory
                     self::make(Authentication\OAuth\Transformers\Scopes::class)
                 );
             },
-            Authentication\OAuth\ConfirmInstallation::class => function () {
-                return new Authentication\OAuth\ConfirmInstallation(
+            Authentication\OAuth\Service::class => function () {
+                return new Authentication\OAuth\Service(
                     self::make(GuzzleHttp\Client::class),
                     self::make(Authentication\OAuth\SecurityChecks::class),
                     self::make(Authentication\OAuth\Transformers\ConfirmationRedirect::class),
-                    self::make(Authentication\OAuth\Transformers\AccessToken::class)
-                );
-            },
-            Authentication\OAuth\DelegateAccess::class => function () {
-                return new Authentication\OAuth\DelegateAccess(
-                    self::make(GuzzleHttp\Client::class),
                     self::make(Authentication\OAuth\Transformers\AccessToken::class),
                     self::make(Authentication\OAuth\Transformers\Scopes::class)
                 );

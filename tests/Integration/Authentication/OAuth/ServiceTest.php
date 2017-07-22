@@ -3,13 +3,13 @@
 namespace Yaspa\Tests\Integration\Authentication\OAuth;
 
 use PHPUnit\Framework\TestCase;
-use Yaspa\Authentication\OAuth\DelegateAccess;
+use Yaspa\Authentication\OAuth\Service;
 use Yaspa\Authentication\OAuth\Builder\Scopes;
 use Yaspa\Factory;
 use Yaspa\Authentication\OAuth\Models\AccessToken;
 use Yaspa\Tests\Utils\Config as TestConfig;
 
-class DelegateAccessTest extends TestCase
+class ServiceTest extends TestCase
 {
     /**
      * @group integration
@@ -27,7 +27,7 @@ class DelegateAccessTest extends TestCase
             ->withWriteOrders()
             ->withWriteCustomers();
 
-        $instance = Factory::make(DelegateAccess::class);
+        $instance = Factory::make(Service::class);
         $delegateToken = $instance->createNewDelegateAccessToken(
             $testShop->myShopifySubdomainName,
             $accessToken,
@@ -56,7 +56,7 @@ class DelegateAccessTest extends TestCase
             ->withWriteOrders()
             ->withWriteCustomers();
 
-        $instance = Factory::make(DelegateAccess::class);
+        $instance = Factory::make(Service::class);
         $delegateToken = $instance->createNewDelegateAccessToken(
             $testShop->myShopifySubdomainName,
             $accessToken,

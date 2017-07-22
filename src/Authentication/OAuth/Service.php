@@ -3,49 +3,134 @@
 namespace Yaspa\Authentication\OAuth;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\RequestOptions;
 use Yaspa\Authentication\OAuth\Builder\Scopes;
+use Yaspa\Authentication\OAuth\Exceptions\FailedSecurityChecksException;
 use Yaspa\Authentication\OAuth\Models\AccessToken;
+use Yaspa\Authentication\OAuth\Models\ConfirmationRedirect;
+use Yaspa\Authentication\OAuth\Models\Credentials;
 use Yaspa\Authentication\OAuth\Transformers\AccessToken as AccessTokenTransformer;
+use Yaspa\Authentication\OAuth\Transformers\ConfirmationRedirect as ConfirmationRedirectTransformer;
 use Yaspa\Authentication\OAuth\Transformers\Scopes as ScopesTransformer;
 
 /**
- * Class DelegateAccess
+ * Class Service
  *
  * @package Yaspa\Authentication\OAuth
- * @see https://help.shopify.com/api/getting-started/authentication/oauth#delegating-access-to-subsystems
+ * @see https://help.shopify.com/api/getting-started/authentication/oauth
  *
- * Provides functionality to delegate access to subsystems.
+ * The OAuth service class enables tasks defined in the Shopify OAuth authentication guide.
  */
-class DelegateAccess
+class Service
 {
+    const REQUEST_PERMANENT_ACCESS_TOKEN_HEADERS = ['Accept' => 'application/json'];
     const DELEGATE_ACCESS_HEADERS = ['Accept' => 'application/json'];
     const CREATE_NEW_DELETE_ACCESS_TOKEN_URI_TEMPLATE = 'https://%s.myshopify.com/admin/access_tokens/delegate';
 
     /** @var Client $httpClient */
     protected $httpClient;
+    /** @var SecurityChecks $securityChecks */
+    protected $securityChecks;
+    /** @var ConfirmationRedirectTransformer $confirmationRedirectTransformer */
+    protected $confirmationRedirectTransformer;
     /** @var AccessTokenTransformer $accessTokenTransformer */
     protected $accessTokenTransformer;
     /** @var ScopesTransformer $scopesTransformer */
     protected $scopesTransformer;
 
     /**
-     * DelegateAccess constructor.
+     * Service constructor.
      *
      * @param Client $httpClient
+     * @param SecurityChecks $securityChecks
+     * @param ConfirmationRedirectTransformer $confirmationRedirectTransformer
      * @param AccessTokenTransformer $accessTokenTransformer
      * @param ScopesTransformer $scopesTransformer
      */
     public function __construct(
         Client $httpClient,
+        SecurityChecks $securityChecks,
+        ConfirmationRedirectTransformer $confirmationRedirectTransformer,
         AccessTokenTransformer $accessTokenTransformer,
         ScopesTransformer $scopesTransformer
     ) {
         $this->httpClient = $httpClient;
+        $this->securityChecks = $securityChecks;
+        $this->confirmationRedirectTransformer = $confirmationRedirectTransformer;
         $this->accessTokenTransformer = $accessTokenTransformer;
         $this->scopesTransformer = $scopesTransformer;
+    }
+
+    /**
+     * @param ConfirmationRedirect $confirmationRedirect
+     * @param Credentials $credentials
+     * @param null|string $nonce
+     * @return AccessToken
+     * @throws ClientException
+     */
+    public function requestPermanentAccessToken(
+        ConfirmationRedirect $confirmationRedirect,
+        Credentials $credentials,
+        ?string $nonce = null
+    ): AccessToken {
+        $response = $this->asyncRequestPermanentAccessToken(
+            $confirmationRedirect,
+            $credentials,
+            $nonce
+        )->wait();
+
+        return $this->accessTokenTransformer->fromResponse($response);
+    }
+
+    /**
+     * @param ConfirmationRedirect $confirmationRedirect
+     * @param Credentials $credentials
+     * @param string|null $nonce
+     * @return PromiseInterface
+     * @throws FailedSecurityChecksException
+     */
+    public function asyncRequestPermanentAccessToken(
+        ConfirmationRedirect $confirmationRedirect,
+        Credentials $credentials,
+        ?string $nonce = null
+    ): PromiseInterface {
+        // Perform security checks
+        if (!$this->securityChecks->nonceIsSame($confirmationRedirect, $nonce)) {
+            throw new FailedSecurityChecksException(
+                'nonce',
+                $nonce,
+                $confirmationRedirect->getState()
+            );
+        }
+
+        if (!$this->securityChecks->hostnameIsValid($confirmationRedirect)) {
+            throw new FailedSecurityChecksException(
+                'shop',
+                'match for pattern '.SecurityChecks::VALID_HOSTNAME_REGEX,
+                $confirmationRedirect->getShop()
+            );
+        }
+
+        if (!$this->securityChecks->hmacIsValid($confirmationRedirect, $credentials)) {
+            throw new FailedSecurityChecksException(
+                'hmac',
+                $this->securityChecks->generateHmac($confirmationRedirect, $credentials),
+                $confirmationRedirect->getHmac()
+            );
+        }
+
+        // Prepare request parameters
+        $requestUri = $this->confirmationRedirectTransformer->toRequestAccessTokenUri($confirmationRedirect);
+        $requestBody = $this->confirmationRedirectTransformer->toRequestAccessTokenPostBody($confirmationRedirect, $credentials);
+
+        // Create code exchange request
+        return $this->httpClient->postAsync($requestUri, [
+            RequestOptions::HEADERS => self::REQUEST_PERMANENT_ACCESS_TOKEN_HEADERS,
+            RequestOptions::MULTIPART => $requestBody,
+        ]);
     }
 
     /**
