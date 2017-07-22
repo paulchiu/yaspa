@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Yaspa\Authentication\OAuth\Builder\Scopes;
 use Yaspa\Authentication\OAuth\Models\AccessToken;
-use Yaspa\Authentication\OAuth\Models\ConfirmationRedirect;
+use Yaspa\Authentication\OAuth\Models\AuthorizationCode;
 use Yaspa\Authentication\OAuth\Models\Credentials;
 use Yaspa\Authentication\OAuth\Service as OAuthService;
 use Yaspa\Factory;
@@ -38,7 +38,7 @@ class ServiceTest extends TestCase
         Factory::inject(Client::class, $client);
 
         // Create parameters
-        $confirmation = new ConfirmationRedirect();
+        $confirmation = new AuthorizationCode();
         $confirmation
             ->setCode('0907a61c0c8d55e99db179b68161bc00')
             ->setShop('some-shop.myshopify.com')

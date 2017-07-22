@@ -10,10 +10,10 @@ use GuzzleHttp\RequestOptions;
 use Yaspa\Authentication\OAuth\Builder\Scopes;
 use Yaspa\Authentication\OAuth\Exceptions\FailedSecurityChecksException;
 use Yaspa\Authentication\OAuth\Models\AccessToken;
-use Yaspa\Authentication\OAuth\Models\ConfirmationRedirect;
+use Yaspa\Authentication\OAuth\Models\AuthorizationCode;
 use Yaspa\Authentication\OAuth\Models\Credentials;
 use Yaspa\Authentication\OAuth\Transformers\AccessToken as AccessTokenTransformer;
-use Yaspa\Authentication\OAuth\Transformers\ConfirmationRedirect as ConfirmationRedirectTransformer;
+use Yaspa\Authentication\OAuth\Transformers\AuthorizationCode as AuthorizationCodeTransformer;
 use Yaspa\Authentication\OAuth\Transformers\Scopes as ScopesTransformer;
 
 /**
@@ -34,8 +34,8 @@ class Service
     protected $httpClient;
     /** @var SecurityChecks $securityChecks */
     protected $securityChecks;
-    /** @var ConfirmationRedirectTransformer $confirmationRedirectTransformer */
-    protected $confirmationRedirectTransformer;
+    /** @var AuthorizationCodeTransformer $authorizationCodeTransformer */
+    protected $authorizationCodeTransformer;
     /** @var AccessTokenTransformer $accessTokenTransformer */
     protected $accessTokenTransformer;
     /** @var ScopesTransformer $scopesTransformer */
@@ -46,38 +46,38 @@ class Service
      *
      * @param Client $httpClient
      * @param SecurityChecks $securityChecks
-     * @param ConfirmationRedirectTransformer $confirmationRedirectTransformer
+     * @param AuthorizationCodeTransformer $authorizationCodeTransformer
      * @param AccessTokenTransformer $accessTokenTransformer
      * @param ScopesTransformer $scopesTransformer
      */
     public function __construct(
         Client $httpClient,
         SecurityChecks $securityChecks,
-        ConfirmationRedirectTransformer $confirmationRedirectTransformer,
+        AuthorizationCodeTransformer $authorizationCodeTransformer,
         AccessTokenTransformer $accessTokenTransformer,
         ScopesTransformer $scopesTransformer
     ) {
         $this->httpClient = $httpClient;
         $this->securityChecks = $securityChecks;
-        $this->confirmationRedirectTransformer = $confirmationRedirectTransformer;
+        $this->authorizationCodeTransformer = $authorizationCodeTransformer;
         $this->accessTokenTransformer = $accessTokenTransformer;
         $this->scopesTransformer = $scopesTransformer;
     }
 
     /**
-     * @param ConfirmationRedirect $confirmationRedirect
+     * @param AuthorizationCode $authorizationCode
      * @param Credentials $credentials
      * @param null|string $nonce
      * @return AccessToken
      * @throws ClientException
      */
     public function requestPermanentAccessToken(
-        ConfirmationRedirect $confirmationRedirect,
+        AuthorizationCode $authorizationCode,
         Credentials $credentials,
         ?string $nonce = null
     ): AccessToken {
         $response = $this->asyncRequestPermanentAccessToken(
-            $confirmationRedirect,
+            $authorizationCode,
             $credentials,
             $nonce
         )->wait();
@@ -86,45 +86,45 @@ class Service
     }
 
     /**
-     * @param ConfirmationRedirect $confirmationRedirect
+     * @param AuthorizationCode $authorizationCode
      * @param Credentials $credentials
      * @param string|null $nonce
      * @return PromiseInterface
      * @throws FailedSecurityChecksException
      */
     public function asyncRequestPermanentAccessToken(
-        ConfirmationRedirect $confirmationRedirect,
+        AuthorizationCode $authorizationCode,
         Credentials $credentials,
         ?string $nonce = null
     ): PromiseInterface {
         // Perform security checks
-        if (!$this->securityChecks->nonceIsSame($confirmationRedirect, $nonce)) {
+        if (!$this->securityChecks->nonceIsSame($authorizationCode, $nonce)) {
             throw new FailedSecurityChecksException(
                 'nonce',
                 $nonce,
-                $confirmationRedirect->getState()
+                $authorizationCode->getState()
             );
         }
 
-        if (!$this->securityChecks->hostnameIsValid($confirmationRedirect)) {
+        if (!$this->securityChecks->hostnameIsValid($authorizationCode)) {
             throw new FailedSecurityChecksException(
                 'shop',
                 'match for pattern '.SecurityChecks::VALID_HOSTNAME_REGEX,
-                $confirmationRedirect->getShop()
+                $authorizationCode->getShop()
             );
         }
 
-        if (!$this->securityChecks->hmacIsValid($confirmationRedirect, $credentials)) {
+        if (!$this->securityChecks->hmacIsValid($authorizationCode, $credentials)) {
             throw new FailedSecurityChecksException(
                 'hmac',
-                $this->securityChecks->generateHmac($confirmationRedirect, $credentials),
-                $confirmationRedirect->getHmac()
+                $this->securityChecks->generateHmac($authorizationCode, $credentials),
+                $authorizationCode->getHmac()
             );
         }
 
         // Prepare request parameters
-        $requestUri = $this->confirmationRedirectTransformer->toRequestAccessTokenUri($confirmationRedirect);
-        $requestBody = $this->confirmationRedirectTransformer->toRequestAccessTokenPostBody($confirmationRedirect, $credentials);
+        $requestUri = $this->authorizationCodeTransformer->toRequestAccessTokenUri($authorizationCode);
+        $requestBody = $this->authorizationCodeTransformer->toRequestAccessTokenPostBody($authorizationCode, $credentials);
 
         // Create code exchange request
         return $this->httpClient->postAsync($requestUri, [

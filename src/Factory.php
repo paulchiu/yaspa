@@ -104,7 +104,7 @@ class Factory
                 return new Authentication\OAuth\Service(
                     self::make(GuzzleHttp\Client::class),
                     self::make(Authentication\OAuth\SecurityChecks::class),
-                    self::make(Authentication\OAuth\Transformers\ConfirmationRedirect::class),
+                    self::make(Authentication\OAuth\Transformers\AuthorizationCode::class),
                     self::make(Authentication\OAuth\Transformers\AccessToken::class),
                     self::make(Authentication\OAuth\Transformers\Scopes::class)
                 );
@@ -120,8 +120,8 @@ class Factory
             Authentication\OAuth\Transformers\AssociatedUser::class => function () {
                 return new Authentication\OAuth\Transformers\AssociatedUser();
             },
-            Authentication\OAuth\Transformers\ConfirmationRedirect::class => function () {
-                return new Authentication\OAuth\Transformers\ConfirmationRedirect();
+            Authentication\OAuth\Transformers\AuthorizationCode::class => function () {
+                return new Authentication\OAuth\Transformers\AuthorizationCode();
             },
             Authentication\OAuth\Transformers\Scopes::class => function () {
                 return new Authentication\OAuth\Transformers\Scopes();

@@ -3,14 +3,16 @@
 namespace Yaspa\Authentication\OAuth\Models;
 
 /**
- * Class ConfirmationRedirect
+ * Class AuthorizationCode
  * @package Yaspa\Models\Authentication\OAuth
  * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
  *
  * This model represents the data returned by Shopify once a shop has confirmed an OAuth grant and is modelled
  * on the pattern of https://example.org/some/redirect/uri?code={authorization_code}&hmac=da9d83c171400a41f8db91a950508985&timestamp=1409617544&state={nonce}&shop={hostname}
+ *
+ * The data is effectively the authorization code with additional data. Similar to how an access token is treated.
  */
-class ConfirmationRedirect
+class AuthorizationCode
 {
     /** @var string $code */
     protected $code;
@@ -33,9 +35,9 @@ class ConfirmationRedirect
 
     /**
      * @param string $code
-     * @return ConfirmationRedirect
+     * @return AuthorizationCode
      */
-    public function setCode(string $code): ConfirmationRedirect
+    public function setCode(string $code): AuthorizationCode
     {
         $this->code = $code;
         return $this;
@@ -51,9 +53,9 @@ class ConfirmationRedirect
 
     /**
      * @param string $hmac
-     * @return ConfirmationRedirect
+     * @return AuthorizationCode
      */
-    public function setHmac(string $hmac): ConfirmationRedirect
+    public function setHmac(string $hmac): AuthorizationCode
     {
         $this->hmac = $hmac;
         return $this;
@@ -69,9 +71,9 @@ class ConfirmationRedirect
 
     /**
      * @param string $shop
-     * @return ConfirmationRedirect
+     * @return AuthorizationCode
      */
-    public function setShop(string $shop): ConfirmationRedirect
+    public function setShop(string $shop): AuthorizationCode
     {
         $this->shop = $shop;
         return $this;
@@ -87,9 +89,9 @@ class ConfirmationRedirect
 
     /**
      * @param string|null $state
-     * @return ConfirmationRedirect
+     * @return AuthorizationCode
      */
-    public function setState(?string $state): ConfirmationRedirect
+    public function setState(?string $state): AuthorizationCode
     {
         $this->state = $state;
         return $this;
@@ -105,9 +107,9 @@ class ConfirmationRedirect
 
     /**
      * @param string $timestamp
-     * @return ConfirmationRedirect
+     * @return AuthorizationCode
      */
-    public function setTimestamp(string $timestamp): ConfirmationRedirect
+    public function setTimestamp(string $timestamp): AuthorizationCode
     {
         $this->timestamp = $timestamp;
         return $this;

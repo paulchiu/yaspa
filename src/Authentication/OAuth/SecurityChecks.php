@@ -2,7 +2,7 @@
 
 namespace Yaspa\Authentication\OAuth;
 
-use Yaspa\Authentication\OAuth\Models\ConfirmationRedirect;
+use Yaspa\Authentication\OAuth\Models\AuthorizationCode;
 use Yaspa\Authentication\OAuth\Models\Credentials;
 
 /**
@@ -21,14 +21,14 @@ class SecurityChecks
      * Ensure the provided nonce is the same one that your application provided to Shopify during the Step 2: Asking
      * for permission.
      *
-     * @param ConfirmationRedirect $confirmationRedirect
+     * @param AuthorizationCode $authorizationCode
      * @param string $nonce
      * @return bool
      */
-    public function nonceIsSame(ConfirmationRedirect $confirmationRedirect, ?string $nonce): bool
+    public function nonceIsSame(AuthorizationCode $authorizationCode, ?string $nonce): bool
     {
-        $nonceEqualsState = $confirmationRedirect->getState() === $nonce;
-        $bothEmpty = empty($confirmationRedirect->getState()) && empty($nonce);
+        $nonceEqualsState = $authorizationCode->getState() === $nonce;
+        $bothEmpty = empty($authorizationCode->getState()) && empty($nonce);
 
         return $nonceEqualsState || $bothEmpty;
     }
@@ -37,12 +37,12 @@ class SecurityChecks
      * Ensure the provided hostname parameter is a valid hostname, ends with myshopify.com, and does not contain
      * characters other than letters (a-z), numbers (0-9), dots, and hyphens.
      *
-     * @param ConfirmationRedirect $confirmationRedirect
+     * @param AuthorizationCode $authorizationCode
      * @return bool
      */
-    public function hostnameIsValid(ConfirmationRedirect $confirmationRedirect): bool
+    public function hostnameIsValid(AuthorizationCode $authorizationCode): bool
     {
-        return preg_match(self::VALID_HOSTNAME_REGEX, $confirmationRedirect->getShop()) === 1;
+        return preg_match(self::VALID_HOSTNAME_REGEX, $authorizationCode->getShop()) === 1;
     }
 
     /**
@@ -50,16 +50,16 @@ class SecurityChecks
      *
      * This is just a convenience function for self::generateHmac
      *
-     * @param ConfirmationRedirect $confirmationRedirect
+     * @param AuthorizationCode $authorizationCode
      * @param Credentials $credentials
      * @return bool
      */
     public function hmacIsValid(
-        ConfirmationRedirect $confirmationRedirect,
+        AuthorizationCode $authorizationCode,
         Credentials $credentials
     ): bool {
-        $untrustedHmac = $confirmationRedirect->getHmac();
-        $trustedHmac = $this->generateHmac($confirmationRedirect, $credentials);
+        $untrustedHmac = $authorizationCode->getHmac();
+        $trustedHmac = $this->generateHmac($authorizationCode, $credentials);
 
         return $untrustedHmac === $trustedHmac;
     }
@@ -70,19 +70,19 @@ class SecurityChecks
      * Please note that this method is tested through self::hmacIsValid
      *
      * @see https://help.shopify.com/api/getting-started/authentication/oauth#verification
-     * @param ConfirmationRedirect $confirmationRedirect
+     * @param AuthorizationCode $authorizationCode
      * @param Credentials $credentials
      * @return string
      */
     public function generateHmac(
-        ConfirmationRedirect $confirmationRedirect,
+        AuthorizationCode $authorizationCode,
         Credentials $credentials
     ): string {
         $queryString = http_build_query([
-            'code' => $confirmationRedirect->getCode(),
-            'shop' => $confirmationRedirect->getShop(),
-            'state' => $confirmationRedirect->getState(),
-            'timestamp' => $confirmationRedirect->getTimestamp(),
+            'code' => $authorizationCode->getCode(),
+            'shop' => $authorizationCode->getShop(),
+            'state' => $authorizationCode->getState(),
+            'timestamp' => $authorizationCode->getTimestamp(),
         ]);
 
         $hmac = hash_hmac(self::HMAC_ALGORITHM, $queryString, $credentials->getApiSecretKey());

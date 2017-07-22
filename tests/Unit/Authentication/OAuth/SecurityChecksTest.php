@@ -4,7 +4,7 @@ namespace Yaspa\Tests\Unit\Authentication\OAuth;
 
 use PHPUnit\Framework\TestCase;
 use Yaspa\Authentication\OAuth\SecurityChecks;
-use Yaspa\Authentication\OAuth\Models\ConfirmationRedirect;
+use Yaspa\Authentication\OAuth\Models\AuthorizationCode;
 use Yaspa\Authentication\OAuth\Models\Credentials;
 
 class SecurityChecksTest extends TestCase
@@ -12,7 +12,7 @@ class SecurityChecksTest extends TestCase
     public function testCanDetermineNonceIsTheSame()
     {
         // Create fixtures
-        $confirmation = new ConfirmationRedirect();
+        $confirmation = new AuthorizationCode();
         $confirmation->setState('foo');
         $nonce = 'foo';
 
@@ -25,7 +25,7 @@ class SecurityChecksTest extends TestCase
     public function testCantDetermineUnsetNonceIsTheSame()
     {
         // Create fixtures
-        $confirmation = new ConfirmationRedirect();
+        $confirmation = new AuthorizationCode();
         $nonce = null;
 
         // Test method
@@ -37,7 +37,7 @@ class SecurityChecksTest extends TestCase
     public function testCanDetermineEmptyNonceIsTheSame()
     {
         // Create fixtures
-        $confirmation = new ConfirmationRedirect();
+        $confirmation = new AuthorizationCode();
         $nonce = '';
 
         // Test method
@@ -49,7 +49,7 @@ class SecurityChecksTest extends TestCase
     public function testCantDetermineNonceIsNotTheSame()
     {
         // Create fixtures
-        $confirmation = new ConfirmationRedirect();
+        $confirmation = new AuthorizationCode();
         $confirmation->setState('foo');
         $nonce = 'bar';
 
@@ -62,7 +62,7 @@ class SecurityChecksTest extends TestCase
     public function testCantDetermineNonceIsNotTheSameWhenRequestNoNonce()
     {
         // Create fixtures
-        $confirmation = new ConfirmationRedirect();
+        $confirmation = new AuthorizationCode();
         $confirmation->setState('foo');
         $nonce = null;
 
@@ -75,7 +75,7 @@ class SecurityChecksTest extends TestCase
     public function testCantDetermineNonceIsNotTheSameWhenResponseNoNonce()
     {
         // Create fixtures
-        $confirmation = new ConfirmationRedirect();
+        $confirmation = new AuthorizationCode();
         $nonce = 'bar';
 
         // Test method
@@ -87,7 +87,7 @@ class SecurityChecksTest extends TestCase
     public function testCanClassifyCorrectHostname()
     {
         // Create fixtures
-        $confirmation = new ConfirmationRedirect();
+        $confirmation = new AuthorizationCode();
         $confirmation->setShop('foo.BAR-3.myshopify.com');
 
         // Test method
@@ -99,7 +99,7 @@ class SecurityChecksTest extends TestCase
     public function testCanInvalidateInvalidCharacterInHostname()
     {
         // Create fixtures
-        $confirmation = new ConfirmationRedirect();
+        $confirmation = new AuthorizationCode();
         $confirmation->setShop('foo:bar.myshopify.com');
 
         // Test method
@@ -111,7 +111,7 @@ class SecurityChecksTest extends TestCase
     public function testCanInvalidateWrongEnding()
     {
         // Create fixtures
-        $confirmation = new ConfirmationRedirect();
+        $confirmation = new AuthorizationCode();
         $confirmation->setShop('foo.myshopify.co.uk');
 
         // Test method
@@ -123,7 +123,7 @@ class SecurityChecksTest extends TestCase
     public function testCanValidateHmac()
     {
         // Create fixtures
-        $confirmation = new ConfirmationRedirect();
+        $confirmation = new AuthorizationCode();
         $confirmation
             ->setCode('foo')
             ->setShop('bar.myshopify.com')
@@ -143,7 +143,7 @@ class SecurityChecksTest extends TestCase
     public function testCanValidateHmacWithoutState()
     {
         // Create fixtures; this is taken directly from Shopify's example
-        $confirmation = new ConfirmationRedirect();
+        $confirmation = new AuthorizationCode();
         $confirmation
             ->setCode('0907a61c0c8d55e99db179b68161bc00')
             ->setShop('some-shop.myshopify.com')
@@ -162,7 +162,7 @@ class SecurityChecksTest extends TestCase
     public function testCanInvalidateHmac()
     {
         // Create fixtures; this is taken directly from Shopify's example
-        $confirmation = new ConfirmationRedirect();
+        $confirmation = new AuthorizationCode();
         $confirmation
             ->setCode('0907a61c0c8d55e99db179b68161bc00')
             ->setShop('some-shop.myshopify.com')

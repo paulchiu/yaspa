@@ -3,14 +3,14 @@
 namespace Yaspa\Authentication\OAuth\Transformers;
 
 use GuzzleHttp\Psr7\Uri;
-use Yaspa\Authentication\OAuth\Models\ConfirmationRedirect as ConfirmationRedirectModel;
+use Yaspa\Authentication\OAuth\Models\AuthorizationCode as AuthorizationCodeModel;
 use Yaspa\Authentication\OAuth\Models\Credentials as CredentialsModel;
 
 /**
- * Class ConfirmationRedirect
+ * Class AuthorizationCode
  * @package Yaspa\Transformers\OAuth
  */
-class ConfirmationRedirect
+class AuthorizationCode
 {
     const REQUEST_ACCESS_TOKEN_URI_TEMPLATE = 'https://%s/admin/oauth/access_token';
     const EXPECTED_REDIRECT_PARAMETERS = [
@@ -25,11 +25,11 @@ class ConfirmationRedirect
      * Generates a request access token URI from a confirmation redirect response.
      *
      * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
-     * @param ConfirmationRedirectModel $confirmationRedirect
+     * @param AuthorizationCodeModel $authorizationCode
      * @return Uri
      */
-    public function toRequestAccessTokenUri(ConfirmationRedirectModel $confirmationRedirect): Uri {
-        $baseUri = sprintf(self::REQUEST_ACCESS_TOKEN_URI_TEMPLATE, $confirmationRedirect->getShop());
+    public function toRequestAccessTokenUri(AuthorizationCodeModel $authorizationCode): Uri {
+        $baseUri = sprintf(self::REQUEST_ACCESS_TOKEN_URI_TEMPLATE, $authorizationCode->getShop());
 
         return new Uri($baseUri);
     }
@@ -39,12 +39,12 @@ class ConfirmationRedirect
      *
      * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
      * @see http://docs.guzzlephp.org/en/stable/request-options.html#multipart
-     * @param ConfirmationRedirectModel $confirmationRedirect
+     * @param AuthorizationCodeModel $authorizationCode
      * @param CredentialsModel $credentials
      * @return array
      */
     public function toRequestAccessTokenPostBody(
-        ConfirmationRedirectModel $confirmationRedirect,
+        AuthorizationCodeModel $authorizationCode,
         CredentialsModel $credentials
     ): array {
         return [
@@ -58,30 +58,30 @@ class ConfirmationRedirect
             ],
             [
                 'name' => 'code',
-                'contents' => $confirmationRedirect->getCode(),
+                'contents' => $authorizationCode->getCode(),
             ],
         ];
     }
 
     /**
-     * Parse an array of confirmation redirect values. This will usually be
+     * Parse an array of authorization code values. This will usually be
      * the GET parameters sent by Shopify as described in their guide.
      *
      * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
      * @param array $redirectParameters
-     * @return ConfirmationRedirectModel
+     * @return AuthorizationCodeModel
      */
-    public function fromArray(array $redirectParameters): ConfirmationRedirectModel
+    public function fromArray(array $redirectParameters): AuthorizationCodeModel
     {
         $fullSetRedirectParameters = array_replace(self::EXPECTED_REDIRECT_PARAMETERS, $redirectParameters);
 
-        $confirmationRedirect = (new ConfirmationRedirectModel())
+        $authorizationCode = (new AuthorizationCodeModel())
             ->setCode($fullSetRedirectParameters['code'])
             ->setShop($fullSetRedirectParameters['shop'])
             ->setState($fullSetRedirectParameters['state'])
             ->setTimestamp($fullSetRedirectParameters['timestamp'])
             ->setHmac($fullSetRedirectParameters['hmac']);
 
-        return $confirmationRedirect;
+        return $authorizationCode;
     }
 }
