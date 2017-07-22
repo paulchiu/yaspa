@@ -5,7 +5,6 @@ namespace Yaspa;
 use GuzzleHttp;
 use UnexpectedValueException;
 use Yaspa\Authentication;
-use Yaspa\Transformers;
 
 /**
  * Class Factory
@@ -88,45 +87,50 @@ class Factory
             GuzzleHttp\Client::class => function () {
                 return new GuzzleHttp\Client();
             },
-            Authentication\OAuth\AuthorizePrompt::class => function () {
-                return new Authentication\OAuth\AuthorizePrompt(
-                    self::make(Transformers\Authentication\OAuth\Scopes::class)
+            Authentication\OAuth\Builder\AuthorizePromptUri::class => function () {
+                return new Authentication\OAuth\Builder\AuthorizePromptUri(
+                    self::make(Authentication\OAuth\Transformers\Scopes::class)
+                );
+            },
+            Authentication\OAuth\Builder\Scopes::class => function () {
+                return new Authentication\OAuth\Builder\Scopes();
+            },
+            Authentication\OAuth\Builder\AuthorizePromptUri::class => function () {
+                return new Authentication\OAuth\Builder\AuthorizePromptUri(
+                    self::make(Authentication\OAuth\Transformers\Scopes::class)
                 );
             },
             Authentication\OAuth\ConfirmInstallation::class => function () {
                 return new Authentication\OAuth\ConfirmInstallation(
                     self::make(GuzzleHttp\Client::class),
                     self::make(Authentication\OAuth\SecurityChecks::class),
-                    self::make(Transformers\Authentication\OAuth\ConfirmationRedirect::class),
-                    self::make(Transformers\Authentication\OAuth\AccessToken::class)
+                    self::make(Authentication\OAuth\Transformers\ConfirmationRedirect::class),
+                    self::make(Authentication\OAuth\Transformers\AccessToken::class)
                 );
             },
             Authentication\OAuth\DelegateAccess::class => function () {
                 return new Authentication\OAuth\DelegateAccess(
                     self::make(GuzzleHttp\Client::class),
-                    self::make(Transformers\Authentication\OAuth\AccessToken::class),
-                    self::make(Transformers\Authentication\OAuth\Scopes::class)
+                    self::make(Authentication\OAuth\Transformers\AccessToken::class),
+                    self::make(Authentication\OAuth\Transformers\Scopes::class)
                 );
-            },
-            Authentication\OAuth\Scopes::class => function () {
-                return new Authentication\OAuth\Scopes();
             },
             Authentication\OAuth\SecurityChecks::class => function () {
                 return new Authentication\OAuth\SecurityChecks();
             },
-            Transformers\Authentication\OAuth\AccessToken::class => function () {
-                return new Transformers\Authentication\OAuth\AccessToken(
-                    self::make(Transformers\Authentication\OAuth\AssociatedUser::class)
+            Authentication\OAuth\Transformers\AccessToken::class => function () {
+                return new Authentication\OAuth\Transformers\AccessToken(
+                    self::make(Authentication\OAuth\Transformers\AssociatedUser::class)
                 );
             },
-            Transformers\Authentication\OAuth\AssociatedUser::class => function () {
-                return new Transformers\Authentication\OAuth\AssociatedUser();
+            Authentication\OAuth\Transformers\AssociatedUser::class => function () {
+                return new Authentication\OAuth\Transformers\AssociatedUser();
             },
-            Transformers\Authentication\OAuth\ConfirmationRedirect::class => function () {
-                return new Transformers\Authentication\OAuth\ConfirmationRedirect();
+            Authentication\OAuth\Transformers\ConfirmationRedirect::class => function () {
+                return new Authentication\OAuth\Transformers\ConfirmationRedirect();
             },
-            Transformers\Authentication\OAuth\Scopes::class => function () {
-                return new Transformers\Authentication\OAuth\Scopes();
+            Authentication\OAuth\Transformers\Scopes::class => function () {
+                return new Authentication\OAuth\Transformers\Scopes();
             },
         ];
     }

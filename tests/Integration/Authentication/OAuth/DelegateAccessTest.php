@@ -4,9 +4,9 @@ namespace Yaspa\Tests\Integration\Authentication\OAuth;
 
 use PHPUnit\Framework\TestCase;
 use Yaspa\Authentication\OAuth\DelegateAccess;
-use Yaspa\Authentication\OAuth\Scopes;
+use Yaspa\Authentication\OAuth\Builder\Scopes;
 use Yaspa\Factory;
-use Yaspa\Models\Authentication\OAuth\AccessToken;
+use Yaspa\Authentication\OAuth\Models\AccessToken;
 use Yaspa\Tests\Utils\Config as TestConfig;
 
 class DelegateAccessTest extends TestCase

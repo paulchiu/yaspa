@@ -1,8 +1,8 @@
 <?php
 
-namespace Yaspa\Transformers\Authentication\OAuth;
+namespace Yaspa\Authentication\OAuth\Transformers;
 
-use Yaspa\Authentication\OAuth\Scopes as ScopesBuilder;
+use Yaspa\Authentication\OAuth\Builder\Scopes as ScopesBuilder;
 
 class Scopes
 {

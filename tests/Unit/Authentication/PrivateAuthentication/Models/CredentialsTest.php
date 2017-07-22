@@ -3,7 +3,7 @@
 namespace Yaspa\Tests\Unit\Models\Authentication\PrivateAuthentication;
 
 use PHPUnit\Framework\TestCase;
-use Yaspa\Models\Authentication\PrivateAuthentication\Credentials;
+use Yaspa\Authentication\PrivateAuthentication\Models\Credentials;
 
 class CredentialsTest extends TestCase
 {

@@ -11,9 +11,9 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Yaspa\Authentication\OAuth\ConfirmInstallation;
 use Yaspa\Factory;
-use Yaspa\Models\Authentication\OAuth\AccessToken;
-use Yaspa\Models\Authentication\OAuth\ConfirmationRedirect;
-use Yaspa\Models\Authentication\OAuth\Credentials;
+use Yaspa\Authentication\OAuth\Models\AccessToken;
+use Yaspa\Authentication\OAuth\Models\ConfirmationRedirect;
+use Yaspa\Authentication\OAuth\Models\Credentials;
 
 class ConfirmInstallationTest extends TestCase
 {

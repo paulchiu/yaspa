@@ -1,13 +1,13 @@
 <?php
 
-namespace Yaspa\Tests\Unit\Authentication\OAuth;
+namespace Yaspa\Tests\Unit\Authentication\OAuth\Builder;
 
 use PHPUnit\Framework\TestCase;
-use Yaspa\Authentication\OAuth\AuthorizePrompt;
-use Yaspa\Authentication\OAuth\Scopes;
+use Yaspa\Authentication\OAuth\Builder\AuthorizePromptUri;
+use Yaspa\Authentication\OAuth\Builder\Scopes;
 use Yaspa\Factory;
 
-class AuthorizePromptTest extends TestCase
+class AuthorizePromptUriTest extends TestCase
 {
     public function testToUri()
     {
@@ -20,7 +20,7 @@ class AuthorizePromptTest extends TestCase
             ->withReadContent()
             ->withReadAnalytics();
 
-        $instance = Factory::make(AuthorizePrompt::class)
+        $instance = Factory::make(AuthorizePromptUri::class)
             ->withShop('bar')
             ->withApiKey('baz')
             ->withNonce('qux')

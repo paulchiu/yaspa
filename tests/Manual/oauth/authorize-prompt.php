@@ -8,17 +8,17 @@ $testApp = $testConfig->get('shopifyAppApi');
 $testShop = $testConfig->get('shopifyShop');
 
 // Get OAuth credentials for the test app
-$oAuthCredentials = new Yaspa\Models\Authentication\OAuth\Credentials();
+$oAuthCredentials = new Yaspa\Authentication\OAuth\Models\Credentials();
 $oAuthCredentials
     ->setApiKey($testApp->key)
     ->setApiSecretKey($testApp->secretKey);
 
 // Prepare app installation URI
-$scopes = Yaspa\Factory::make(Yaspa\Authentication\OAuth\Scopes::class)
+$scopes = Yaspa\Factory::make(Yaspa\Authentication\OAuth\Builder\Scopes::class)
     ->withWriteCustomers()
     ->withWriteOrders();
 
-$redirectUri = Yaspa\Factory::make(Yaspa\Authentication\OAuth\AuthorizePrompt::class)
+$redirectUri = Yaspa\Factory::make(Yaspa\Authentication\OAuth\Builder\AuthorizePromptUri::class)
     ->withShop($testShop->myShopifySubdomainName)
     ->withApiKey($oAuthCredentials->getApiKey())
     ->withNonce('foo')

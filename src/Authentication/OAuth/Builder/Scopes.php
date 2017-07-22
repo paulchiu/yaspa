@@ -1,6 +1,6 @@
 <?php
 
-namespace Yaspa\Authentication\OAuth;
+namespace Yaspa\Authentication\OAuth\Builder;
 
 /**
  * Class Scopes

@@ -1,6 +1,6 @@
 <?php
 
-namespace Yaspa\Models\Authentication\PrivateAuthentication;
+namespace Yaspa\Authentication\PrivateAuthentication\Models;
 
 /**
  * Class Credentials

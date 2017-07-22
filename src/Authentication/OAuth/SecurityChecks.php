@@ -2,8 +2,8 @@
 
 namespace Yaspa\Authentication\OAuth;
 
-use Yaspa\Models\Authentication\OAuth\ConfirmationRedirect;
-use Yaspa\Models\Authentication\OAuth\Credentials;
+use Yaspa\Authentication\OAuth\Models\ConfirmationRedirect;
+use Yaspa\Authentication\OAuth\Models\Credentials;
 
 /**
  * Class SecurityChecks

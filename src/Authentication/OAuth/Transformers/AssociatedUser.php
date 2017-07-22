@@ -1,9 +1,9 @@
 <?php
 
-namespace Yaspa\Transformers\Authentication\OAuth;
+namespace Yaspa\Authentication\OAuth\Transformers;
 
 use Psr\Http\Message\ResponseInterface;
-use Yaspa\Models\Authentication\OAuth\AssociatedUser as AssociatedUserModel;
+use Yaspa\Authentication\OAuth\Models\AssociatedUser as AssociatedUserModel;
 use stdClass;
 
 /**

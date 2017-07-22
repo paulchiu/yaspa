@@ -1,10 +1,10 @@
 <?php
 
-namespace Yaspa\Transformers\Authentication\OAuth;
+namespace Yaspa\Authentication\OAuth\Transformers;
 
 use GuzzleHttp\Psr7\Uri;
-use Yaspa\Models\Authentication\OAuth\ConfirmationRedirect as ConfirmationRedirectModel;
-use Yaspa\Models\Authentication\OAuth\Credentials as CredentialsModel;
+use Yaspa\Authentication\OAuth\Models\ConfirmationRedirect as ConfirmationRedirectModel;
+use Yaspa\Authentication\OAuth\Models\Credentials as CredentialsModel;
 
 /**
  * Class ConfirmationRedirect

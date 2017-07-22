@@ -1,6 +1,6 @@
 <?php
 
-namespace Yaspa\Models\Authentication\OAuth;
+namespace Yaspa\Authentication\OAuth\Models;
 
 /**
  * Class AccessToken

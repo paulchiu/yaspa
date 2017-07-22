@@ -7,11 +7,11 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\RequestOptions;
 use Yaspa\Authentication\OAuth\Exceptions\FailedSecurityChecksException;
-use Yaspa\Models\Authentication\OAuth\AccessToken;
-use Yaspa\Models\Authentication\OAuth\ConfirmationRedirect;
-use Yaspa\Models\Authentication\OAuth\Credentials;
-use Yaspa\Transformers\Authentication\OAuth\AccessToken as AccessTokenTransformer;
-use Yaspa\Transformers\Authentication\OAuth\ConfirmationRedirect as ConfirmationRedirectTransformer;
+use Yaspa\Authentication\OAuth\Models\AccessToken;
+use Yaspa\Authentication\OAuth\Models\ConfirmationRedirect;
+use Yaspa\Authentication\OAuth\Models\Credentials;
+use Yaspa\Authentication\OAuth\Transformers\AccessToken as AccessTokenTransformer;
+use Yaspa\Authentication\OAuth\Transformers\ConfirmationRedirect as ConfirmationRedirectTransformer;
 
 /**
  * Class ConfirmInstallation

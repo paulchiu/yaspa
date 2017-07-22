@@ -6,9 +6,10 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\RequestOptions;
-use Yaspa\Models\Authentication\OAuth\AccessToken;
-use Yaspa\Transformers\Authentication\OAuth\AccessToken as AccessTokenTransformer;
-use Yaspa\Transformers\Authentication\OAuth\Scopes as ScopesTransformer;
+use Yaspa\Authentication\OAuth\Builder\Scopes;
+use Yaspa\Authentication\OAuth\Models\AccessToken;
+use Yaspa\Authentication\OAuth\Transformers\AccessToken as AccessTokenTransformer;
+use Yaspa\Authentication\OAuth\Transformers\Scopes as ScopesTransformer;
 
 /**
  * Class DelegateAccess

@@ -1,17 +1,17 @@
 <?php
 
-namespace Yaspa\Authentication\OAuth;
+namespace Yaspa\Authentication\OAuth\Builder;
 
 use GuzzleHttp\Psr7\Uri;
 use Yaspa\Authentication\OAuth\Exceptions\MissingRequiredParameterException;
-use Yaspa\Transformers\Authentication\OAuth\Scopes as ScopesTransformer;
+use Yaspa\Authentication\OAuth\Transformers\Scopes as ScopesTransformer;
 
 /**
- * Class AuthorizePrompt
+ * Class AuthorizePromptUri
  * @package Yaspa\OAuth
  * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-2-ask-for-permission
  *
- * OAuth authorization prompt immutable URI builder.
+ * OAuth authorization prompt URI builder.
  *
  * Example - Get URI string to request read content scope
  *
@@ -19,7 +19,7 @@ use Yaspa\Transformers\Authentication\OAuth\Scopes as ScopesTransformer;
  * $scope = Factory::make(Scopes::class)
  *      ->withReadContent();
  *
- * $authPromptUriString = (new AuthorizePrompt('http://foo.example.com'))
+ * $authPromptUriString = (new AuthorizePromptUri('http://foo.example.com'))
  *     ->withShop('bar')
  *     ->withApiKey('baz')
  *     ->withScopes($scope)
@@ -27,7 +27,7 @@ use Yaspa\Transformers\Authentication\OAuth\Scopes as ScopesTransformer;
  *     ->__toString();
  * ```
  */
-class AuthorizePrompt
+class AuthorizePromptUri
 {
     /**
      * Access modes are defined in the `{option}` definition in https://help.shopify.com/api/getting-started/authentication/oauth#step-2-ask-for-permission
@@ -56,7 +56,7 @@ class AuthorizePrompt
     protected $scopesTransformer;
 
     /**
-     * AuthorizePrompt constructor.
+     * AuthorizePromptUri constructor.
      *
      * @param ScopesTransformer $scopesTransformer
      */
@@ -97,9 +97,9 @@ class AuthorizePrompt
 
     /**
      * @param string $shop
-     * @return AuthorizePrompt
+     * @return AuthorizePromptUri
      */
-    public function withShop(string $shop): AuthorizePrompt
+    public function withShop(string $shop): AuthorizePromptUri
     {
         $new = clone $this;
         $new->shop = $shop;
@@ -109,9 +109,9 @@ class AuthorizePrompt
 
     /**
      * @param string $apiKey
-     * @return AuthorizePrompt
+     * @return AuthorizePromptUri
      */
-    public function withApiKey(string $apiKey): AuthorizePrompt
+    public function withApiKey(string $apiKey): AuthorizePromptUri
     {
         $new = clone $this;
         $new->apiKey = $apiKey;
@@ -121,9 +121,9 @@ class AuthorizePrompt
 
     /**
      * @param Scopes $scopes
-     * @return AuthorizePrompt
+     * @return AuthorizePromptUri
      */
-    public function withScopes(Scopes $scopes): AuthorizePrompt
+    public function withScopes(Scopes $scopes): AuthorizePromptUri
     {
         $new = clone $this;
         $new->scopes = $scopes;
@@ -133,9 +133,9 @@ class AuthorizePrompt
 
     /**
      * @param string $redirectUri
-     * @return AuthorizePrompt
+     * @return AuthorizePromptUri
      */
-    public function withRedirectUri(string $redirectUri): AuthorizePrompt
+    public function withRedirectUri(string $redirectUri): AuthorizePromptUri
     {
         $new = clone $this;
         $new->redirectUri = $redirectUri;
@@ -145,9 +145,9 @@ class AuthorizePrompt
 
     /**
      * @param string $nonce
-     * @return AuthorizePrompt
+     * @return AuthorizePromptUri
      */
-    public function withNonce(string $nonce): AuthorizePrompt
+    public function withNonce(string $nonce): AuthorizePromptUri
     {
         $new = clone $this;
         $new->nonce = $nonce;
@@ -156,9 +156,9 @@ class AuthorizePrompt
     }
 
     /**
-     * @return AuthorizePrompt
+     * @return AuthorizePromptUri
      */
-    public function withOnlineAccess(): AuthorizePrompt
+    public function withOnlineAccess(): AuthorizePromptUri
     {
         $new = clone $this;
         $new->option = self::GRANT_OPTION_ONLINE_ACCESS;
@@ -167,9 +167,9 @@ class AuthorizePrompt
     }
 
     /**
-     * @return AuthorizePrompt
+     * @return AuthorizePromptUri
      */
-    public function withOfflineAccess(): AuthorizePrompt
+    public function withOfflineAccess(): AuthorizePromptUri
     {
         $new = clone $this;
         $new->option = self::GRANT_OPTION_OFFLINE_ACCESS;

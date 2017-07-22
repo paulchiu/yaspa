@@ -10,9 +10,9 @@ use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Yaspa\Authentication\OAuth\DelegateAccess;
-use Yaspa\Authentication\OAuth\Scopes;
+use Yaspa\Authentication\OAuth\Builder\Scopes;
 use Yaspa\Factory;
-use Yaspa\Models\Authentication\OAuth\AccessToken;
+use Yaspa\Authentication\OAuth\Models\AccessToken;
 
 class DelegateAccessTest extends TestCase
 {
