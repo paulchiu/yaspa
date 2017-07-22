@@ -38,8 +38,8 @@ class ServiceTest extends TestCase
         Factory::inject(Client::class, $client);
 
         // Create parameters
-        $confirmation = new AuthorizationCode();
-        $confirmation
+        $authorizationCode = new AuthorizationCode();
+        $authorizationCode
             ->setCode('0907a61c0c8d55e99db179b68161bc00')
             ->setShop('some-shop.myshopify.com')
             ->setTimestamp('1337178173')
@@ -50,7 +50,7 @@ class ServiceTest extends TestCase
 
         // Test results
         $oAuthService = Factory::make(OAuthService::class);
-        $result = $oAuthService->requestPermanentAccessToken($confirmation, $credentials);
+        $result = $oAuthService->requestPermanentAccessToken($authorizationCode, $credentials);
         $this->assertInstanceOf(AccessToken::class, $result);
         $this->assertEquals('foo', $result->getAccessToken());
 

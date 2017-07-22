@@ -7,7 +7,7 @@ $testConfig = new Yaspa\Tests\Utils\Config();
 $testApp = $testConfig->get('shopifyAppApi');
 
 // Get other dependencies
-$confirmationRedirectTransformer = Yaspa\Factory::make(Yaspa\Authentication\OAuth\Transformers\AuthorizationCode::class);
+$authorizationCodeTransformer = Yaspa\Factory::make(Yaspa\Authentication\OAuth\Transformers\AuthorizationCode::class);
 $accessTokenTransformer = Yaspa\Factory::make(Yaspa\Authentication\OAuth\Transformers\AccessToken::class);
 $oAuthService = Yaspa\Factory::make(Yaspa\Authentication\OAuth\Service::class);
 
@@ -17,12 +17,12 @@ $oAuthCredentials
     ->setApiKey($testApp->key)
     ->setApiSecretKey($testApp->secretKey);
 
-// Parse provided confirmation
-$confirmation = $confirmationRedirectTransformer->fromArray($_GET);
+// Parse provided authorization code
+$authorizationCode = $authorizationCodeTransformer->fromArray($_GET);
 
 // Get access token
 $nonce = 'foo';
-$accessToken = $oAuthService->requestPermanentAccessToken($confirmation, $oAuthCredentials, $nonce);
+$accessToken = $oAuthService->requestPermanentAccessToken($authorizationCode, $oAuthCredentials, $nonce);
 
 // Output access key
 echo '<pre>';

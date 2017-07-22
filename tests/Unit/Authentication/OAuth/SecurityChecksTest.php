@@ -105,111 +105,111 @@ class SecurityChecksTest extends TestCase
     public function testCanDetermineNonceIsTheSame()
     {
         // Create fixtures
-        $confirmation = new AuthorizationCode();
-        $confirmation->setState('foo');
+        $authorizationCode = new AuthorizationCode();
+        $authorizationCode->setState('foo');
         $nonce = 'foo';
 
         // Test method
         $instance = new SecurityChecks();
-        $result = $instance->nonceIsSame($confirmation, $nonce);
+        $result = $instance->nonceIsSame($authorizationCode, $nonce);
         $this->assertTrue($result);
     }
 
     public function testCantDetermineUnsetNonceIsTheSame()
     {
         // Create fixtures
-        $confirmation = new AuthorizationCode();
+        $authorizationCode = new AuthorizationCode();
         $nonce = null;
 
         // Test method
         $instance = new SecurityChecks();
-        $result = $instance->nonceIsSame($confirmation, $nonce);
+        $result = $instance->nonceIsSame($authorizationCode, $nonce);
         $this->assertTrue($result);
     }
 
     public function testCanDetermineEmptyNonceIsTheSame()
     {
         // Create fixtures
-        $confirmation = new AuthorizationCode();
+        $authorizationCode = new AuthorizationCode();
         $nonce = '';
 
         // Test method
         $instance = new SecurityChecks();
-        $result = $instance->nonceIsSame($confirmation, $nonce);
+        $result = $instance->nonceIsSame($authorizationCode, $nonce);
         $this->assertTrue($result);
     }
 
     public function testCantDetermineNonceIsNotTheSame()
     {
         // Create fixtures
-        $confirmation = new AuthorizationCode();
-        $confirmation->setState('foo');
+        $authorizationCode = new AuthorizationCode();
+        $authorizationCode->setState('foo');
         $nonce = 'bar';
 
         // Test method
         $instance = new SecurityChecks();
-        $result = $instance->nonceIsSame($confirmation, $nonce);
+        $result = $instance->nonceIsSame($authorizationCode, $nonce);
         $this->assertFalse($result);
     }
 
     public function testCantDetermineNonceIsNotTheSameWhenRequestNoNonce()
     {
         // Create fixtures
-        $confirmation = new AuthorizationCode();
-        $confirmation->setState('foo');
+        $authorizationCode = new AuthorizationCode();
+        $authorizationCode->setState('foo');
         $nonce = null;
 
         // Test method
         $instance = new SecurityChecks();
-        $result = $instance->nonceIsSame($confirmation, $nonce);
+        $result = $instance->nonceIsSame($authorizationCode, $nonce);
         $this->assertFalse($result);
     }
 
     public function testCantDetermineNonceIsNotTheSameWhenResponseNoNonce()
     {
         // Create fixtures
-        $confirmation = new AuthorizationCode();
+        $authorizationCode = new AuthorizationCode();
         $nonce = 'bar';
 
         // Test method
         $instance = new SecurityChecks();
-        $result = $instance->nonceIsSame($confirmation, $nonce);
+        $result = $instance->nonceIsSame($authorizationCode, $nonce);
         $this->assertFalse($result);
     }
 
     public function testCanClassifyCorrectHostname()
     {
         // Create fixtures
-        $confirmation = new AuthorizationCode();
-        $confirmation->setShop('foo.BAR-3.myshopify.com');
+        $authorizationCode = new AuthorizationCode();
+        $authorizationCode->setShop('foo.BAR-3.myshopify.com');
 
         // Test method
         $instance = new SecurityChecks();
-        $result = $instance->hostnameIsValid($confirmation);
+        $result = $instance->hostnameIsValid($authorizationCode);
         $this->assertTrue($result);
     }
 
     public function testCanInvalidateInvalidCharacterInHostname()
     {
         // Create fixtures
-        $confirmation = new AuthorizationCode();
-        $confirmation->setShop('foo:bar.myshopify.com');
+        $authorizationCode = new AuthorizationCode();
+        $authorizationCode->setShop('foo:bar.myshopify.com');
 
         // Test method
         $instance = new SecurityChecks();
-        $result = $instance->hostnameIsValid($confirmation);
+        $result = $instance->hostnameIsValid($authorizationCode);
         $this->assertFalse($result);
     }
 
     public function testCanInvalidateWrongEnding()
     {
         // Create fixtures
-        $confirmation = new AuthorizationCode();
-        $confirmation->setShop('foo.myshopify.co.uk');
+        $authorizationCode = new AuthorizationCode();
+        $authorizationCode->setShop('foo.myshopify.co.uk');
 
         // Test method
         $instance = new SecurityChecks();
-        $result = $instance->hostnameIsValid($confirmation);
+        $result = $instance->hostnameIsValid($authorizationCode);
         $this->assertFalse($result);
     }
 
