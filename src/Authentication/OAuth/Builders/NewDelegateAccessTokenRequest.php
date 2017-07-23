@@ -1,6 +1,6 @@
 <?php
 
-namespace Yaspa\Authentication\OAuth\Builder;
+namespace Yaspa\Authentication\OAuth\Builders;
 
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;

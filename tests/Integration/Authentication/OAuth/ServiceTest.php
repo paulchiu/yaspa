@@ -4,7 +4,7 @@ namespace Yaspa\Tests\Integration\Authentication\OAuth;
 
 use PHPUnit\Framework\TestCase;
 use Yaspa\Authentication\OAuth\Service;
-use Yaspa\Authentication\OAuth\Builder\Scopes;
+use Yaspa\Authentication\OAuth\Builders\Scopes;
 use Yaspa\Factory;
 use Yaspa\Authentication\OAuth\Models\AccessToken;
 use Yaspa\Tests\Utils\Config as TestConfig;

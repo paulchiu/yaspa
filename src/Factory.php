@@ -87,21 +87,21 @@ class Factory
             GuzzleHttp\Client::class => function () {
                 return new GuzzleHttp\Client();
             },
-            Authentication\OAuth\Builder\AccessTokenRequest::class => function () {
-                return new Authentication\OAuth\Builder\AccessTokenRequest();
+            Authentication\OAuth\Builders\AccessTokenRequest::class => function () {
+                return new Authentication\OAuth\Builders\AccessTokenRequest();
             },
-            Authentication\OAuth\Builder\AuthorizePromptUri::class => function () {
-                return new Authentication\OAuth\Builder\AuthorizePromptUri(
+            Authentication\OAuth\Builders\AuthorizePromptUri::class => function () {
+                return new Authentication\OAuth\Builders\AuthorizePromptUri(
                     self::make(Authentication\OAuth\Transformers\Scopes::class)
                 );
             },
-            Authentication\OAuth\Builder\NewDelegateAccessTokenRequest::class => function () {
-                return new Authentication\OAuth\Builder\NewDelegateAccessTokenRequest(
+            Authentication\OAuth\Builders\NewDelegateAccessTokenRequest::class => function () {
+                return new Authentication\OAuth\Builders\NewDelegateAccessTokenRequest(
                     self::make(Authentication\OAuth\Transformers\AccessToken::class)
                 );
             },
-            Authentication\OAuth\Builder\Scopes::class => function () {
-                return new Authentication\OAuth\Builder\Scopes();
+            Authentication\OAuth\Builders\Scopes::class => function () {
+                return new Authentication\OAuth\Builders\Scopes();
             },
             Authentication\OAuth\Service::class => function () {
                 return new Authentication\OAuth\Service(
@@ -109,7 +109,7 @@ class Factory
                     self::make(Authentication\OAuth\SecurityChecks::class),
                     self::make(Authentication\OAuth\Transformers\AuthorizationCode::class),
                     self::make(Authentication\OAuth\Transformers\AccessToken::class),
-                    self::make(Authentication\OAuth\Builder\NewDelegateAccessTokenRequest::class)
+                    self::make(Authentication\OAuth\Builders\NewDelegateAccessTokenRequest::class)
                 );
             },
             Authentication\OAuth\SecurityChecks::class => function () {

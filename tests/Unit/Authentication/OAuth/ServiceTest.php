@@ -9,7 +9,7 @@ use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
-use Yaspa\Authentication\OAuth\Builder\Scopes;
+use Yaspa\Authentication\OAuth\Builders\Scopes;
 use Yaspa\Authentication\OAuth\Models\AccessToken;
 use Yaspa\Authentication\OAuth\Models\AuthorizationCode;
 use Yaspa\Authentication\OAuth\Models\Credentials;

@@ -1,9 +1,9 @@
 <?php
 
-namespace Yaspa\Tests\Unit\Authentication\OAuth\Builder;
+namespace Yaspa\Tests\Unit\Authentication\OAuth\Builders;
 
 use PHPUnit\Framework\TestCase;
-use Yaspa\Authentication\OAuth\Builder\Scopes;
+use Yaspa\Authentication\OAuth\Builders\Scopes;
 use Yaspa\Factory;
 
 class ScopesTest extends TestCase

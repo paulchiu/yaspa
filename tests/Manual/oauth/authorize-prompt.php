@@ -14,11 +14,11 @@ $oAuthCredentials
     ->setApiSecretKey($testApp->secretKey);
 
 // Prepare app installation URI
-$scopes = Yaspa\Factory::make(Yaspa\Authentication\OAuth\Builder\Scopes::class)
+$scopes = Yaspa\Factory::make(Yaspa\Authentication\OAuth\Builders\Scopes::class)
     ->withWriteCustomers()
     ->withWriteOrders();
 
-$redirectUri = Yaspa\Factory::make(Yaspa\Authentication\OAuth\Builder\AuthorizePromptUri::class)
+$redirectUri = Yaspa\Factory::make(Yaspa\Authentication\OAuth\Builders\AuthorizePromptUri::class)
     ->withShop($testShop->myShopifySubdomainName)
     ->withApiKey($oAuthCredentials->getApiKey())
     ->withNonce('foo')

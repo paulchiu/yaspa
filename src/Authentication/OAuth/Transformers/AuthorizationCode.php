@@ -2,7 +2,7 @@
 
 namespace Yaspa\Authentication\OAuth\Transformers;
 
-use Yaspa\Authentication\OAuth\Builder\AccessTokenRequest;
+use Yaspa\Authentication\OAuth\Builders\AccessTokenRequest;
 use Yaspa\Authentication\OAuth\Models\AuthorizationCode as AuthorizationCodeModel;
 use Yaspa\Authentication\OAuth\Models\Credentials as CredentialsModel;
 use Yaspa\Factory;

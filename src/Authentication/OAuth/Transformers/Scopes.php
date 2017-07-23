@@ -2,7 +2,7 @@
 
 namespace Yaspa\Authentication\OAuth\Transformers;
 
-use Yaspa\Authentication\OAuth\Builder\Scopes as ScopesBuilder;
+use Yaspa\Authentication\OAuth\Builders\Scopes as ScopesBuilder;
 
 /**
  * Class Scopes
