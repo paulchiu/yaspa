@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__.'/../../bootstrap.php';
+require_once __DIR__.'/../bootstrap.php';
 
 // Get test config and initialise test data
 $testConfig = new Yaspa\Tests\Utils\Config();
