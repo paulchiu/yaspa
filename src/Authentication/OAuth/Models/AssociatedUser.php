@@ -4,6 +4,7 @@ namespace Yaspa\Authentication\OAuth\Models;
 
 /**
  * Class AssociatedUser
+ *
  * @package Yaspa\Models\Authentication\OAuth
  * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
  *

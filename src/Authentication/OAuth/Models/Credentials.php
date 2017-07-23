@@ -4,6 +4,7 @@ namespace Yaspa\Authentication\OAuth\Models;
 
 /**
  * Class Credentials
+ *
  * @package Yaspa\Models\Authentication\OAuth
  * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-1-get-the-clients-credentials
  *

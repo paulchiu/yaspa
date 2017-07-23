@@ -9,10 +9,18 @@ use Yaspa\Factory;
 
 /**
  * Class AuthorizationCode
+ *
  * @package Yaspa\Transformers\OAuth
  */
 class AuthorizationCode
 {
+    /**
+     * Redirects sent from Shopify to a developer's authorization code receiving web endpoint.
+     *
+     * Query parameters as defined by Shopify.
+     *
+     * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
+     */
     const EXPECTED_REDIRECT_PARAMETERS = [
         'code' => '',
         'shop' => '',
@@ -22,6 +30,9 @@ class AuthorizationCode
     ];
 
     /**
+     * Transforms an authorization code to an access token request.
+     *
+     * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
      * @param AuthorizationCodeModel $authorizationCode
      * @param CredentialsModel $credentials
      * @return AccessTokenRequest
@@ -40,8 +51,8 @@ class AuthorizationCode
     }
 
     /**
-     * Parse an array of authorization code values. This will usually be
-     * the GET parameters sent by Shopify as described in their guide.
+     * Parse an array of authorization code values. This will usually be the GET parameters sent by Shopify as
+     * described in their guide.
      *
      * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
      * @param array $redirectParameters

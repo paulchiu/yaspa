@@ -46,6 +46,8 @@ class AccessTokenRequest implements RequestBuilderInterface
     }
 
     /**
+     * Generate a Guzzle/PSR-7 request.
+     *
      * @return Request
      */
     public function toRequest(): Request
@@ -62,7 +64,7 @@ class AccessTokenRequest implements RequestBuilderInterface
     }
 
     /**
-     * Request options for multi-part form data.
+     * Generate Guzzle request options.
      *
      * @see http://docs.guzzlephp.org/en/stable/request-options.html#multipart
      * @return array

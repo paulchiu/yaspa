@@ -6,6 +6,7 @@ use Yaspa\Responses\Exceptions;
 
 /**
  * Class StatusCodes
+ *
  * @package Yaspa\Responses
  * @see https://help.shopify.com/api/getting-started/response-status-codes
  *

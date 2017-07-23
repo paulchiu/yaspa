@@ -6,6 +6,8 @@ namespace Yaspa\Traits;
  * Trait RequestBuilderTrait
  *
  * @package Yaspa\Traits
+ *
+ * Response builders will probably need these properties and immutable setters.
  */
 trait RequestBuilderTrait
 {

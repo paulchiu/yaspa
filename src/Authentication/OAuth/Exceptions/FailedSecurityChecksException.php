@@ -7,7 +7,10 @@ use Throwable;
 
 /**
  * Class FailedSecurityChecksException
+ *
  * @package Yaspa\OAuth\Exceptions
+ *
+ * When an OAuth authorization code security check fails, use this exception.
  */
 class FailedSecurityChecksException extends Exception
 {

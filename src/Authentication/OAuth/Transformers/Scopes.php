@@ -9,8 +9,6 @@ use Yaspa\Factory;
  * Class Scopes
  *
  * @package Yaspa\Authentication\OAuth\Transformers
- *
- * Transform requested scopes into various representations.
  */
 class Scopes
 {
@@ -27,6 +25,11 @@ class Scopes
     }
 
     /**
+     * Convert scopes from comma separated list. Returned by Shopify when requesting an access token or delegated
+     * access token.
+     *
+     * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
+     * @see https://help.shopify.com/api/getting-started/authentication/oauth#delegating-access-to-subsystems
      * @param string $scopesCsv
      * @return ScopesBuilder
      */

@@ -7,6 +7,7 @@ use Throwable;
 
 /**
  * Class StatusCodeDefinitionNotFoundException
+ *
  * @package Yaspa\Responses\Exceptions
  */
 class StatusCodeDefinitionNotFoundException extends Exception

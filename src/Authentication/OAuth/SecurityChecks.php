@@ -9,6 +9,7 @@ use Yaspa\Authentication\OAuth\Models\SecurityCheckResult;
 
 /**
  * Class SecurityChecks
+ *
  * @package Yaspa\OAuth
  * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
  *
@@ -20,6 +21,10 @@ class SecurityChecks
     const HMAC_ALGORITHM = 'sha256';
 
     /**
+     * Check authorization code sent by Shopify as described by their documentation.
+     *
+     * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
+     * @see https://help.shopify.com/api/getting-started/authentication/oauth#verification
      * @param AuthorizationCode $authorizationCode
      * @param Credentials $credentials
      * @param null|string $nonce
@@ -69,6 +74,8 @@ class SecurityChecks
      * Ensure the provided nonce is the same one that your application provided to Shopify during the Step 2: Asking
      * for permission.
      *
+     * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-2-ask-for-permission
+     * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
      * @param AuthorizationCode $authorizationCode
      * @param string $nonce
      * @return bool
@@ -85,6 +92,7 @@ class SecurityChecks
      * Ensure the provided hostname parameter is a valid hostname, ends with myshopify.com, and does not contain
      * characters other than letters (a-z), numbers (0-9), dots, and hyphens.
      *
+     * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
      * @param AuthorizationCode $authorizationCode
      * @return bool
      */
@@ -117,6 +125,7 @@ class SecurityChecks
      *
      * Please note that this method is tested through self::hmacIsValid
      *
+     * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
      * @see https://help.shopify.com/api/getting-started/authentication/oauth#verification
      * @param AuthorizationCode $authorizationCode
      * @param Credentials $credentials

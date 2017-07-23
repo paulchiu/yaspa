@@ -2,6 +2,11 @@
 
 [![CircleCI](https://circleci.com/gh/paulchiu/yaspa/tree/master.svg?style=svg)](https://circleci.com/gh/paulchiu/yaspa/tree/master)
 
+## Installation
+
+*Do no install this library. It is currently under active development
+and is in no way stable.*
+
 ## Purpose
 
 Most Shopify APIs appear to be thin wrappers around Guzzle that makes things
@@ -49,10 +54,63 @@ To run integration tests, execute:
 
 ## To do
 
-- [ ] Implement [authentication][sauth]
-    - [ ] Clean up docs and create docs folder
+- [ ] Begin working with the admin api
+    - [ ] Abandoned checkouts
+    - [ ] ApplicationCharge
+    - [ ] ApplicationCredit
+    - [ ] Article
+    - [ ] Asset
+    - [ ] Blog
+    - [ ] CarrierService
+    - [ ] Checkout
+    - [ ] Collect
+    - [ ] CollectionListing
+    - [ ] Comment
+    - [ ] Country
+    - [ ] CustomCollection
+    - [ ] Customer
+    - [ ] CustomerAddress
+    - [ ] CustomerSavedSearch
+    - [ ] Discount SHOPIFY PLUS
+    - [ ] DraftOrder
+    - [ ] Event
+    - [ ] Fulfillment
+    - [ ] FulfillmentEvent
+    - [ ] FulfillmentService
+    - [ ] Gift Card SHOPIFY PLUS
+    - [ ] Location
+    - [ ] Marketing Event
+    - [ ] Metafield
+    - [ ] Multipass SHOPIFY PLUS
+    - [ ] Order
+    - [ ] Order Risks
+    - [ ] Page
+    - [ ] Policy
+    - [ ] PriceRule
+    - [ ] Product
+    - [ ] Product Image
+    - [ ] Product Variant
+    - [ ] ProductListing
+    - [ ] Province
+    - [ ] RecurringApplicationCharge
+    - [ ] Redirect
+    - [ ] Refund
+    - [ ] Report
+    - [ ] ResourceFeedback BETA
+    - [ ] ScriptTag
+    - [ ] Shipping Zone
+    - [ ] Shop
+    - [ ] SmartCollection
+    - [ ] Storefront Access Token
+    - [ ] Theme
+    - [ ] Transaction
+    - [ ] UsageCharge
+    - [ ] User SHOPIFY PLUS
+    - [ ] Webhook
+    - [ ] ShopifyQL
 - [ ] Implement [api call limit throtling][acl] through custom pool [pool][gpool]
+- [ ] Implement [webhooks][whs]
 
-[sauth]: https://help.shopify.com/api/getting-started/authentication
 [acl]: https://help.shopify.com/api/getting-started/api-call-limit
 [gpool]: http://docs.guzzlephp.org/en/stable/quickstart.html#concurrent-requests
+[whs]: https://help.shopify.com/api/getting-started/webhooks

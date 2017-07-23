@@ -4,6 +4,7 @@ namespace Yaspa\Authentication\PrivateAuthentication\Models;
 
 /**
  * Class Credentials
+ *
  * @package Yaspa\Models\Authentication\PrivateAuthentication
  * @see https://help.shopify.com/api/getting-started/authentication/private-authentication
  *

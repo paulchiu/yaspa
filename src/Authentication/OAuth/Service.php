@@ -59,6 +59,9 @@ class Service
     }
 
     /**
+     * Request a permanent access token.
+     *
+     * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
      * @param AuthorizationCode $authorizationCode
      * @param Credentials $credentials
      * @param null|string $nonce
@@ -80,6 +83,12 @@ class Service
     }
 
     /**
+     * Request a permanent access token. Async version.
+     *
+     * Please note that the response will need to be transformed. See self::requestPermanentAccessToken for an
+     * example of how to use the access token transformer.
+     *
+     * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
      * @param AuthorizationCode $authorizationCode
      * @param Credentials $credentials
      * @param string|null $nonce
@@ -117,6 +126,11 @@ class Service
     }
 
     /**
+     * Request a new delegate access token.
+     *
+     * Please note that delegate access tokens cannot have more permissions than the token it is delegated from,
+     * and it will also be revoked once the parent is revoked.
+     *
      * @see https://help.shopify.com/api/getting-started/authentication/oauth#delegating-access-to-subsystems
      * @param string $shop The shop subdomain
      * @param AccessToken $accessToken The primary access token we will create a delegate from
@@ -141,6 +155,11 @@ class Service
     }
 
     /**
+     * Request a new delegate access token. Async version.
+     *
+     * Please note that the response will need to be transformed. See self::createNewDelegateAccessToken for an
+     * example of how to use the access token transformer.
+     *
      * @see https://help.shopify.com/api/getting-started/authentication/oauth#delegating-access-to-subsystems
      * @param string $shop The shop subdomain
      * @param AccessToken $accessToken The primary access token we will create a delegate from

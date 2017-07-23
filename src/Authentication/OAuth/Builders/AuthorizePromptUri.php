@@ -8,6 +8,7 @@ use Yaspa\Authentication\OAuth\Transformers\Scopes as ScopesTransformer;
 
 /**
  * Class AuthorizePromptUri
+ *
  * @package Yaspa\OAuth
  * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-2-ask-for-permission
  *
@@ -16,13 +17,16 @@ use Yaspa\Authentication\OAuth\Transformers\Scopes as ScopesTransformer;
  * Example - Get URI string to request read content scope
  *
  * ```
- * $scope = Factory::make(Scopes::class)
+ * $scope = Yaspa\Factory::make(Scopes::class)
  *      ->withReadContent();
  *
- * $authPromptUriString = (new AuthorizePromptUri('http://foo.example.com'))
- *     ->withShop('bar')
- *     ->withApiKey('baz')
- *     ->withScopes($scope)
+ * $redirectUri = Yaspa\Factory::make(Yaspa\Authentication\OAuth\Builders\AuthorizePromptUri::class)
+ *     ->withShop('foo-store')
+ *     ->withApiKey('bar)
+ *     ->withNonce('baz')
+ *     ->withScopes($scopes)
+ *     ->withRedirectUri('http://qux.example.com/confirm.php')
+ *     ->withOfflineAccess()
  *     ->toUri()
  *     ->__toString();
  * ```
@@ -66,6 +70,8 @@ class AuthorizePromptUri
     }
 
     /**
+     * Generate a URI based on build settings.
+     *
      * @return Uri
      * @throws MissingRequiredParameterException
      */

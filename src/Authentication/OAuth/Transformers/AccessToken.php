@@ -8,10 +8,8 @@ use stdClass;
 
 /**
  * Class AccessToken
- * @package Yaspa\Transformers\Authentication\OAuth
- * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
  *
- * Converts a response or `json_decoded` standard class from Shopify into a PHP object.
+ * @package Yaspa\Transformers\Authentication\OAuth
  */
 class AccessToken
 {
@@ -35,6 +33,12 @@ class AccessToken
     }
 
     /**
+     * Transform a Guzzle response into an AccessToken model.
+     *
+     * The expected response contents is a JSON string.
+     *
+     * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
+     * @see https://help.shopify.com/api/getting-started/authentication/oauth#delegating-access-to-subsystems
      * @param ResponseInterface $response
      * @return AccessTokenModel
      */
@@ -46,6 +50,12 @@ class AccessToken
     }
 
     /**
+     * Transform a Shopify JSON access token stdClass into a PHP AccessToken model class.
+     *
+     * Please note that this transformer deeply transforms scope attributes into Scope builder classes.
+     *
+     * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
+     * @see https://help.shopify.com/api/getting-started/authentication/oauth#delegating-access-to-subsystems
      * @param stdClass $shopifyJsonAccessToken
      * @return AccessTokenModel
      */

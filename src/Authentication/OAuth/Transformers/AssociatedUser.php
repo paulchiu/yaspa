@@ -2,30 +2,24 @@
 
 namespace Yaspa\Authentication\OAuth\Transformers;
 
-use Psr\Http\Message\ResponseInterface;
 use Yaspa\Authentication\OAuth\Models\AssociatedUser as AssociatedUserModel;
 use stdClass;
 
 /**
  * Class AssociatedUser
- * @package Yaspa\Transformers\Authentication\OAuth
- * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
  *
- * Converts a response or `json_decoded` standard class from Shopify into a PHP object.
+ * @package Yaspa\Transformers\Authentication\OAuth
  */
 class AssociatedUser
 {
     /**
-     * @param ResponseInterface $response
-     * @return AssociatedUserModel
-     */
-    public function fromResponse(ResponseInterface $response): AssociatedUserModel
-    {
-        $stdClass = json_decode($response->getBody()->getContents());
-        return $this->fromShopifyJsonAssociatedUser($stdClass);
-    }
-
-    /**
+     * Transform an Shopify associated user JSON decoded stdClass into a PHP AssociatedUser class.
+     *
+     * Please note that this response is returned as a nested object in an access token response that
+     * is of an online access mode.
+     *
+     * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
+     * @see https://help.shopify.com/api/getting-started/authentication/oauth#api-access-modes
      * @param stdClass $shopifyJsonAssociatedUser
      * @return AssociatedUserModel
      */

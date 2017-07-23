@@ -8,6 +8,7 @@ use Yaspa\Authentication;
 
 /**
  * Class Factory
+ *
  * @package Yaspa
  *
  * Factory class for all Yaspa service classes.
@@ -103,6 +104,9 @@ class Factory
             Authentication\OAuth\Builders\Scopes::class => function () {
                 return new Authentication\OAuth\Builders\Scopes();
             },
+            Authentication\OAuth\SecurityChecks::class => function () {
+                return new Authentication\OAuth\SecurityChecks();
+            },
             Authentication\OAuth\Service::class => function () {
                 return new Authentication\OAuth\Service(
                     self::make(GuzzleHttp\Client::class),
@@ -111,9 +115,6 @@ class Factory
                     self::make(Authentication\OAuth\Transformers\AccessToken::class),
                     self::make(Authentication\OAuth\Builders\NewDelegateAccessTokenRequest::class)
                 );
-            },
-            Authentication\OAuth\SecurityChecks::class => function () {
-                return new Authentication\OAuth\SecurityChecks();
             },
             Authentication\OAuth\Transformers\AccessToken::class => function () {
                 return new Authentication\OAuth\Transformers\AccessToken(

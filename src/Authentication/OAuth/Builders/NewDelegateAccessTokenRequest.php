@@ -62,6 +62,8 @@ class NewDelegateAccessTokenRequest implements RequestBuilderInterface
     }
 
     /**
+     * Generate a Guzzle/PSR-7 request.
+     *
      * @return Request
      */
     public function toRequest(): Request
@@ -81,6 +83,8 @@ class NewDelegateAccessTokenRequest implements RequestBuilderInterface
     }
 
     /**
+     * Generate Guzzle request options.
+     *
      * @return array
      */
     public function toRequestOptions(): array

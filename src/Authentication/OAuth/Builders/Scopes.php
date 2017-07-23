@@ -15,9 +15,9 @@ namespace Yaspa\Authentication\OAuth\Builders;
  * Example - Create scopes for write customers orders.
  *
  * ```
- * $scopes = Factory::make(Scopes::class)
+ * $scopes = Yaspa\Factory::make(Scopes::class)
  *     ->withWriteCustomers()
- *     ->withWriteOrders()
+ *     ->withWriteOrders();
  *
  * $requestedScopesArray = $scopes->getRequested();
  * ```
@@ -55,7 +55,7 @@ class Scopes
     const READ_PRICE_RULES = 'read_price_rules';
     const WRITE_PRICE_RULES = 'write_price_rules';
 
-    /** @var string[] $requested Scopes requested */
+    /** @var string[] $requested Scopes requested or granted */
     protected $requested;
 
     /**

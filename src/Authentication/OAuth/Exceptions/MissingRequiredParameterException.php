@@ -9,6 +9,8 @@ use Throwable;
  * Class MissingRequiredParameterException
  *
  * @package Yaspa\Authentication\OAuth\Exceptions
+ *
+ * This is a general exception for use with builder classes that have pre-checked requirements.
  */
 class MissingRequiredParameterException extends Exception
 {

@@ -4,13 +4,12 @@ namespace Yaspa\Authentication\OAuth\Models;
 
 /**
  * Class AuthorizationCode
+ *
  * @package Yaspa\Models\Authentication\OAuth
  * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
  *
  * This model represents the data returned by Shopify once a shop has confirmed an OAuth grant and is modelled
  * on the pattern of https://example.org/some/redirect/uri?code={authorization_code}&hmac=da9d83c171400a41f8db91a950508985&timestamp=1409617544&state={nonce}&shop={hostname}
- *
- * The data is effectively the authorization code with additional data. Similar to how an access token is treated.
  */
 class AuthorizationCode
 {
