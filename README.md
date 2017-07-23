@@ -14,41 +14,32 @@ needing to think too much about the REST API.
 
 ## Project objectives
 
-- Be truthful to the original API, do not rename, restructure, or otherwise modify terms where possible
+- Be truthful to the original API, do not rename, restructure, or
+  otherwise modify terms where possible
 - Offer different levels of abstraction
 - Work with native models where possible
 - Promises first, embrace async support in Guzzle
 
-## Manual testing
+# Examples
 
-To perform manual testing, publish the contents of `tests/Manual` on a web server. For example,
-on [Devilbox][dbox] one would create a symlink called `htdoc` in the project root to `tests/Manual`.
+Please see `examples.index.html` for library usage examples. Please note
+that some examples are interactive, while others are purely code samples.
 
-[dbox]: http://devilbox.org/
+# Testing
 
-### Test OAuth token request
+To run tests, execute:
 
-- Set up Shopify app, add redirect whitelist for `http://httpbin.org/anything`
-- Fill out `test-config.json`; a template is available in `project-root/test-config.example.json`
-- Make public the contents of `tests/Manual`
-- Visit `http://localhost/oauth/authorize-prompt.php`
-- Click link to authorize
-- Copy the request parameters
-- Visit `http://localhost/oauth/confirm-installation.php?[copied request parameters]`
-- The access token should be shown
-
-### Available manual testing routes
-
-The following assumes all files are hosted on `http://localhost/`
-
-|Route|Tests|
-|-----|-----|
-|`/oauth/authorize-prompt.php`|Enables clicking and viewing results of a app OAuth authorization request from the app installer's perspective|
+```
+./vendor/bin/phpunit
+```
 
 ## Integration testing
 
-Please note that similar to manual testing, integration tests requires `test-configuration.json`
-to exist.
+Integration tests will hit the Shopify API. Please only run these
+against a purely development store as data modification will occur.
+
+Integration tests requires `test-config.json` to exist. Please see
+`test-config.example.json` for expectations on how it should be filled.
 
 To run integration tests, execute:
 
@@ -59,12 +50,9 @@ To run integration tests, execute:
 ## To do
 
 - [ ] Implement [authentication][sauth]
-    - [ ] Move manual tests to examples
     - [ ] Clean up docs and create docs folder
 - [ ] Implement [api call limit throtling][acl] through custom pool [pool][gpool]
 
 [sauth]: https://help.shopify.com/api/getting-started/authentication
 [acl]: https://help.shopify.com/api/getting-started/api-call-limit
 [gpool]: http://docs.guzzlephp.org/en/stable/quickstart.html#concurrent-requests
-[cinst]: https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
-[hmac]: http://php.net/manual/en/function.hash-hmac.php
