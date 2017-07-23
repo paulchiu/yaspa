@@ -2,9 +2,10 @@
 
 namespace Yaspa\Authentication\OAuth\Transformers;
 
-use GuzzleHttp\Psr7\Uri;
+use Yaspa\Authentication\OAuth\Builder\AccessTokenRequest;
 use Yaspa\Authentication\OAuth\Models\AuthorizationCode as AuthorizationCodeModel;
 use Yaspa\Authentication\OAuth\Models\Credentials as CredentialsModel;
+use Yaspa\Factory;
 
 /**
  * Class AuthorizationCode
@@ -12,7 +13,6 @@ use Yaspa\Authentication\OAuth\Models\Credentials as CredentialsModel;
  */
 class AuthorizationCode
 {
-    const REQUEST_ACCESS_TOKEN_URI_TEMPLATE = 'https://%s/admin/oauth/access_token';
     const EXPECTED_REDIRECT_PARAMETERS = [
         'code' => '',
         'shop' => '',
@@ -22,45 +22,21 @@ class AuthorizationCode
     ];
 
     /**
-     * Generates a request access token URI from a confirmation redirect response.
-     *
-     * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
-     * @param AuthorizationCodeModel $authorizationCode
-     * @return Uri
-     */
-    public function toRequestAccessTokenUri(AuthorizationCodeModel $authorizationCode): Uri {
-        $baseUri = sprintf(self::REQUEST_ACCESS_TOKEN_URI_TEMPLATE, $authorizationCode->getShop());
-
-        return new Uri($baseUri);
-    }
-
-    /**
-     * Generates the POST body content for a request access token request.
-     *
-     * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
-     * @see http://docs.guzzlephp.org/en/stable/request-options.html#multipart
      * @param AuthorizationCodeModel $authorizationCode
      * @param CredentialsModel $credentials
-     * @return array
+     * @return AccessTokenRequest
      */
-    public function toRequestAccessTokenPostBody(
+    public function toAccessTokenRequest(
         AuthorizationCodeModel $authorizationCode,
         CredentialsModel $credentials
-    ): array {
-        return [
-            [
-                'name' => 'client_id',
-                'contents' => $credentials->getApiKey(),
-            ],
-            [
-                'name' => 'client_secret',
-                'contents' => $credentials->getApiSecretKey(),
-            ],
-            [
-                'name' => 'code',
-                'contents' => $authorizationCode->getCode(),
-            ],
-        ];
+    ): AccessTokenRequest {
+        $accessTokenRequest = Factory::make(AccessTokenRequest::class)
+            ->withShop($authorizationCode->getShop())
+            ->withClientId($credentials->getApiKey())
+            ->withClientSecret($credentials->getApiSecretKey())
+            ->withCode($authorizationCode->getCode());
+
+        return $accessTokenRequest;
     }
 
     /**

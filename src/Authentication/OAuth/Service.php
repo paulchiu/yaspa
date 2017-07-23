@@ -26,7 +26,6 @@ use Yaspa\Authentication\OAuth\Transformers\Scopes as ScopesTransformer;
  */
 class Service
 {
-    const REQUEST_PERMANENT_ACCESS_TOKEN_HEADERS = ['Accept' => 'application/json'];
     const DELEGATE_ACCESS_HEADERS = ['Accept' => 'application/json'];
     const CREATE_NEW_DELETE_ACCESS_TOKEN_URI_TEMPLATE = 'https://%s.myshopify.com/admin/access_tokens/delegate';
 
@@ -109,15 +108,17 @@ class Service
             throw $securityCheckResult->getFailureException();
         }
 
-        // Prepare request parameters
-        $requestUri = $this->authorizationCodeTransformer->toRequestAccessTokenUri($authorizationCode);
-        $requestBody = $this->authorizationCodeTransformer->toRequestAccessTokenPostBody($authorizationCode, $credentials);
+        // Prepare request
+        $accessTokenRequest = $this->authorizationCodeTransformer->toAccessTokenRequest(
+            $authorizationCode,
+            $credentials
+        );
 
         // Create code exchange request
-        return $this->httpClient->postAsync($requestUri, [
-            RequestOptions::HEADERS => self::REQUEST_PERMANENT_ACCESS_TOKEN_HEADERS,
-            RequestOptions::MULTIPART => $requestBody,
-        ]);
+        return $this->httpClient->sendAsync(
+            $accessTokenRequest->toRequest(),
+            $accessTokenRequest->toRequestOptions()
+        );
     }
 
     /**

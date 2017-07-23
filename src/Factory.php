@@ -87,6 +87,9 @@ class Factory
             GuzzleHttp\Client::class => function () {
                 return new GuzzleHttp\Client();
             },
+            Authentication\OAuth\Builder\AccessTokenRequest::class => function () {
+                return new Authentication\OAuth\Builder\AccessTokenRequest();
+            },
             Authentication\OAuth\Builder\AuthorizePromptUri::class => function () {
                 return new Authentication\OAuth\Builder\AuthorizePromptUri(
                     self::make(Authentication\OAuth\Transformers\Scopes::class)

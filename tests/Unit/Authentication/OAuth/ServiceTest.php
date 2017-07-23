@@ -46,7 +46,9 @@ class ServiceTest extends TestCase
             ->setHmac('4712bf92ffc2917d15a2f5a273e39f0116667419aa4b6ac0b3baaf26fa3c4d20');
 
         $credentials = new Credentials();
-        $credentials->setApiSecretKey('hush');
+        $credentials
+            ->setApiKey('foo')
+            ->setApiSecretKey('hush');
 
         // Test results
         $oAuthService = Factory::make(OAuthService::class);
