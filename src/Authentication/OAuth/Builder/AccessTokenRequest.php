@@ -50,13 +50,8 @@ class AccessTokenRequest implements RequestBuilderInterface
         // Create URI
         $uri = new Uri(sprintf($this->uriTemplate, $this->shop));
 
-        // Create headers
-        $headers = [
-            RequestOptions::HEADERS => self::HEADERS,
-        ];
-
         // Create request
-        return new Request(self::HTTP_METHOD, $uri, $headers);
+        return new Request(self::HTTP_METHOD, $uri, self::HEADERS);
     }
 
     /**

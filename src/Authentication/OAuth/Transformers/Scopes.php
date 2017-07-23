@@ -4,6 +4,13 @@ namespace Yaspa\Authentication\OAuth\Transformers;
 
 use Yaspa\Authentication\OAuth\Builder\Scopes as ScopesBuilder;
 
+/**
+ * Class Scopes
+ *
+ * @package Yaspa\Authentication\OAuth\Transformers
+ *
+ * Transform requested scopes into various representations.
+ */
 class Scopes
 {
     /**
@@ -16,25 +23,5 @@ class Scopes
     public function toCommaSeparatedList(ScopesBuilder $scopes): string
     {
         return implode(',', $scopes->getRequested());
-    }
-
-    /**
-     * Generates POST body content for a create new delegate access token request.
-     *
-     * @see https://help.shopify.com/api/getting-started/authentication/oauth#delegating-access-to-subsystems
-     * @see http://docs.guzzlephp.org/en/stable/request-options.html#multipart
-     * @param ScopesBuilder $scopes
-     * @return array
-     */
-    public function toCreateNewDelegateAccessTokenPostBody(ScopesBuilder $scopes): array
-    {
-        $delegateAccessScopes = array_map(function (string $scope): array {
-            return [
-                'name' => 'delegate_access_scope[]',
-                'contents' => $scope,
-            ];
-        }, $scopes->getRequested());
-
-        return $delegateAccessScopes;
     }
 }

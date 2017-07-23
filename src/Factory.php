@@ -95,13 +95,13 @@ class Factory
                     self::make(Authentication\OAuth\Transformers\Scopes::class)
                 );
             },
+            Authentication\OAuth\Builder\NewDelegateAccessTokenRequest::class => function () {
+                return new Authentication\OAuth\Builder\NewDelegateAccessTokenRequest(
+                    self::make(Authentication\OAuth\Transformers\AccessToken::class)
+                );
+            },
             Authentication\OAuth\Builder\Scopes::class => function () {
                 return new Authentication\OAuth\Builder\Scopes();
-            },
-            Authentication\OAuth\Builder\AuthorizePromptUri::class => function () {
-                return new Authentication\OAuth\Builder\AuthorizePromptUri(
-                    self::make(Authentication\OAuth\Transformers\Scopes::class)
-                );
             },
             Authentication\OAuth\Service::class => function () {
                 return new Authentication\OAuth\Service(
@@ -109,7 +109,7 @@ class Factory
                     self::make(Authentication\OAuth\SecurityChecks::class),
                     self::make(Authentication\OAuth\Transformers\AuthorizationCode::class),
                     self::make(Authentication\OAuth\Transformers\AccessToken::class),
-                    self::make(Authentication\OAuth\Transformers\Scopes::class)
+                    self::make(Authentication\OAuth\Builder\NewDelegateAccessTokenRequest::class)
                 );
             },
             Authentication\OAuth\SecurityChecks::class => function () {

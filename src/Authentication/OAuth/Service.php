@@ -5,8 +5,7 @@ namespace Yaspa\Authentication\OAuth;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Promise\PromiseInterface;
-use GuzzleHttp\Psr7\Uri;
-use GuzzleHttp\RequestOptions;
+use Yaspa\Authentication\OAuth\Builder\NewDelegateAccessTokenRequest;
 use Yaspa\Authentication\OAuth\Builder\Scopes;
 use Yaspa\Authentication\OAuth\Exceptions\FailedSecurityChecksException;
 use Yaspa\Authentication\OAuth\Models\AccessToken;
@@ -14,7 +13,6 @@ use Yaspa\Authentication\OAuth\Models\AuthorizationCode;
 use Yaspa\Authentication\OAuth\Models\Credentials;
 use Yaspa\Authentication\OAuth\Transformers\AccessToken as AccessTokenTransformer;
 use Yaspa\Authentication\OAuth\Transformers\AuthorizationCode as AuthorizationCodeTransformer;
-use Yaspa\Authentication\OAuth\Transformers\Scopes as ScopesTransformer;
 
 /**
  * Class Service
@@ -26,9 +24,6 @@ use Yaspa\Authentication\OAuth\Transformers\Scopes as ScopesTransformer;
  */
 class Service
 {
-    const DELEGATE_ACCESS_HEADERS = ['Accept' => 'application/json'];
-    const CREATE_NEW_DELETE_ACCESS_TOKEN_URI_TEMPLATE = 'https://%s.myshopify.com/admin/access_tokens/delegate';
-
     /** @var Client $httpClient */
     protected $httpClient;
     /** @var SecurityChecks $securityChecks */
@@ -37,8 +32,8 @@ class Service
     protected $authorizationCodeTransformer;
     /** @var AccessTokenTransformer $accessTokenTransformer */
     protected $accessTokenTransformer;
-    /** @var ScopesTransformer $scopesTransformer */
-    protected $scopesTransformer;
+    /** @var NewDelegateAccessTokenRequest $newDelegateAccessTokenRequestBuilder */
+    protected $newDelegateAccessTokenRequestBuilder;
 
     /**
      * Service constructor.
@@ -47,20 +42,20 @@ class Service
      * @param SecurityChecks $securityChecks
      * @param AuthorizationCodeTransformer $authorizationCodeTransformer
      * @param AccessTokenTransformer $accessTokenTransformer
-     * @param ScopesTransformer $scopesTransformer
+     * @param NewDelegateAccessTokenRequest $newDelegateAccessTokenRequestBuilder
      */
     public function __construct(
         Client $httpClient,
         SecurityChecks $securityChecks,
         AuthorizationCodeTransformer $authorizationCodeTransformer,
         AccessTokenTransformer $accessTokenTransformer,
-        ScopesTransformer $scopesTransformer
+        NewDelegateAccessTokenRequest $newDelegateAccessTokenRequestBuilder
     ) {
         $this->httpClient = $httpClient;
         $this->securityChecks = $securityChecks;
         $this->authorizationCodeTransformer = $authorizationCodeTransformer;
         $this->accessTokenTransformer = $accessTokenTransformer;
-        $this->scopesTransformer = $scopesTransformer;
+        $this->newDelegateAccessTokenRequestBuilder = $newDelegateAccessTokenRequestBuilder;
     }
 
     /**
@@ -159,31 +154,17 @@ class Service
         Scopes $delegateScopes,
         ?int $expiresIn = null
     ): PromiseInterface {
-        // Create request URI
-        $baseUri = sprintf(self::CREATE_NEW_DELETE_ACCESS_TOKEN_URI_TEMPLATE, $shop);
-        $uri = new Uri($baseUri);
+        // Build request
+        $delegateAccessTokenRequest = $this->newDelegateAccessTokenRequestBuilder
+            ->withShop($shop)
+            ->withAccessToken($accessToken)
+            ->withScopes($delegateScopes)
+            ->withExpiresIn($expiresIn);
 
-        // Create headers
-        $authenticatedRequestHeader = $this->accessTokenTransformer->toAuthenticatedRequestHeader($accessToken);
-        $headers = array_merge(self::DELEGATE_ACCESS_HEADERS, $authenticatedRequestHeader);
-
-        // Create post body
-        $delegateScopesBodyParts = $this->scopesTransformer->toCreateNewDelegateAccessTokenPostBody($delegateScopes);
-        $expiresInBodyParts = [
-            [
-                'name' => 'expires_in',
-                'contents' => $expiresIn,
-            ],
-        ];
-        $bodyParts = array_merge($delegateScopesBodyParts, $expiresInBodyParts);
-        $body = array_filter($bodyParts, function(array $part) {
-            return empty($part['contents']) === false;
-        });
-
-        // Create request
-        return $this->httpClient->postAsync($uri, [
-            RequestOptions::HEADERS => $headers,
-            RequestOptions::MULTIPART => $body,
-        ]);
+        // Create new delegate access token request
+        return $this->httpClient->sendAsync(
+            $delegateAccessTokenRequest->toRequest(),
+            $delegateAccessTokenRequest->toRequestOptions()
+        );
     }
 }
