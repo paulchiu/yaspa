@@ -4,6 +4,7 @@ namespace Yaspa;
 
 use GuzzleHttp;
 use UnexpectedValueException;
+use Yaspa\AdminApi;
 use Yaspa\Authentication;
 
 /**
@@ -95,6 +96,15 @@ class Factory
             /**
              * Yaspa constructors
              */
+            AdminApi\Shop\Service::class => function () {
+                return new AdminApi\Shop\Service(
+                    self::make(GuzzleHttp\Client::class),
+                    self::make(AdminApi\Shop\Builders\GetShopRequest::class)
+                );
+            },
+            AdminApi\Shop\Builders\GetShopRequest::class => function () {
+                return new AdminApi\Shop\Builders\GetShopRequest();
+            },
             Authentication\Builders\ApiCredentials::class => function () {
                 return new Authentication\Builders\ApiCredentials(
                     self::make(Authentication\OAuth\Transformers\AccessToken::class),
