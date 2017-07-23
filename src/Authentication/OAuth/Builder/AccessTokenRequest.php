@@ -6,17 +6,21 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\RequestOptions;
 use Yaspa\Interfaces\RequestBuilderInterface;
+use Yaspa\Traits\RequestBuilderTrait;
 
 /**
  * Class AccessTokenRequest
  *
  * @package Yaspa\Authentication\OAuth\Builder
+ * @mixin RequestBuilderTrait
  * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
  *
  * Generates a access token request to use with Guzzle.
  */
 class AccessTokenRequest implements RequestBuilderInterface
 {
+    use RequestBuilderTrait;
+
     const HEADERS = ['Accept' => 'application/json'];
     const HTTP_METHOD = 'POST';
     const URI_TEMPLATE = 'https://%s/admin/oauth/access_token';
@@ -29,17 +33,16 @@ class AccessTokenRequest implements RequestBuilderInterface
     protected $clientSecret;
     /** @var string $code */
     protected $code;
-    /** @var string $uriTemplate */
-    protected $uriTemplate;
 
     /**
      * AccessTokenRequest constructor.
-     *
-     * @param string $uriTemplate
      */
-    public function __construct(string $uriTemplate = self::URI_TEMPLATE)
+    public function __construct()
     {
-        $this->uriTemplate = $uriTemplate;
+        // Set properties with defaults
+        $this->httpMethod = self::HTTP_METHOD;
+        $this->uriTemplate = self::URI_TEMPLATE;
+        $this->headers = self::HEADERS;
     }
 
     /**
@@ -51,7 +54,11 @@ class AccessTokenRequest implements RequestBuilderInterface
         $uri = new Uri(sprintf($this->uriTemplate, $this->shop));
 
         // Create request
-        return new Request(self::HTTP_METHOD, $uri, self::HEADERS);
+        return new Request(
+            $this->httpMethod,
+            $uri,
+            $this->headers
+        );
     }
 
     /**
@@ -124,18 +131,6 @@ class AccessTokenRequest implements RequestBuilderInterface
     {
         $new = clone $this;
         $new->code = $code;
-
-        return $new;
-    }
-
-    /**
-     * @param string $uriTemplate
-     * @return AccessTokenRequest
-     */
-    public function withUriTemplate(string $uriTemplate): AccessTokenRequest
-    {
-        $new = clone $this;
-        $new->uriTemplate = $uriTemplate;
 
         return $new;
     }

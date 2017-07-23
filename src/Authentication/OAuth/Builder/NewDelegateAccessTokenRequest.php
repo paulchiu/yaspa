@@ -8,17 +8,21 @@ use GuzzleHttp\RequestOptions;
 use Yaspa\Authentication\OAuth\Models\AccessToken;
 use Yaspa\Authentication\OAuth\Transformers\AccessToken as AccessTokenTransformer;
 use Yaspa\Interfaces\RequestBuilderInterface;
+use Yaspa\Traits\RequestBuilderTrait;
 
 /**
  * Class NewDelegateAccessTokenRequest
  *
  * @package Yaspa\Authentication\OAuth\Builder
+ * @mixin RequestBuilderTrait
  * @see https://help.shopify.com/api/getting-started/authentication/oauth#delegating-access-to-subsystems
  *
  * Create a new delegate access token request.
  */
 class NewDelegateAccessTokenRequest implements RequestBuilderInterface
 {
+    use RequestBuilderTrait;
+
     const HTTP_METHOD = 'POST';
     const URI_TEMPLATE = 'https://%s.myshopify.com/admin/access_tokens/delegate';
     const HEADERS = ['Accept' => 'application/json'];
@@ -40,16 +44,6 @@ class NewDelegateAccessTokenRequest implements RequestBuilderInterface
     protected $scopes;
     /** @var int $expiresIn */
     protected $expiresIn;
-
-    /**
-     * Builder properties
-     */
-    /** @var string $httpMethod */
-    protected $httpMethod;
-    /** @var string $uriTemplate */
-    protected $uriTemplate;
-    /** @var string $headers */
-    protected $headers;
 
     /**
      * NewDelegateAccessTokenRequest constructor.
@@ -163,42 +157,6 @@ class NewDelegateAccessTokenRequest implements RequestBuilderInterface
     {
         $new = clone $this;
         $new->expiresIn = $expiresIn;
-
-        return $new;
-    }
-
-    /**
-     * @param string $httpMethod
-     * @return NewDelegateAccessTokenRequest
-     */
-    public function withHttpMethod(string $httpMethod): NewDelegateAccessTokenRequest
-    {
-        $new = clone $this;
-        $new->httpMethod = $httpMethod;
-
-        return $new;
-    }
-
-    /**
-     * @param string $uriTemplate
-     * @return NewDelegateAccessTokenRequest
-     */
-    public function withUriTemplate(string $uriTemplate): NewDelegateAccessTokenRequest
-    {
-        $new = clone $this;
-        $new->uriTemplate = $uriTemplate;
-
-        return $new;
-    }
-
-    /**
-     * @param array $headers
-     * @return NewDelegateAccessTokenRequest
-     */
-    public function withHeaders(array $headers): NewDelegateAccessTokenRequest
-    {
-        $new = clone $this;
-        $new->headers = $headers;
 
         return $new;
     }
