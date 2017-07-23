@@ -5,6 +5,7 @@ namespace Yaspa\Authentication\OAuth\Builder;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\RequestOptions;
+use Yaspa\Interfaces\RequestBuilderInterface;
 
 /**
  * Class AccessTokenRequest
@@ -14,7 +15,7 @@ use GuzzleHttp\RequestOptions;
  *
  * Generates a access token request to use with Guzzle.
  */
-class AccessTokenRequest
+class AccessTokenRequest implements RequestBuilderInterface
 {
     const HEADERS = ['Accept' => 'application/json'];
     const HTTP_METHOD = 'POST';
