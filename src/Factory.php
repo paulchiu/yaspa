@@ -88,6 +88,12 @@ class Factory
             GuzzleHttp\Client::class => function () {
                 return new GuzzleHttp\Client();
             },
+            Authentication\Builders\ApiCredentials::class => function () {
+                return new Authentication\Builders\ApiCredentials(
+                    self::make(Authentication\OAuth\Transformers\AccessToken::class),
+                    self::make(Authentication\PrivateAuthentication\Transformers\Credentials::class)
+                );
+            },
             Authentication\OAuth\Builders\AccessTokenRequest::class => function () {
                 return new Authentication\OAuth\Builders\AccessTokenRequest();
             },
@@ -130,6 +136,9 @@ class Factory
             },
             Authentication\OAuth\Transformers\Scopes::class => function () {
                 return new Authentication\OAuth\Transformers\Scopes();
+            },
+            Authentication\PrivateAuthentication\Transformers\Credentials::class => function () {
+                return new Authentication\PrivateAuthentication\Transformers\Credentials();
             },
         ];
     }

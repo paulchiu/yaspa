@@ -3,8 +3,8 @@
 namespace Yaspa\Authentication\OAuth\Builders;
 
 use GuzzleHttp\Psr7\Uri;
-use Yaspa\Authentication\OAuth\Exceptions\MissingRequiredParameterException;
 use Yaspa\Authentication\OAuth\Transformers\Scopes as ScopesTransformer;
+use Yaspa\Exceptions\MissingRequiredParameterException;
 
 /**
  * Class AuthorizePromptUri

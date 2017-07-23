@@ -2,6 +2,7 @@
 
 namespace Yaspa\Authentication\OAuth\Transformers;
 
+use GuzzleHttp\RequestOptions;
 use Psr\Http\Message\ResponseInterface;
 use Yaspa\Authentication\OAuth\Models\AccessToken as AccessTokenModel;
 use stdClass;
@@ -101,5 +102,21 @@ class AccessToken
     public function toAuthenticatedRequestHeader(AccessTokenModel $accessToken): array
     {
         return ['X-Shopify-Access-Token' => $accessToken->getAccessToken()];
+    }
+
+    /**
+     * Return the access token as a Guzzle request option
+     *
+     * This is a wrapper for self::toAuthenticatedRequestHeader
+     *
+     * @see http://docs.guzzlephp.org/en/stable/request-options.html
+     * @param AccessTokenModel $accessToken
+     * @return array
+     */
+    public function toRequestOptions(AccessTokenModel $accessToken): array
+    {
+        return [
+            RequestOptions::HEADERS => $this->toAuthenticatedRequestHeader($accessToken),
+        ];
     }
 }
