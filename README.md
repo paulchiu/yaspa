@@ -59,8 +59,6 @@ To run integration tests, execute:
 ## To do
 
 - [ ] Implement [authentication][sauth]
-    - [ ] Refactor code to combine OAuth functions into a Client class
-    - [ ] Parse returned scopes as scope builder
     - [ ] Move manual tests to examples
     - [ ] Clean up docs and create docs folder
 - [ ] Implement [api call limit throtling][acl] through custom pool [pool][gpool]

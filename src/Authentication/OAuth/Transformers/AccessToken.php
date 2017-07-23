@@ -17,14 +17,21 @@ class AccessToken
 {
     /** @var AssociatedUser $associatedUserTransformer */
     protected $associatedUserTransformer;
+    /** @var Scopes $scopesTransformer */
+    protected $scopesTransformer;
 
     /**
      * AccessToken constructor.
+     *
      * @param AssociatedUser $associatedUserTransformer
+     * @param Scopes $scopesTransformer
      */
-    public function __construct(AssociatedUser $associatedUserTransformer)
-    {
+    public function __construct(
+        AssociatedUser $associatedUserTransformer,
+        Scopes $scopesTransformer
+    ) {
         $this->associatedUserTransformer = $associatedUserTransformer;
+        $this->scopesTransformer = $scopesTransformer;
     }
 
     /**
@@ -51,7 +58,7 @@ class AccessToken
         }
 
         if (property_exists($shopifyJsonAccessToken, 'scope')) {
-            $scopes = explode(',', $shopifyJsonAccessToken->scope);
+            $scopes = $this->scopesTransformer->fromCommaSeparatedList($shopifyJsonAccessToken->scope);
             $accessToken->setScopes($scopes);
         }
 
@@ -60,7 +67,7 @@ class AccessToken
         }
 
         if (property_exists($shopifyJsonAccessToken, 'associated_user_scope')) {
-            $associatedUserScopes = explode(',', $shopifyJsonAccessToken->associated_user_scope);
+            $associatedUserScopes = $this->scopesTransformer->fromCommaSeparatedList($shopifyJsonAccessToken->associated_user_scope);
             $accessToken->setAssociatedUserScopes($associatedUserScopes);
         }
 

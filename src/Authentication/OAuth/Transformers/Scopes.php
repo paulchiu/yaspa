@@ -3,6 +3,7 @@
 namespace Yaspa\Authentication\OAuth\Transformers;
 
 use Yaspa\Authentication\OAuth\Builders\Scopes as ScopesBuilder;
+use Yaspa\Factory;
 
 /**
  * Class Scopes
@@ -23,5 +24,17 @@ class Scopes
     public function toCommaSeparatedList(ScopesBuilder $scopes): string
     {
         return implode(',', $scopes->getRequested());
+    }
+
+    /**
+     * @param string $scopesCsv
+     * @return ScopesBuilder
+     */
+    public function fromCommaSeparatedList(string $scopesCsv): ScopesBuilder
+    {
+        $scopesArray = str_getcsv($scopesCsv);
+
+        return Factory::make(ScopesBuilder::class)
+            ->withRequested($scopesArray);
     }
 }

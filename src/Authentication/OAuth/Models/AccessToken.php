@@ -2,6 +2,8 @@
 
 namespace Yaspa\Authentication\OAuth\Models;
 
+use Yaspa\Authentication\OAuth\Builders\Scopes;
+
 /**
  * Class AccessToken
  * @package Yaspa\Models\Authentication\OAuth
@@ -14,7 +16,7 @@ class AccessToken
 {
     /** @var string $accessToken */
     protected $accessToken;
-    /** @var array|string[] $scopes */
+    /** @var Scopes $scopes */
     protected $scopes;
     /** @var int $expiresIn */
     protected $expiresIn;
@@ -22,7 +24,7 @@ class AccessToken
     /**
      * The following properties are only filled when the access token is of type 'online'
      */
-    /** @var array|string[] $associatedUserScopes */
+    /** @var Scopes $associatedUserScopes */
     protected $associatedUserScopes;
     /** @var AssociatedUser $associatedUser */
     protected $associatedUser;
@@ -46,18 +48,18 @@ class AccessToken
     }
 
     /**
-     * @return array|string[]
+     * @return Scopes
      */
-    public function getScopes():? array
+    public function getScopes():? Scopes
     {
         return $this->scopes;
     }
 
     /**
-     * @param array|string[] $scopes
+     * @param Scopes $scopes
      * @return AccessToken
      */
-    public function setScopes(array $scopes): AccessToken
+    public function setScopes(Scopes $scopes): AccessToken
     {
         $this->scopes = $scopes;
         return $this;
@@ -82,18 +84,18 @@ class AccessToken
     }
 
     /**
-     * @return array|string[]
+     * @return Scopes
      */
-    public function getAssociatedUserScopes():? array
+    public function getAssociatedUserScopes():? Scopes
     {
         return $this->associatedUserScopes;
     }
 
     /**
-     * @param array|string[] $associatedUserScopes
+     * @param Scopes $associatedUserScopes
      * @return AccessToken
      */
-    public function setAssociatedUserScopes(array $associatedUserScopes): AccessToken
+    public function setAssociatedUserScopes(Scopes $associatedUserScopes): AccessToken
     {
         $this->associatedUserScopes = $associatedUserScopes;
         return $this;

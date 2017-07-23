@@ -117,7 +117,8 @@ class Factory
             },
             Authentication\OAuth\Transformers\AccessToken::class => function () {
                 return new Authentication\OAuth\Transformers\AccessToken(
-                    self::make(Authentication\OAuth\Transformers\AssociatedUser::class)
+                    self::make(Authentication\OAuth\Transformers\AssociatedUser::class),
+                    self::make(Authentication\OAuth\Transformers\Scopes::class)
                 );
             },
             Authentication\OAuth\Transformers\AssociatedUser::class => function () {

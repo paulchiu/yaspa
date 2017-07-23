@@ -75,6 +75,20 @@ class Scopes
     }
 
     /**
+     * This is a convenience method to set requested scopes as an array.
+     *
+     * @param array $requestedScopes
+     * @return Scopes
+     */
+    public function withRequested(array $requestedScopes): Scopes
+    {
+        $new = clone $this;
+        $new->requested = $requestedScopes;
+
+        return $new;
+    }
+
+    /**
      * @return Scopes
      */
     public function withReadContent(): Scopes
