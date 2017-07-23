@@ -1,6 +1,6 @@
 <?php
 
-namespace Yaspa\Tests\Authentication\Builders;
+namespace Yaspa\Tests\Unit\Authentication\Builders;
 
 use PHPUnit\Framework\TestCase;
 use Yaspa\Authentication\Builders\ApiCredentials;
@@ -56,5 +56,12 @@ class ApiCredentialsTest extends TestCase
             ->withPrivateAuthCredentials($privateCredentials);
         $options = $apiCredentials->toRequestOptions();
         $this->assertEquals($expectedOptions, $options);
+    }
+
+    public function testWillExceptionIfNoCredentialsSet()
+    {
+        $this->expectException(MissingRequiredParameterException::class);
+        $apiCredentials = Factory::make(ApiCredentials::class);
+        $apiCredentials->toRequestOptions();
     }
 }

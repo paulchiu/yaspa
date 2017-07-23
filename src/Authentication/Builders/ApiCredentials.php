@@ -7,6 +7,7 @@ use Yaspa\Authentication\OAuth\Transformers\AccessToken as OAuthAccessTokenTrans
 use Yaspa\Authentication\PrivateAuthentication\Models\Credentials as PrivateAuthCredentials;
 use Yaspa\Authentication\PrivateAuthentication\Transformers\Credentials as PrivateAuthCredentialsTransformer;
 use Yaspa\Exceptions\MissingRequiredParameterException;
+use Yaspa\Interfaces\RequestCredentialsInterface;
 
 /**
  * Class ApiCredentials
@@ -17,9 +18,11 @@ use Yaspa\Exceptions\MissingRequiredParameterException;
  *
  * To use, set shop and either an OAuthAccess token or private authentication credentials.
  *
+ * Alternatively, use `Yaspa\Authentication\Factory\ApiCredentials` to quickly create details.
+ *
  * Please note that the OAuth access token will take precedence if both are provided.
  */
-class ApiCredentials
+class ApiCredentials implements RequestCredentialsInterface
 {
     /**
      * Properties

@@ -3,7 +3,7 @@
 namespace Yaspa\AdminApi\Shop;
 
 use GuzzleHttp\Client;
-use Yaspa\Authentication\Builders\ApiCredentials;
+use Yaspa\Interfaces\RequestCredentialsInterface;
 
 /**
  * Class Service
@@ -19,7 +19,7 @@ class Service
     protected $httpClient;
 
     public function asyncGetShop(
-        ApiCredentials $credentials
+        RequestCredentialsInterface $credentials
     ) {
         /**
          * @todo

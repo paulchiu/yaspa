@@ -85,14 +85,24 @@ class Factory
     protected static function makeConstructors(): array
     {
         return [
+            /**
+             * External library constructors
+             */
             GuzzleHttp\Client::class => function () {
                 return new GuzzleHttp\Client();
             },
+
+            /**
+             * Yaspa constructors
+             */
             Authentication\Builders\ApiCredentials::class => function () {
                 return new Authentication\Builders\ApiCredentials(
                     self::make(Authentication\OAuth\Transformers\AccessToken::class),
                     self::make(Authentication\PrivateAuthentication\Transformers\Credentials::class)
                 );
+            },
+            Authentication\Factory\ApiCredentials::class => function () {
+                return new Authentication\Factory\ApiCredentials();
             },
             Authentication\OAuth\Builders\AccessTokenRequest::class => function () {
                 return new Authentication\OAuth\Builders\AccessTokenRequest();
