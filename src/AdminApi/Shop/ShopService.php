@@ -17,7 +17,7 @@ use Yaspa\Interfaces\RequestCredentialsInterface;
  *
  * Shopify shop details service.
  */
-class Service
+class ShopService
 {
     /** @var Client $httpClient */
     protected $httpClient;

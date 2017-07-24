@@ -9,7 +9,7 @@ $testApp = $testConfig->get('shopifyAppApi');
 // Get other dependencies
 $authorizationCodeTransformer = Yaspa\Factory::make(Yaspa\Authentication\OAuth\Transformers\AuthorizationCode::class);
 $accessTokenTransformer = Yaspa\Factory::make(Yaspa\Authentication\OAuth\Transformers\AccessToken::class);
-$oAuthService = Yaspa\Factory::make(Yaspa\Authentication\OAuth\Service::class);
+$oAuthService = Yaspa\Factory::make(Yaspa\Authentication\OAuth\OAuthService::class);
 
 // Get OAuth credentials for the test app
 $oAuthCredentials = new Yaspa\Authentication\OAuth\Models\Credentials();

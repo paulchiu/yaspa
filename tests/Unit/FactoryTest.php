@@ -5,15 +5,15 @@ namespace Yaspa\Tests\Unit;
 use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
 use UnexpectedValueException;
-use Yaspa\Authentication\OAuth\Service;
+use Yaspa\Authentication\OAuth\OAuthService;
 use Yaspa\Factory;
 
 class FactoryTest extends TestCase
 {
     public function testCanMakeDependentInstance()
     {
-        $instance = Factory::make(Service::class);
-        $this->assertInstanceOf(Service::class, $instance);
+        $instance = Factory::make(OAuthService::class);
+        $this->assertInstanceOf(OAuthService::class, $instance);
     }
 
     public function testWillExceptionIfCannotMake()

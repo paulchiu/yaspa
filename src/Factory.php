@@ -96,8 +96,8 @@ class Factory
             /**
              * Yaspa constructors
              */
-            AdminApi\Shop\Service::class => function () {
-                return new AdminApi\Shop\Service(
+            AdminApi\Shop\ShopService::class => function () {
+                return new AdminApi\Shop\ShopService(
                     self::make(GuzzleHttp\Client::class),
                     self::make(AdminApi\Shop\Builders\GetShopRequest::class),
                     self::make(AdminApi\Shop\Transformers\Shop::class)
@@ -137,8 +137,8 @@ class Factory
             Authentication\OAuth\SecurityChecks::class => function () {
                 return new Authentication\OAuth\SecurityChecks();
             },
-            Authentication\OAuth\Service::class => function () {
-                return new Authentication\OAuth\Service(
+            Authentication\OAuth\OAuthService::class => function () {
+                return new Authentication\OAuth\OAuthService(
                     self::make(GuzzleHttp\Client::class),
                     self::make(Authentication\OAuth\SecurityChecks::class),
                     self::make(Authentication\OAuth\Transformers\AuthorizationCode::class),

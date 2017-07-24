@@ -5,12 +5,12 @@ namespace Yaspa\Tests\Integration\AdminApi\Shop;
 use DateTime;
 use PHPUnit\Framework\TestCase;
 use Yaspa\AdminApi\Shop\Models\Shop;
-use Yaspa\AdminApi\Shop\Service;
+use Yaspa\AdminApi\Shop\ShopService;
 use Yaspa\Authentication\Factory\ApiCredentials;
 use Yaspa\Factory;
 use Yaspa\Tests\Utils\Config as TestConfig;
 
-class ServiceTest extends TestCase
+class ShopServiceTest extends TestCase
 {
     /**
      * @group integration
@@ -29,7 +29,7 @@ class ServiceTest extends TestCase
             );
 
         // Test method
-        $service = Factory::make(Service::class);
+        $service = Factory::make(ShopService::class);
         $shop = $service->getShop($credentials);
         $this->assertInstanceOf(Shop::class, $shop);
         $this->assertInstanceOf(DateTime::class, $shop->getCreatedAt());
@@ -54,7 +54,7 @@ class ServiceTest extends TestCase
             );
 
         // Test method
-        $service = Factory::make(Service::class);
+        $service = Factory::make(ShopService::class);
         $shop = $service->getShop($credentials);
         $this->assertInstanceOf(Shop::class, $shop);
         $this->assertInstanceOf(DateTime::class, $shop->getCreatedAt());

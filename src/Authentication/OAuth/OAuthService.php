@@ -22,7 +22,7 @@ use Yaspa\Authentication\OAuth\Transformers\AuthorizationCode as AuthorizationCo
  *
  * The OAuth service class enables tasks defined in the Shopify OAuth authentication guide.
  */
-class Service
+class OAuthService
 {
     /** @var Client $httpClient */
     protected $httpClient;

@@ -9,11 +9,11 @@ use Yaspa\Authentication\OAuth\Builders\Scopes;
 use Yaspa\Authentication\OAuth\Models\AccessToken;
 use Yaspa\Authentication\OAuth\Models\AuthorizationCode;
 use Yaspa\Authentication\OAuth\Models\Credentials;
-use Yaspa\Authentication\OAuth\Service as OAuthService;
+use Yaspa\Authentication\OAuth\OAuthService as OAuthService;
 use Yaspa\Factory;
 use Yaspa\Tests\Utils\MockGuzzleClient;
 
-class ServiceTest extends TestCase
+class OAuthServiceTest extends TestCase
 {
     public function testCanRequestPermanentAccessToken()
     {

@@ -6,12 +6,12 @@ use DateTime;
 use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
 use Yaspa\AdminApi\Shop\Models\Shop;
-use Yaspa\AdminApi\Shop\Service;
+use Yaspa\AdminApi\Shop\ShopService;
 use Yaspa\Authentication\Factory\ApiCredentials;
 use Yaspa\Factory;
 use Yaspa\Tests\Utils\MockGuzzleClient;
 
-class ServiceTest extends TestCase
+class ShopServiceTest extends TestCase
 {
     public function testCanGetShop()
     {
@@ -32,7 +32,7 @@ class ServiceTest extends TestCase
             ->makeOAuth('foo', 'bar');
 
         // Test method
-        $service = Factory::make(Service::class);
+        $service = Factory::make(ShopService::class);
         $shop = $service->getShop($credentials);
         $this->assertInstanceOf(Shop::class, $shop);
         $this->assertInstanceOf(DateTime::class, $shop->getCreatedAt());
