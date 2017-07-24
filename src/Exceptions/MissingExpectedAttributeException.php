@@ -8,7 +8,7 @@ use Throwable;
 /**
  * Class MissingExpectedAttributeException
  *
- * @package Yaspa\Authentication\OAuth\Exceptions
+ * @package Yaspa\Exceptions
  *
  * This is a general exception for use with Shopify response parsing that have attribute checks.
  */

@@ -3,6 +3,7 @@
 namespace Yaspa\Tests\Utils;
 
 use stdClass;
+use Yaspa\Exceptions\InvalidJsonStringException;
 
 class Config
 {
@@ -14,11 +15,17 @@ class Config
 
     /**
      * Config constructor.
-     * @param string $pathToConfig Should be path to JSON file tht follows `test-config.example.json`
+     *
+     * @param string $pathToConfig
+     * @throws InvalidJsonStringException
      */
     public function __construct(string $pathToConfig = self::PATH_TO_CONFIG)
     {
         $this->configData = json_decode(file_get_contents($pathToConfig));
+
+        if (is_null($this->configData)) {
+            throw new InvalidJsonStringException(json_last_error_msg());
+        }
     }
 
     /**

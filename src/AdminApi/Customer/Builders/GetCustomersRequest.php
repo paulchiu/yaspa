@@ -14,6 +14,7 @@ use Yaspa\Traits\RequestBuilderTrait;
  * Class GetCustomersRequest
  *
  * @package Yaspa\AdminApi\Customer\Builders
+ * @see https://help.shopify.com/api/reference/customer#index
  */
 class GetCustomersRequest implements RequestBuilderInterface
 {

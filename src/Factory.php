@@ -96,6 +96,17 @@ class Factory
             /**
              * Yaspa constructors
              */
+            AdminApi\Customer\CustomerService::class => function () {
+                return new AdminApi\Customer\CustomerService(
+                    self::make(GuzzleHttp\Client::class)
+                );
+            },
+            AdminApi\Customer\Builders\CustomerFields::class => function () {
+                return new AdminApi\Customer\Builders\CustomerFields();
+            },
+            AdminApi\Customer\Builders\GetCustomersRequest::class => function () {
+                return new AdminApi\Customer\Builders\GetCustomersRequest();
+            },
             AdminApi\Shop\ShopService::class => function () {
                 return new AdminApi\Shop\ShopService(
                     self::make(GuzzleHttp\Client::class),
