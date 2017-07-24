@@ -99,7 +99,7 @@ To run integration tests, execute:
     - [ ] ResourceFeedback BETA
     - [ ] ScriptTag
     - [ ] Shipping Zone
-    - [ ] Shop (in progress)
+    - [x] Shop
     - [ ] SmartCollection
     - [ ] Storefront Access Token
     - [ ] Theme

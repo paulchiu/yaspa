@@ -5,21 +5,23 @@ namespace Yaspa\AdminApi\Shop\Builders;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
 use Yaspa\Interfaces\RequestBuilderInterface;
-use Yaspa\Interfaces\RequestCredentialsInterface;
+use Yaspa\Traits\AuthorizedRequestTrait;
 use Yaspa\Traits\RequestBuilderTrait;
 
 /**
  * Class GetShopRequest
  *
- * @package Yaspa\Authentication\OAuth\Builder
+ * @package Yaspa\AdminApi\Shop\Builders
+ * @mixin AuthorizedRequestTrait
  * @mixin RequestBuilderTrait
- * @see https://help.shopify.com/api/getting-started/authentication/oauth#step-3-confirm-installation
+ * @see https://help.shopify.com/api/reference/shop#show
  *
- * Generates a access token request to use with Guzzle.
+ * Show the shop details of the credentials used.
  */
 class GetShopRequest implements RequestBuilderInterface
 {
-    use RequestBuilderTrait;
+    use AuthorizedRequestTrait,
+        RequestBuilderTrait;
 
     const HEADERS = [
         'Accept' => 'application/json',
@@ -27,9 +29,6 @@ class GetShopRequest implements RequestBuilderInterface
     ];
     const HTTP_METHOD = 'GET';
     const URI_TEMPLATE = 'https://%s.myshopify.com/admin/shop.json';
-
-    /** @var RequestCredentialsInterface $credentials */
-    protected $credentials;
 
     /**
      * GetShopRequest constructor.
@@ -68,18 +67,6 @@ class GetShopRequest implements RequestBuilderInterface
      */
     public function toRequestOptions(): array
     {
-        return array_merge($this->credentials->toRequestOptions(), []);
-    }
-
-    /**
-     * @param RequestCredentialsInterface $credentials
-     * @return GetShopRequest
-     */
-    public function withCredentials(RequestCredentialsInterface $credentials): GetShopRequest
-    {
-        $new = clone $this;
-        $new->credentials = $credentials;
-
-        return $new;
+        return $this->credentials->toRequestOptions();
     }
 }

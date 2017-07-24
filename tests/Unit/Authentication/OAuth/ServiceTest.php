@@ -3,10 +3,6 @@
 namespace Yaspa\Tests\Unit\Authentication\OAuth;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\Middleware;
-use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Yaspa\Authentication\OAuth\Builders\Scopes;
@@ -15,26 +11,22 @@ use Yaspa\Authentication\OAuth\Models\AuthorizationCode;
 use Yaspa\Authentication\OAuth\Models\Credentials;
 use Yaspa\Authentication\OAuth\Service as OAuthService;
 use Yaspa\Factory;
+use Yaspa\Tests\Utils\MockGuzzleClient;
 
 class ServiceTest extends TestCase
 {
     public function testCanRequestPermanentAccessToken()
     {
         // Create mock client
-        $mock = new MockHandler([
-            new Response(
-                200,
-                [],
-                json_encode([
-                    'access_token' => 'foo',
-                ])
-            ),
-        ]);
-        $stack = HandlerStack::create($mock);
         $container = [];
-        $history = Middleware::history($container);
-        $stack->push($history);
-        $client = new Client(['handler' => $stack]);
+        $mockClientUtil = new MockGuzzleClient();
+        $client = $mockClientUtil->makeWithJsonResponse(
+            200,
+            [
+                'access_token' => 'foo',
+            ],
+            $container
+        );
         Factory::inject(Client::class, $client);
 
         // Create parameters
@@ -69,22 +61,17 @@ class ServiceTest extends TestCase
     public function testCanDelegateAccessToken()
     {
         // Create mock client
-        $mock = new MockHandler([
-            new Response(
-                200,
-                [],
-                json_encode([
-                    'access_token' => 'foo',
-                    'scope' => 'bar,baz',
-                    'expires_in' => 10,
-                ])
-            ),
-        ]);
-        $stack = HandlerStack::create($mock);
         $container = [];
-        $history = Middleware::history($container);
-        $stack->push($history);
-        $client = new Client(['handler' => $stack]);
+        $mockClientUtil = new MockGuzzleClient();
+        $client = $mockClientUtil->makeWithJsonResponse(
+            200,
+            [
+                'access_token' => 'foo',
+                'scope' => 'bar,baz',
+                'expires_in' => 10,
+            ],
+            $container
+        );
         Factory::inject(Client::class, $client);
 
         // Prepare parameters
@@ -120,21 +107,16 @@ class ServiceTest extends TestCase
     public function testCanDelegateAccessTokenWithoutExpires()
     {
         // Create mock client
-        $mock = new MockHandler([
-            new Response(
-                200,
-                [],
-                json_encode([
-                    'access_token' => 'foo',
-                    'scope' => 'bar,baz',
-                ])
-            ),
-        ]);
-        $stack = HandlerStack::create($mock);
         $container = [];
-        $history = Middleware::history($container);
-        $stack->push($history);
-        $client = new Client(['handler' => $stack]);
+        $mockClientUtil = new MockGuzzleClient();
+        $client = $mockClientUtil->makeWithJsonResponse(
+            200,
+            [
+                'access_token' => 'foo',
+                'scope' => 'bar,baz',
+            ],
+            $container
+        );
         Factory::inject(Client::class, $client);
 
         // Prepare parameters

@@ -99,8 +99,12 @@ class Factory
             AdminApi\Shop\Service::class => function () {
                 return new AdminApi\Shop\Service(
                     self::make(GuzzleHttp\Client::class),
-                    self::make(AdminApi\Shop\Builders\GetShopRequest::class)
+                    self::make(AdminApi\Shop\Builders\GetShopRequest::class),
+                    self::make(AdminApi\Shop\Transformers\Shop::class)
                 );
+            },
+            AdminApi\Shop\Transformers\Shop::class => function () {
+                return new AdminApi\Shop\Transformers\Shop();
             },
             AdminApi\Shop\Builders\GetShopRequest::class => function () {
                 return new AdminApi\Shop\Builders\GetShopRequest();
