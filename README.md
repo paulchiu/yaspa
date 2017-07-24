@@ -68,7 +68,7 @@ To run integration tests, execute:
     - [ ] Comment
     - [ ] Country
     - [ ] CustomCollection
-    - [ ] Customer
+    - [ ] Customer (in progress)
     - [ ] CustomerAddress
     - [ ] CustomerSavedSearch
     - [ ] Discount SHOPIFY PLUS
