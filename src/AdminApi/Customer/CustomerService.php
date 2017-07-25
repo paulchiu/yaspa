@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
 use Yaspa\AdminApi\Customer\Builders\GetCustomersRequest;
 use Yaspa\AdminApi\Customer\Transformers;
+use Yaspa\Exceptions\MissingExpectedAttributeException;
 
 /**
  * Class CustomerService
@@ -42,7 +43,20 @@ class CustomerService
     {
         $response = $this->asyncGetCustomers($request)->wait();
 
-        return $this->customerTransformer->fromResponse($response);
+        /**
+         * Begin manual transform
+         */
+        $stdClass = json_decode($response->getBody()->getContents());
+
+        if (!property_exists($stdClass, 'customers')) {
+            throw new MissingExpectedAttributeException('customers');
+        }
+
+        $results = array_map([$this->customerTransformer, 'fromShopifyJsonCustomer'], $stdClass->customers);
+
+        dump($results);
+
+        return $results;
     }
 
     /**

@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 use Yaspa\AdminApi\Customer\Builders\CustomerFields;
 use Yaspa\AdminApi\Customer\Builders\GetCustomersRequest;
 use Yaspa\AdminApi\Customer\CustomerService;
+use Yaspa\AdminApi\Customer\Models\Customer;
 use Yaspa\Authentication\Factory\ApiCredentials;
 use Yaspa\Factory;
 use Yaspa\Tests\Utils\Config as TestConfig;
@@ -48,6 +49,18 @@ class CustomerServiceTest extends TestCase
 
         $service = Factory::make(CustomerService::class);
         $customers = $service->getCustomers($request);
-        dump($customers);
+
+        // Confirm we can move through pages seamlessly
+        $targetIterations = 5;
+        $timesIterated = 0;
+        foreach ($customers as $customer) {
+            if ($timesIterated >= $targetIterations) {
+                break;
+            }
+
+            $this->assertInstanceOf(Customer::class, $customer);
+            $timesIterated++;
+        }
+        $this->assertGreaterThanOrEqual($targetIterations, $timesIterated);
     }
 }

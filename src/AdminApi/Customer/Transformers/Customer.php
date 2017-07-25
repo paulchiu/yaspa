@@ -2,6 +2,7 @@
 
 namespace Yaspa\AdminApi\Customer\Transformers;
 
+use DateTime;
 use Psr\Http\Message\ResponseInterface;
 use Yaspa\AdminApi\Customer\Models\Customer as CustomerModel;
 use Yaspa\Exceptions\MissingExpectedAttributeException;
@@ -17,17 +18,17 @@ use stdClass;
  */
 class Customer
 {
-    /** @var Address $defaultAddressTransformer */
-    protected $defaultAddressTransformer;
+    /** @var Address $addressTransformer */
+    protected $addressTransformer;
 
     /**
      * Customer constructor.
      *
-     * @param Address $defaultAddressTransformer
+     * @param Address $addressTransformer
      */
-    public function __construct(Address $defaultAddressTransformer)
+    public function __construct(Address $addressTransformer)
     {
-        $this->defaultAddressTransformer = $defaultAddressTransformer;
+        $this->addressTransformer = $addressTransformer;
     }
 
     /**
@@ -135,13 +136,13 @@ class Customer
         }
 
         if (property_exists($shopifyJsonCustomer, 'addresses')) {
-            $addresses = explode(',', $shopifyJsonCustomer->addresses);
+            $addresses = array_map([$this->addressTransformer, 'fromShopifyJsonAddress'], $shopifyJsonCustomer->addresses);
             $customer->setAddresses($addresses);
         }
 
         if (property_exists($shopifyJsonCustomer, 'default_address')) {
-            $defaultAddress = $this->defaultAddressTransformer
-                ->fromShopifyJsonDefaultAddress($shopifyJsonCustomer->default_address);
+            $defaultAddress = $this->addressTransformer
+                ->fromShopifyJsonAddress($shopifyJsonCustomer->default_address);
             $customer->setDefaultAddress($defaultAddress);
         }
 
@@ -174,11 +175,11 @@ class Customer
         $array['phone'] = $customer->getPhone();
         $array['tags'] = $customer->getTags();
         $array['last_order_name'] = $customer->getLastOrderName();
-        $array['addresses'] = array_map([$this->defaultAddressTransformer, 'toArray'], $customer->getAddresses());
+        $array['addresses'] = array_map([$this->addressTransformer, 'toArray'], $customer->getAddresses());
 
         // Only provide default address is one
         if ($customer->getDefaultAddress()) {
-            $array['default_address'] = $this->defaultAddressTransformer->toArray($customer->getDefaultAddress());
+            $array['default_address'] = $this->addressTransformer->toArray($customer->getDefaultAddress());
         }
 
         return $array;

@@ -28,7 +28,7 @@ class Address
     protected $province;
     /** @var string $country */
     protected $country;
-    /** @var int $zip */
+    /** @var string $zip */
     protected $zip;
     /** @var string $phone */
     protected $phone;
@@ -206,18 +206,18 @@ class Address
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getZip():? int
+    public function getZip():? string
     {
         return $this->zip;
     }
 
     /**
-     * @param int $zip
+     * @param string $zip
      * @return Address
      */
-    public function setZip(int $zip): Address
+    public function setZip(string $zip): Address
     {
         $this->zip = $zip;
         return $this;
