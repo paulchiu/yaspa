@@ -53,7 +53,7 @@ class CustomerServiceTest extends TestCase
         // Confirm we can move through pages seamlessly
         $targetIterations = 5;
         $timesIterated = 0;
-        foreach ($customers as $customer) {
+        foreach ($customers as $index => $customer) {
             if ($timesIterated >= $targetIterations) {
                 break;
             }

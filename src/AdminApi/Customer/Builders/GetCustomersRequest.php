@@ -27,6 +27,7 @@ class GetCustomersRequest implements RequestBuilderInterface
     ];
     const HTTP_METHOD = 'GET';
     const URI_TEMPLATE = 'https://%s.myshopify.com/admin/customers.json';
+    const STARTING_PAGE = 1;
 
     /** @var array|int[] $ids */
     protected $ids;
@@ -56,6 +57,7 @@ class GetCustomersRequest implements RequestBuilderInterface
         $this->httpMethod = self::HTTP_METHOD;
         $this->uriTemplate = self::URI_TEMPLATE;
         $this->headers = self::HEADERS;
+        $this->page = self::STARTING_PAGE;
     }
 
     /**
@@ -133,6 +135,14 @@ class GetCustomersRequest implements RequestBuilderInterface
         }
 
         return $array;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPage():? int
+    {
+        return $this->page;
     }
 
     /**

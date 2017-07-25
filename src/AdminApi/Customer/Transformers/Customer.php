@@ -51,6 +51,25 @@ class Customer
     }
 
     /**
+     * Convert a Shopify customers response into an array of customer models.
+     *
+     * @see https://help.shopify.com/api/reference/customer#show
+     * @param ResponseInterface $response
+     * @return array|CustomerModel[]
+     * @throws MissingExpectedAttributeException
+     */
+    public function fromArrayResponse(ResponseInterface $response): array
+    {
+        $stdClass = json_decode($response->getBody()->getContents());
+
+        if (!property_exists($stdClass, 'customers')) {
+            throw new MissingExpectedAttributeException('customers');
+        }
+
+        return array_map([$this, 'fromShopifyJsonCustomer'], $stdClass->customers);
+    }
+
+    /**
      * Convert a Shopify customer JSON class into a customer model.
      *
      * @see https://help.shopify.com/api/reference/customer#show
