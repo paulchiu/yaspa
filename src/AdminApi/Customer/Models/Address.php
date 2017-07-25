@@ -330,5 +330,4 @@ class Address
         $this->default = $default;
         return $this;
     }
-
 }

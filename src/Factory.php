@@ -98,7 +98,16 @@ class Factory
              */
             AdminApi\Customer\CustomerService::class => function () {
                 return new AdminApi\Customer\CustomerService(
-                    self::make(GuzzleHttp\Client::class)
+                    self::make(GuzzleHttp\Client::class),
+                    self::make(AdminApi\Customer\Transformers\Customer::class)
+                );
+            },
+            AdminApi\Customer\Transformers\Address::class => function () {
+                return new AdminApi\Customer\Transformers\Address();
+            },
+            AdminApi\Customer\Transformers\Customer::class => function () {
+                return new AdminApi\Customer\Transformers\Customer(
+                    self::make(AdminApi\Customer\Transformers\Address::class)
                 );
             },
             AdminApi\Customer\Builders\CustomerFields::class => function () {
