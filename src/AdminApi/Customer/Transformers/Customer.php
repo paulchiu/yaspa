@@ -6,6 +6,7 @@ use DateTime;
 use Psr\Http\Message\ResponseInterface;
 use Yaspa\AdminApi\Customer\Models\Customer as CustomerModel;
 use Yaspa\Exceptions\MissingExpectedAttributeException;
+use Yaspa\Interfaces\ArrayResponseTransformerInterface;
 use stdClass;
 
 /**
@@ -16,7 +17,7 @@ use stdClass;
  *
  * Customer transformer.
  */
-class Customer
+class Customer implements ArrayResponseTransformerInterface
 {
     /** @var Address $addressTransformer */
     protected $addressTransformer;

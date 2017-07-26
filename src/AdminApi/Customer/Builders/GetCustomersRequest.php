@@ -6,7 +6,7 @@ use DateTime;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\RequestOptions;
-use Yaspa\Interfaces\RequestBuilderInterface;
+use Yaspa\Interfaces\PagingRequestBuilderInterface;
 use Yaspa\Traits\AuthorizedRequestTrait;
 use Yaspa\Traits\RequestBuilderTrait;
 
@@ -16,7 +16,7 @@ use Yaspa\Traits\RequestBuilderTrait;
  * @package Yaspa\AdminApi\Customer\Builders
  * @see https://help.shopify.com/api/reference/customer#index
  */
-class GetCustomersRequest implements RequestBuilderInterface
+class GetCustomersRequest implements PagingRequestBuilderInterface
 {
     use AuthorizedRequestTrait,
         RequestBuilderTrait;

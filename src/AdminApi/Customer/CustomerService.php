@@ -5,16 +5,13 @@ namespace Yaspa\AdminApi\Customer;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
 use Yaspa\AdminApi\Customer\Builders\GetCustomersRequest;
-use Yaspa\AdminApi\Customer\Iterators\Customers as CustomersIterator;
 use Yaspa\AdminApi\Customer\Transformers;
-use Yaspa\Exceptions\MissingExpectedAttributeException;
+use Yaspa\Builders\PagedResultsIterator;
 
 /**
  * Class CustomerService
  *
  * @package Yaspa\AdminApi\Customer
- *
- * @todo Figure out how to to iterable for get customers
  */
 class CustomerService
 {
@@ -22,17 +19,24 @@ class CustomerService
     protected $httpClient;
     /** @var Transformers\Customer $customerTransformer */
     protected $customerTransformer;
+    /** @var PagedResultsIterator $pagedResultsIteratorBuilder */
+    protected $pagedResultsIteratorBuilder;
 
     /**
      * CustomerService constructor.
      *
      * @param Client $httpClient
      * @param Transformers\Customer $customerTransformer
+     * @param PagedResultsIterator $pagedResultsIteratorBuilder
      */
-    public function __construct(Client $httpClient, Transformers\Customer $customerTransformer)
-    {
+    public function __construct(
+        Client $httpClient,
+        Transformers\Customer $customerTransformer,
+        PagedResultsIterator $pagedResultsIteratorBuilder
+    ) {
         $this->httpClient = $httpClient;
         $this->customerTransformer = $customerTransformer;
+        $this->pagedResultsIteratorBuilder = $pagedResultsIteratorBuilder;
     }
 
     /**
@@ -42,7 +46,9 @@ class CustomerService
      */
     public function getCustomers(GetCustomersRequest $request)
     {
-        return new CustomersIterator($this->httpClient, $this->customerTransformer, $request);
+        return $this->pagedResultsIteratorBuilder
+            ->withRequestBuilder($request)
+            ->withTransformer($this->customerTransformer);
     }
 
     /**

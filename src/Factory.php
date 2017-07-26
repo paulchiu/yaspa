@@ -96,10 +96,16 @@ class Factory
             /**
              * Yaspa constructors
              */
+            Builders\PagedResultsIterator::class => function () {
+                return new Builders\PagedResultsIterator(
+                    self::make(GuzzleHttp\Client::class)
+                );
+            },
             AdminApi\Customer\CustomerService::class => function () {
                 return new AdminApi\Customer\CustomerService(
                     self::make(GuzzleHttp\Client::class),
-                    self::make(AdminApi\Customer\Transformers\Customer::class)
+                    self::make(AdminApi\Customer\Transformers\Customer::class),
+                    self::make(Builders\PagedResultsIterator::class)
                 );
             },
             AdminApi\Customer\Transformers\Address::class => function () {
