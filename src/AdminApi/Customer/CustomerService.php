@@ -5,6 +5,7 @@ namespace Yaspa\AdminApi\Customer;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
 use Yaspa\AdminApi\Customer\Builders\GetCustomersRequest;
+use Yaspa\AdminApi\Customer\Models;
 use Yaspa\AdminApi\Customer\Transformers;
 use Yaspa\Builders\PagedResultsIterator;
 
@@ -42,7 +43,7 @@ class CustomerService
     /**
      * @see https://help.shopify.com/api/reference/customer#index
      * @param GetCustomersRequest $request
-     * @return mixed
+     * @return Models\Customer[]|PagedResultsIterator
      */
     public function getCustomers(GetCustomersRequest $request)
     {

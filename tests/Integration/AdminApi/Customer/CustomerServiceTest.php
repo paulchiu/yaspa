@@ -17,7 +17,7 @@ class CustomerServiceTest extends TestCase
     /**
      * @group integration
      */
-    public function testGetCustomers()
+    public function testCanGetCustomers()
     {
         // Get config
         $config = new TestConfig();
