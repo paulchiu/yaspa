@@ -125,7 +125,7 @@ class PagedResultsIterator implements Iterator
      */
     public function current()
     {
-        return $this->pageResults[$this->pageIndex];
+        return $this->pageResults[$this->page][$this->pageIndex];
     }
 
     /**
@@ -133,27 +133,34 @@ class PagedResultsIterator implements Iterator
      */
     public function next()
     {
-        // If we have results to provide, use it
-        if (isset($this->pageResults[$this->pageIndex + 1])) {
+        // If we have next result to provide, use it
+        if (isset($this->pageResults[$this->page][$this->pageIndex + 1])) {
             $this->pageIndex += 1;
             return;
         }
 
-        // Otherwise, get next page
+        // Otherwise, go to next page
         $nextPage = $this->page + 1;
-        /** @var PagingRequestBuilderInterface $nextPageRequest */
-        $nextPageRequest = $this->pagingRequestBuilder->withPage($nextPage);
-        $response = $this->httpClient
-            ->sendAsync($nextPageRequest->toRequest(), $nextPageRequest->toRequestOptions())
-            ->wait();
-        usleep($this->postCallDelayMicroseconds);
-        $results = $this->arrayTransformer->fromArrayResponse($response);
 
-        // Reset page relative positional values
+        // If we have next page, use it
+        $results = $this->pageResults[$nextPage] ?? [];
+
+        // Otherwise, fetch next page
+        if (!isset($this->pageResults[$nextPage])) {
+            /** @var PagingRequestBuilderInterface $nextPageRequest */
+            $nextPageRequest = $this->pagingRequestBuilder->withPage($nextPage);
+            $response = $this->httpClient
+                ->sendAsync($nextPageRequest->toRequest(), $nextPageRequest->toRequestOptions())
+                ->wait();
+            usleep($this->postCallDelayMicroseconds);
+            $results = $this->arrayTransformer->fromArrayResponse($response);
+        }
+
+        // Set next state
         $this->index += 1;
         $this->page = $nextPage;
         $this->pageIndex = 0;
-        $this->pageResults = $results;
+        $this->pageResults[$this->page] = $results;
     }
 
     /**
@@ -173,7 +180,7 @@ class PagedResultsIterator implements Iterator
      */
     public function valid()
     {
-        return !empty($this->pageResults);
+        return !empty($this->pageResults[$this->page]);
     }
 
     /**
@@ -184,7 +191,7 @@ class PagedResultsIterator implements Iterator
         $this->index = -1;
         $this->page = $this->pagingRequestBuilder->getPage() ?: 0;
         $this->pageIndex;
-        $this->pageResults = [];
+        $this->pageResults = $this->pageResults ?: [];
         $this->next();
     }
 }

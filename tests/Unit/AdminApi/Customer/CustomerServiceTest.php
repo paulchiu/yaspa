@@ -4,20 +4,14 @@ namespace Yaspa\Tests\Unit\AdminApi\Customer;
 
 use DateTime;
 use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Middleware;
-use GuzzleHttp\Psr7\Response;
 use Iterator;
 use PHPUnit\Framework\TestCase;
+use Yaspa\AdminApi\Customer\Builders\GetCustomersRequest;
 use Yaspa\AdminApi\Customer\CustomerService;
 use Yaspa\AdminApi\Customer\Models\Customer;
-use Yaspa\AdminApi\Shop\Models\Shop;
-use Yaspa\AdminApi\Shop\ShopService;
 use Yaspa\Authentication\Factory\ApiCredentials;
 use Yaspa\Factory;
 use Yaspa\Tests\Utils\MockGuzzleClient;
-use Yaspa\AdminApi\Customer\Builders\GetCustomersRequest;
 
 class CustomerServiceTest extends TestCase
 {
@@ -64,6 +58,18 @@ class CustomerServiceTest extends TestCase
             $timesIterated++;
         }
         $this->assertEquals(2, $timesIterated);
+
+        // Return customers for dependent tests
+        return $customers;
+    }
+
+    /**
+     * @depends testCanGetCustomers
+     * @param Iterator $customers
+     */
+    public function testCanGetCustomersAndCount(Iterator $customers)
+    {
+        $this->assertEquals(2, iterator_count($customers));
     }
 
     public function testCanGetCustomersSpanningMultiplePages()
