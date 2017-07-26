@@ -41,6 +41,8 @@ class CustomerService
     }
 
     /**
+     * Get customers based on parameters set in the request.
+     *
      * @see https://help.shopify.com/api/reference/customer#index
      * @param GetCustomersRequest $request
      * @return Models\Customer[]|PagedResultsIterator
@@ -53,6 +55,10 @@ class CustomerService
     }
 
     /**
+     * Async version of self::getCustomers
+     *
+     * Please note that results will have to be manually transformed.
+     *
      * @see https://help.shopify.com/api/reference/customer#index
      * @param GetCustomersRequest $request
      * @return PromiseInterface

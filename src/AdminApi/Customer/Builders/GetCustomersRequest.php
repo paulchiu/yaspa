@@ -3,12 +3,8 @@
 namespace Yaspa\AdminApi\Customer\Builders;
 
 use DateTime;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Uri;
-use GuzzleHttp\RequestOptions;
 use Yaspa\Interfaces\PagingRequestBuilderInterface;
-use Yaspa\Traits\AuthorizedRequestTrait;
-use Yaspa\Traits\RequestBuilderTrait;
+use Yaspa\Traits\AuthorizedRequestBuilderTrait;
 
 /**
  * Class GetCustomersRequest
@@ -18,8 +14,7 @@ use Yaspa\Traits\RequestBuilderTrait;
  */
 class GetCustomersRequest implements PagingRequestBuilderInterface
 {
-    use AuthorizedRequestTrait,
-        RequestBuilderTrait;
+    use AuthorizedRequestBuilderTrait;
 
     const HEADERS = [
         'Accept' => 'application/json',
@@ -58,37 +53,6 @@ class GetCustomersRequest implements PagingRequestBuilderInterface
         $this->uriTemplate = self::URI_TEMPLATE;
         $this->headers = self::HEADERS;
         $this->page = self::STARTING_PAGE;
-    }
-
-    /**
-     * Generate a Guzzle/PSR-7 request.
-     *
-     * @return Request
-     */
-    public function toRequest(): Request
-    {
-        // Create URI
-        $uri = new Uri(sprintf($this->uriTemplate, $this->credentials->getShop()));
-
-        // Create request
-        return new Request(
-            $this->httpMethod,
-            $uri,
-            $this->headers
-        );
-    }
-
-    /**
-     * Generate Guzzle request options.
-     *
-     * @see http://docs.guzzlephp.org/en/stable/request-options.html#query
-     * @return array
-     */
-    public function toRequestOptions(): array
-    {
-        $requestOptions = [RequestOptions::QUERY => $this->toArray()];
-
-        return array_merge($this->credentials->toRequestOptions(), $requestOptions);
     }
 
     /**
