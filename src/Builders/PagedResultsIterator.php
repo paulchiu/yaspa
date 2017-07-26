@@ -57,6 +57,8 @@ class PagedResultsIterator implements Iterator
     protected $pageIndex;
     /** @var array */
     protected $pageResults;
+    /** @var bool $firstIteration */
+    protected $firstIteration;
 
     /**
      * PagedResultsIterator constructor.
@@ -68,6 +70,7 @@ class PagedResultsIterator implements Iterator
         $this->httpClient = $httpClient;
         $this->postCallDelayMicroseconds = self::DEFAULT_POST_CALL_DELAY_SECONDS * self::SECONDS_TO_MICROSECONDS_MULTIPLIER;
         $this->identifierGetter = self::DEFAULT_IDENTIFIER_GETTER;
+        $this->firstIteration = true;
     }
 
     /**
@@ -189,9 +192,11 @@ class PagedResultsIterator implements Iterator
     public function rewind()
     {
         $this->index = -1;
-        $this->page = $this->pagingRequestBuilder->getPage() ?: 0;
-        $this->pageIndex;
+        $this->page = ($this->firstIteration) ? -1 : 0; // Offset for first iteration page retrieval
+        $this->page += $this->pagingRequestBuilder->getPage();
+        $this->pageIndex = 0;
         $this->pageResults = $this->pageResults ?: [];
+        $this->firstIteration = false;
         $this->next();
     }
 }

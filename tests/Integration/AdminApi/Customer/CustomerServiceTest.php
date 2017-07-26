@@ -6,6 +6,7 @@ use DateTime;
 use PHPUnit\Framework\TestCase;
 use Yaspa\AdminApi\Customer\Builders\CustomerFields;
 use Yaspa\AdminApi\Customer\Builders\GetCustomersRequest;
+use Yaspa\AdminApi\Customer\Builders\SearchCustomersRequest;
 use Yaspa\AdminApi\Customer\CustomerService;
 use Yaspa\AdminApi\Customer\Models\Customer;
 use Yaspa\Authentication\Factory\ApiCredentials;
@@ -62,5 +63,43 @@ class CustomerServiceTest extends TestCase
             $timesIterated++;
         }
         $this->assertGreaterThanOrEqual($targetIterations, $timesIterated);
+    }
+
+    /**
+     * @group integration
+     */
+    public function testCanSearchCustomers()
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Test method
+        $fields = Factory::make(CustomerFields::class)
+            ->withId()
+            ->withEmail()
+            ->withFirstName();
+        $request = Factory::make(SearchCustomersRequest::class)
+            ->withCredentials($credentials)
+            ->withCustomerFields($fields)
+            ->withQuery('Edward');
+
+        $service = Factory::make(CustomerService::class);
+        $customers = $service->searchCustomers($request);
+
+        // Confirm we can move through pages seamlessly
+        $this->assertEquals(1, iterator_count($customers));
+        foreach ($customers as $customer) {
+            $this->assertInstanceOf(Customer::class, $customer);
+        }
     }
 }

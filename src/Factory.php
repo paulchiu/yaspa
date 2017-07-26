@@ -37,7 +37,7 @@ class Factory
 
         // If we don't know how to create a given class, throw exception
         if (!isset(self::$constructors[$className])) {
-            $message = sprintf('Cannot make a new instance of class %s as it is not defined', $className);
+            $message = sprintf('Cannot make a new instance of class %s as it is not defined in %s', $className, __CLASS__);
             throw new UnexpectedValueException($message);
         }
 
@@ -121,6 +121,9 @@ class Factory
             },
             AdminApi\Customer\Builders\GetCustomersRequest::class => function () {
                 return new AdminApi\Customer\Builders\GetCustomersRequest();
+            },
+            AdminApi\Customer\Builders\SearchCustomersRequest::class => function () {
+                return new AdminApi\Customer\Builders\SearchCustomersRequest();
             },
             AdminApi\Shop\ShopService::class => function () {
                 return new AdminApi\Shop\ShopService(
