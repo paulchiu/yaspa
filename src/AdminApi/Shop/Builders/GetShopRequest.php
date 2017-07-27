@@ -2,6 +2,7 @@
 
 namespace Yaspa\AdminApi\Shop\Builders;
 
+use GuzzleHttp\RequestOptions;
 use Yaspa\Interfaces\RequestBuilderInterface;
 use Yaspa\Traits\AuthorizedRequestBuilderTrait;
 
@@ -24,6 +25,7 @@ class GetShopRequest implements RequestBuilderInterface
     ];
     const HTTP_METHOD = 'GET';
     const URI_TEMPLATE = 'https://%s.myshopify.com/admin/shop.json';
+    const BODY_TYPE = RequestOptions::QUERY;
 
     /**
      * GetShopRequest constructor.
@@ -34,5 +36,6 @@ class GetShopRequest implements RequestBuilderInterface
         $this->httpMethod = self::HTTP_METHOD;
         $this->uriTemplate = self::URI_TEMPLATE;
         $this->headers = self::HEADERS;
+        $this->bodyType = self::BODY_TYPE;
     }
 }

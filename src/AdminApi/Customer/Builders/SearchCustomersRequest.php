@@ -2,6 +2,7 @@
 
 namespace Yaspa\AdminApi\Customer\Builders;
 
+use GuzzleHttp\RequestOptions;
 use Yaspa\Interfaces\PagingRequestBuilderInterface;
 use Yaspa\Traits\AuthorizedRequestBuilderTrait;
 
@@ -21,6 +22,7 @@ class SearchCustomersRequest implements PagingRequestBuilderInterface
     ];
     const HTTP_METHOD = 'GET';
     const URI_TEMPLATE = 'https://%s.myshopify.com/admin/customers/search.json';
+    const BODY_TYPE = RequestOptions::QUERY;
     const STARTING_PAGE = 1;
     const DEFAULT_ORDER = 'last_order_date DESC';
 
@@ -44,6 +46,7 @@ class SearchCustomersRequest implements PagingRequestBuilderInterface
         $this->httpMethod = self::HTTP_METHOD;
         $this->uriTemplate = self::URI_TEMPLATE;
         $this->headers = self::HEADERS;
+        $this->bodyType = self::BODY_TYPE;
         $this->order = self::DEFAULT_ORDER;
         $this->page = self::STARTING_PAGE;
     }

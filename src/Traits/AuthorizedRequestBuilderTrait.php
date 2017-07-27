@@ -4,7 +4,6 @@ namespace Yaspa\Traits;
 
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
-use GuzzleHttp\RequestOptions;
 use Yaspa\Interfaces\RequestCredentialsInterface;
 
 /**
@@ -29,6 +28,8 @@ trait AuthorizedRequestBuilderTrait
     protected $uriTemplate;
     /** @var string $headers */
     protected $headers;
+    /** @var string $bodyType */
+    protected $bodyType;
 
     /**
      * Generate a Guzzle/PSR-7 request.
@@ -56,7 +57,7 @@ trait AuthorizedRequestBuilderTrait
      */
     public function toRequestOptions(): array
     {
-        $requestOptions = [RequestOptions::QUERY => $this->toArray()];
+        $requestOptions = [$this->bodyType => $this->toArray()];
 
         return array_merge($this->credentials->toRequestOptions(), $requestOptions);
     }

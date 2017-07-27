@@ -4,10 +4,12 @@ namespace Yaspa\Tests\Integration\AdminApi\Customer;
 
 use DateTime;
 use PHPUnit\Framework\TestCase;
+use Yaspa\AdminApi\Customer\Builders\CreateNewCustomerRequest;
 use Yaspa\AdminApi\Customer\Builders\CustomerFields;
 use Yaspa\AdminApi\Customer\Builders\GetCustomersRequest;
 use Yaspa\AdminApi\Customer\Builders\SearchCustomersRequest;
 use Yaspa\AdminApi\Customer\CustomerService;
+use Yaspa\AdminApi\Customer\Models\Address;
 use Yaspa\AdminApi\Customer\Models\Customer;
 use Yaspa\Authentication\Factory\ApiCredentials;
 use Yaspa\Factory;
@@ -15,6 +17,51 @@ use Yaspa\Tests\Utils\Config as TestConfig;
 
 class CustomerServiceTest extends TestCase
 {
+    /**
+     * @group integration
+     */
+    public function testCanCreateNewCustomer()
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Test method
+        $address = (new Address())
+            ->setAddress1('123 Oak St')
+            ->setCity('Ottawa')
+            ->setProvince('ON')
+            ->setPhone('555-1212')
+            ->setZip('123 ABC')
+            ->setLastName('Lastnameson')
+            ->setFirstName('Mother')
+            ->setCountry('CA');
+        $customer = (new Customer())
+            ->setFirstName('Steve')
+            ->setLastName('Lastnameson')
+            ->setEmail(uniqid('steve-').'@example.com')
+            ->setVerifiedEmail(true)
+            ->setAcceptsMarketing(true)
+            ->setAddresses([$address]);
+        $request = Factory::make(CreateNewCustomerRequest::class)
+            ->withCredentials($credentials)
+            ->withCustomer($customer);
+
+        $service = Factory::make(CustomerService::class);
+        $newCustomer = $service->createNewCustomer($request);
+        $this->assertInstanceOf(Customer::class, $newCustomer);
+        $this->assertNotEmpty($newCustomer->getId());
+    }
+
     /**
      * @group integration
      */

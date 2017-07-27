@@ -4,6 +4,7 @@ namespace Yaspa\AdminApi\Customer;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
+use Yaspa\AdminApi\Customer\Builders\CreateNewCustomerRequest;
 use Yaspa\AdminApi\Customer\Builders\GetCustomersRequest;
 use Yaspa\AdminApi\Customer\Builders\SearchCustomersRequest;
 use Yaspa\AdminApi\Customer\Models;
@@ -95,6 +96,36 @@ class CustomerService
      * @return PromiseInterface
      */
     public function asyncSearchCustomers(SearchCustomersRequest $request): PromiseInterface {
+        return $this->httpClient->sendAsync(
+            $request->toRequest(),
+            $request->toRequestOptions()
+        );
+    }
+
+    /**
+     * Create a new customer.
+     *
+     * @todo Improve builder generator to support wrapping and object transformers
+     * @see https://help.shopify.com/api/reference/customer#create
+     * @param CreateNewCustomerRequest $request
+     * @return Models\Customer
+     */
+    public function createNewCustomer(CreateNewCustomerRequest $request): Models\Customer
+    {
+        $response = $this->asyncCreateNewCustomer($request)->wait();
+
+        return $this->customerTransformer->fromResponse($response);
+    }
+
+    /**
+     * Async version of self::createNewCustomer
+     *
+     * @see https://help.shopify.com/api/reference/customer#create
+     * @param CreateNewCustomerRequest $request
+     * @return PromiseInterface
+     */
+    public function asyncCreateNewCustomer(CreateNewCustomerRequest $request): PromiseInterface
+    {
         return $this->httpClient->sendAsync(
             $request->toRequest(),
             $request->toRequestOptions()

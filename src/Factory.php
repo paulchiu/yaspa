@@ -119,11 +119,20 @@ class Factory
             AdminApi\Customer\Builders\CustomerFields::class => function () {
                 return new AdminApi\Customer\Builders\CustomerFields();
             },
+            AdminApi\Customer\Builders\CreateNewCustomerRequest::class => function () {
+                return new AdminApi\Customer\Builders\CreateNewCustomerRequest(
+                    self::make(AdminApi\Customer\Transformers\Customer::class),
+                    self::make(AdminApi\Metafield\Transformers\Metafield::class)
+                );
+            },
             AdminApi\Customer\Builders\GetCustomersRequest::class => function () {
                 return new AdminApi\Customer\Builders\GetCustomersRequest();
             },
             AdminApi\Customer\Builders\SearchCustomersRequest::class => function () {
                 return new AdminApi\Customer\Builders\SearchCustomersRequest();
+            },
+            AdminApi\Metafield\Transformers\Metafield::class => function () {
+                return new AdminApi\Metafield\Transformers\Metafield();
             },
             AdminApi\Shop\ShopService::class => function () {
                 return new AdminApi\Shop\ShopService(
