@@ -27,6 +27,8 @@ class PagedResultsIterator implements Iterator
     const SECONDS_TO_MICROSECONDS_MULTIPLIER = 1000000;
     const DEFAULT_IDENTIFIER_GETTER = 'getId';
     const DEFAULT_POST_CALL_DELAY_SECONDS = 0.5;
+    const DEFAULT_PAGE = 1;
+    const DEFAULT_PAGE_RESULTS = [];
 
     /**
      * Dependencies
@@ -57,8 +59,6 @@ class PagedResultsIterator implements Iterator
     protected $pageIndex;
     /** @var array */
     protected $pageResults;
-    /** @var bool $firstIteration */
-    protected $firstIteration;
 
     /**
      * PagedResultsIterator constructor.
@@ -70,7 +70,6 @@ class PagedResultsIterator implements Iterator
         $this->httpClient = $httpClient;
         $this->postCallDelayMicroseconds = self::DEFAULT_POST_CALL_DELAY_SECONDS * self::SECONDS_TO_MICROSECONDS_MULTIPLIER;
         $this->identifierGetter = self::DEFAULT_IDENTIFIER_GETTER;
-        $this->firstIteration = true;
     }
 
     /**
@@ -138,32 +137,19 @@ class PagedResultsIterator implements Iterator
     {
         // If we have next result to provide, use it
         if (isset($this->pageResults[$this->page][$this->pageIndex + 1])) {
+            $this->index += 1;
             $this->pageIndex += 1;
             return;
         }
 
-        // Otherwise, go to next page
-        $nextPage = $this->page + 1;
-
-        // If we have next page, use it
-        $results = $this->pageResults[$nextPage] ?? [];
-
-        // Otherwise, fetch next page
-        if (!isset($this->pageResults[$nextPage])) {
-            /** @var PagingRequestBuilderInterface $nextPageRequest */
-            $nextPageRequest = $this->pagingRequestBuilder->withPage($nextPage);
-            $response = $this->httpClient
-                ->sendAsync($nextPageRequest->toRequest(), $nextPageRequest->toRequestOptions())
-                ->wait();
-            usleep($this->postCallDelayMicroseconds);
-            $results = $this->arrayTransformer->fromArrayResponse($response);
-        }
-
-        // Set next state
-        $this->index += 1;
-        $this->page = $nextPage;
+        // If no next result, move on to next page
+        $this->page += 1;
         $this->pageIndex = 0;
-        $this->pageResults[$this->page] = $results;
+
+        // If we do not have the next page data, load it
+        if (!isset($this->pageResults[$this->page])) {
+            $this->pageResults[$this->page] = $this->loadPageResults($this->page);
+        }
     }
 
     /**
@@ -191,12 +177,32 @@ class PagedResultsIterator implements Iterator
      */
     public function rewind()
     {
-        $this->index = -1;
-        $this->page = ($this->firstIteration) ? -1 : 0; // Offset for first iteration page retrieval
-        $this->page += $this->pagingRequestBuilder->getPage();
+        // Set starting state
+        $this->index = 0;
+        $this->page = $this->pagingRequestBuilder->getPage() ?: self::DEFAULT_PAGE;
         $this->pageIndex = 0;
-        $this->pageResults = $this->pageResults ?: [];
-        $this->firstIteration = false;
-        $this->next();
+        $this->pageResults = $this->pageResults ?: self::DEFAULT_PAGE_RESULTS;
+
+        // If we do not have the initial page data, load it
+        if (!isset($this->pageResults[$this->page])) {
+            $this->pageResults[$this->page] = $this->loadPageResults($this->page);
+        }
+    }
+
+    /**
+     * @param int $page
+     * @return array
+     */
+    protected function loadPageResults(int $page)
+    {
+        /** @var PagingRequestBuilderInterface $nextPageRequest */
+        $nextPageRequest = $this->pagingRequestBuilder->withPage($page);
+        $response = $this->httpClient
+            ->sendAsync($nextPageRequest->toRequest(), $nextPageRequest->toRequestOptions())
+            ->wait();
+        usleep($this->postCallDelayMicroseconds);
+        $results = $this->arrayTransformer->fromArrayResponse($response);
+
+        return $results;
     }
 }
