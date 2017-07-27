@@ -148,7 +148,7 @@ class Customer implements ArrayResponseTransformerInterface
         }
 
         if (property_exists($shopifyJsonCustomer, 'tags')) {
-            $customer->setTags($shopifyJsonCustomer->tags);
+            $customer->setTags(explode(',', $shopifyJsonCustomer->tags));
         }
 
         if (property_exists($shopifyJsonCustomer, 'last_order_name')) {
@@ -193,7 +193,7 @@ class Customer implements ArrayResponseTransformerInterface
         $array['multipass_identifier'] = $customer->getMultipassIdentifier();
         $array['tax_exempt'] = $customer->isTaxExempt();
         $array['phone'] = $customer->getPhone();
-        $array['tags'] = $customer->getTags();
+        $array['tags'] = empty($customer->getTags()) ? null : implode(',', $customer->getTags());
         $array['last_order_name'] = $customer->getLastOrderName();
         $array['addresses'] = array_map([$this->addressTransformer, 'toArray'], $customer->getAddresses());
 

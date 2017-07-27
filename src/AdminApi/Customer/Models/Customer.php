@@ -44,7 +44,7 @@ class Customer
     protected $taxExempt;
     /** @var string $phone */
     protected $phone;
-    /** @var string $tags */
+    /** @var array|string[] $tags */
     protected $tags;
     /** @var string $lastOrderName */
     protected $lastOrderName;
@@ -59,6 +59,7 @@ class Customer
     public function __construct()
     {
         $this->addresses = [];
+        $this->tags = [];
     }
 
 
@@ -351,18 +352,18 @@ class Customer
     }
 
     /**
-     * @return string
+     * @return array|string[]
      */
-    public function getTags():? string
+    public function getTags():? array
     {
         return $this->tags;
     }
 
     /**
-     * @param string $tags
+     * @param array|string[] $tags
      * @return Customer
      */
-    public function setTags(string $tags): Customer
+    public function setTags(array $tags): Customer
     {
         $this->tags = $tags;
         return $this;

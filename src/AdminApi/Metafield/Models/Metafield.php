@@ -18,7 +18,7 @@ class Metafield
     protected $namespace;
     /** @var string $key */
     protected $key;
-    /** @var int $value */
+    /** @var mixed $value */
     protected $value;
     /** @var string $valueType */
     protected $valueType;
@@ -88,9 +88,9 @@ class Metafield
     }
 
     /**
-     * @return int
+     * @return mixed
      */
-    public function getValue():? int
+    public function getValue()
     {
         return $this->value;
     }
@@ -99,7 +99,7 @@ class Metafield
      * @param int $value
      * @return Metafield
      */
-    public function setValue(int $value): Metafield
+    public function setValue($value): Metafield
     {
         $this->value = $value;
         return $this;

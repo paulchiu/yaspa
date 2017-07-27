@@ -105,7 +105,7 @@ class CustomerService
     /**
      * Create a new customer.
      *
-     * @todo Improve builder generator to support wrapping and object transformers
+     * @todo Write unit tests
      * @see https://help.shopify.com/api/reference/customer#create
      * @param CreateNewCustomerRequest $request
      * @return Models\Customer
