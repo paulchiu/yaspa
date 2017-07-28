@@ -6,9 +6,11 @@ use DateTime;
 use GuzzleHttp\Client;
 use Iterator;
 use PHPUnit\Framework\TestCase;
+use Yaspa\AdminApi\Customer\Builders\CreateNewCustomerRequest;
 use Yaspa\AdminApi\Customer\Builders\GetCustomersRequest;
 use Yaspa\AdminApi\Customer\Builders\SearchCustomersRequest;
 use Yaspa\AdminApi\Customer\CustomerService;
+use Yaspa\AdminApi\Customer\Models\Address;
 use Yaspa\AdminApi\Customer\Models\Customer;
 use Yaspa\Authentication\Factory\ApiCredentials;
 use Yaspa\Factory;
@@ -168,5 +170,37 @@ class CustomerServiceTest extends TestCase
 
         // Return customers for dependent tests
         return $customers;
+    }
+
+    public function testCanCreateNewCustomer()
+    {
+        // Create mock client
+        $mockClientUtil = new MockGuzzleClient();
+        $client = $mockClientUtil->makeWithResponses(
+            [
+                $mockClientUtil->makeJsonResponse(200, [
+                    'customer' => [
+                        'id' => 3,
+                        'email' => 'foo@example.com',
+                    ],
+                ]),
+            ]
+        );
+        Factory::inject(Client::class, $client);
+
+        // Create parameters
+        $customer = (new Customer())
+            ->setEmail('foo@example.com')
+            ->setAddresses([new Address()]);
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makeOAuth('foo', 'bar');
+        $request = Factory::make(CreateNewCustomerRequest::class)
+            ->withCredentials($credentials)
+            ->withCustomer($customer);
+
+        // Test method
+        $service = Factory::make(CustomerService::class);
+        $customer = $service->createNewCustomer($request);
+        $this->assertInstanceOf(Customer::class, $customer);
     }
 }

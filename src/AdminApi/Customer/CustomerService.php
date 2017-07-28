@@ -76,7 +76,6 @@ class CustomerService
      * Search customers.
      *
      * @progress Just managed to get integration test working, there are issues with iterator
-     * @todo Do create customer; may need to re-factor/break-apart AuthorizedRequestBuilderTrait
      * @see https://help.shopify.com/api/reference/customer#search
      * @param SearchCustomersRequest $request
      * @return Models\Customer[]|PagedResultsIterator
@@ -105,7 +104,6 @@ class CustomerService
     /**
      * Create a new customer.
      *
-     * @todo Write unit tests
      * @see https://help.shopify.com/api/reference/customer#create
      * @param CreateNewCustomerRequest $request
      * @return Models\Customer
