@@ -2,6 +2,8 @@
 
 namespace Yaspa\AdminApi\Customer\Builders;
 
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\RequestOptions;
 use Yaspa\AdminApi\Customer\Models\Customer as CustomerModel;
 use Yaspa\AdminApi\Customer\Transformers\Customer as CustomerTransformer;
@@ -11,12 +13,12 @@ use Yaspa\Interfaces\RequestBuilderInterface;
 use Yaspa\Traits\AuthorizedRequestBuilderTrait;
 
 /**
- * Class CreateNewCustomerRequest
+ * Class ModifyExistingCustomerRequest
  *
  * @package Yaspa\AdminApi\Customer\Builders
  * @see https://help.shopify.com/api/reference/customer#create
  */
-class CreateNewCustomerRequest implements RequestBuilderInterface
+class ModifyExistingCustomerRequest implements RequestBuilderInterface
 {
     use AuthorizedRequestBuilderTrait;
 
@@ -24,8 +26,8 @@ class CreateNewCustomerRequest implements RequestBuilderInterface
         'Accept' => 'application/json',
         'Content-Type' => 'application/json',
     ];
-    const HTTP_METHOD = 'POST';
-    const URI_TEMPLATE = 'https://%s.myshopify.com/admin/customers.json';
+    const HTTP_METHOD = 'PUT';
+    const URI_TEMPLATE = 'https://%s.myshopify.com/admin/customers/%s.json';
     const BODY_TYPE = RequestOptions::JSON;
 
     /**
@@ -41,20 +43,13 @@ class CreateNewCustomerRequest implements RequestBuilderInterface
      */
     /** @var CustomerModel $customerModel */
     protected $customerModel;
-    /** @var bool $sendEmailInvite */
-    protected $sendEmailInvite;
     /** @var array|MetafieldModel[] $metafields */
     protected $metafields;
-    /** @var string $password */
-    protected $password;
-    /** @var string $passwordConfirmation */
-    protected $passwordConfirmation;
 
     /**
-     * CreateNewCustomerRequest constructor.
+     * ModifyExistingCustomerRequest constructor.
      *
      * @param CustomerTransformer $customerTransformer
-     * @param MetafieldTransformer $metafieldTransformer
      */
     public function __construct(
         CustomerTransformer $customerTransformer,
@@ -72,6 +67,24 @@ class CreateNewCustomerRequest implements RequestBuilderInterface
     }
 
     /**
+     * Generate a Guzzle/PSR-7 request.
+     *
+     * @return Request
+     */
+    public function toRequest(): Request
+    {
+        // Create URI
+        $uri = new Uri(sprintf($this->uriTemplate, $this->credentials->getShop(), $this->customerModel->getId()));
+
+        // Create request
+        return new Request(
+            $this->httpMethod,
+            $uri,
+            $this->headers
+        );
+    }
+
+    /**
      * @return array
      */
     public function toArray(): array
@@ -82,20 +95,8 @@ class CreateNewCustomerRequest implements RequestBuilderInterface
             $array = $this->customerTransformer->toArray($this->customerModel);
         }
 
-        if (!is_null($this->sendEmailInvite)) {
-            $array['send_email_invite'] = $this->sendEmailInvite;
-        }
-
         if (!empty($this->metafields)) {
             $array['metafields'] = array_map([$this->metafieldTransformer, 'toArray'], $this->metafields);
-        }
-
-        if (!is_null($this->password)) {
-            $array['password'] = $this->password;
-        }
-
-        if (!is_null($this->passwordConfirmation)) {
-            $array['password_confirmation'] = $this->passwordConfirmation;
         }
 
         $array = array_filter($array);
@@ -105,9 +106,9 @@ class CreateNewCustomerRequest implements RequestBuilderInterface
 
     /**
      * @param CustomerModel $customerModel
-     * @return CreateNewCustomerRequest
+     * @return ModifyExistingCustomerRequest
      */
-    public function withCustomer(CustomerModel $customerModel): CreateNewCustomerRequest
+    public function withCustomer(CustomerModel $customerModel): ModifyExistingCustomerRequest
     {
         $new = clone $this;
         $new->customerModel = $customerModel;
@@ -116,49 +117,13 @@ class CreateNewCustomerRequest implements RequestBuilderInterface
     }
 
     /**
-     * @param bool $sendEmailInvite
-     * @return CreateNewCustomerRequest
-     */
-    public function withSendEmailInvite(bool $sendEmailInvite): CreateNewCustomerRequest
-    {
-        $new = clone $this;
-        $new->sendEmailInvite = $sendEmailInvite;
-
-        return $new;
-    }
-
-    /**
      * @param array|MetafieldModel[] $metafields
-     * @return CreateNewCustomerRequest
+     * @return ModifyExistingCustomerRequest
      */
-    public function withMetafields(array $metafields): CreateNewCustomerRequest
+    public function withMetafields(array $metafields): ModifyExistingCustomerRequest
     {
         $new = clone $this;
         $new->metafields = $metafields;
-
-        return $new;
-    }
-
-    /**
-     * @param string $password
-     * @return CreateNewCustomerRequest
-     */
-    public function withPassword(string $password): CreateNewCustomerRequest
-    {
-        $new = clone $this;
-        $new->password = $password;
-
-        return $new;
-    }
-
-    /**
-     * @param string $passwordConfirmation
-     * @return CreateNewCustomerRequest
-     */
-    public function withPasswordConfirmation(string $passwordConfirmation): CreateNewCustomerRequest
-    {
-        $new = clone $this;
-        $new->passwordConfirmation = $passwordConfirmation;
 
         return $new;
     }

@@ -148,7 +148,7 @@ class Customer implements ArrayResponseTransformerInterface
         }
 
         if (property_exists($shopifyJsonCustomer, 'tags')) {
-            $customer->setTags(explode(',', $shopifyJsonCustomer->tags));
+            $customer->setTags(array_map('trim', explode(',', $shopifyJsonCustomer->tags)));
         }
 
         if (property_exists($shopifyJsonCustomer, 'last_order_name')) {

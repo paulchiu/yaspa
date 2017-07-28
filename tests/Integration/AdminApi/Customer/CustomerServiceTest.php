@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 use Yaspa\AdminApi\Customer\Builders\CreateNewCustomerRequest;
 use Yaspa\AdminApi\Customer\Builders\CustomerFields;
 use Yaspa\AdminApi\Customer\Builders\GetCustomersRequest;
+use Yaspa\AdminApi\Customer\Builders\ModifyExistingCustomerRequest;
 use Yaspa\AdminApi\Customer\Builders\SearchCustomersRequest;
 use Yaspa\AdminApi\Customer\CustomerService;
 use Yaspa\AdminApi\Customer\Models\Address;
@@ -20,6 +21,7 @@ class CustomerServiceTest extends TestCase
 {
     /**
      * @group integration
+     * @return Customer
      */
     public function testCanCreateNewCustomer()
     {
@@ -64,6 +66,8 @@ class CustomerServiceTest extends TestCase
         $this->assertNotEmpty($newCustomer->getId());
         $this->assertEquals('disabled', $newCustomer->getState());
         $this->assertCount(2, $newCustomer->getTags());
+
+        return $newCustomer;
     }
 
     /**
@@ -111,7 +115,6 @@ class CustomerServiceTest extends TestCase
         $this->assertInstanceOf(Customer::class, $newCustomer);
         $this->assertNotEmpty($newCustomer->getId());
         $this->assertEquals('invited', $newCustomer->getState());
-        $this->assertEmpty($newCustomer->getTags());
     }
 
     /**
@@ -201,11 +204,6 @@ class CustomerServiceTest extends TestCase
             ->setVerifiedEmail(true)
             ->setAcceptsMarketing(true)
             ->setAddresses([$address]);
-        $metafield = (new Metafield())
-            ->setKey('cst:ccnc')
-            ->setValue(uniqid('v:'))
-            ->setValueType('string')
-            ->setNamespace('global');
         $request = Factory::make(CreateNewCustomerRequest::class)
             ->withCredentials($credentials)
             ->withCustomer($customer)
@@ -306,5 +304,144 @@ class CustomerServiceTest extends TestCase
         foreach ($customers as $customer) {
             $this->assertInstanceOf(Customer::class, $customer);
         }
+    }
+
+    /**
+     * @group integration
+     * @depends testCanCreateNewCustomer
+     * @param Customer $customer
+     */
+    public function testCanModifyExistingCustomerTags(Customer $customer)
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Test pre-state
+        $this->assertNotEmpty($customer->getId());
+        $this->assertFalse(in_array('baz', $customer->getTags()));
+        $this->assertFalse(in_array('qux', $customer->getTags()));
+
+        // Update customer
+        $newFirstName = uniqid('firstName:');
+        $customerUpdates = (new Customer())
+            ->setId($customer->getId())
+            ->setFirstName($newFirstName)
+            ->setTags(['baz', 'qux']);
+
+        // Modify customer
+        $request = Factory::make(ModifyExistingCustomerRequest::class)
+            ->withCredentials($credentials)
+            ->withCustomer($customerUpdates);
+        $service = Factory::make(CustomerService::class);
+        $modifiedCustomer = $service->modifyExistingCustomer($request);
+
+        // Test results
+        $this->assertEquals($customer->getId(), $modifiedCustomer->getId());
+        $this->assertEquals(['baz', 'qux'], $modifiedCustomer->getTags());
+    }
+
+    /**
+     * @group integration
+     * @depends testCanCreateNewCustomer
+     * @param Customer $customer
+     */
+    public function testCanModifyExistingCustomerWithNewDetails(Customer $customer)
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Test pre-state
+        $this->assertNotEmpty($customer->getId());
+        $this->assertNotEmpty($customer->getFirstName());
+
+        // Update customer
+        $newFirstName = uniqid('firstName:');
+        $customerUpdates = (new Customer())
+            ->setId($customer->getId())
+            ->setFirstName($newFirstName)
+            ->setNote('Customer is a great guy');
+
+        // Modify customer
+        $request = Factory::make(ModifyExistingCustomerRequest::class)
+            ->withCredentials($credentials)
+            ->withCustomer($customerUpdates);
+        $service = Factory::make(CustomerService::class);
+        $modifiedCustomer = $service->modifyExistingCustomer($request);
+
+        // Test results
+        $this->assertEquals($customer->getId(), $modifiedCustomer->getId());
+        $this->assertNotEquals($customer->getFirstName(), $modifiedCustomer->getFirstName());
+        $this->assertEquals($newFirstName, $modifiedCustomer->getFirstName());
+    }
+
+    /**
+     * @group integration
+     * @depends testCanCreateNewCustomer
+     * @param Customer $customer
+     * @todo Once implemented get metafields for customer, test metafields are actually added
+     */
+    public function testCanModifyExistingCustomerWithMetaField(Customer $customer)
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Test pre-state
+        $this->assertNotEmpty($customer->getId());
+        $this->assertNotEmpty($customer->getFirstName());
+
+        // Update customer
+        $newFirstName = uniqid('firstName:');
+        $metafield = (new Metafield())
+            ->setKey('cst:ccnc')
+            ->setValue(uniqid('v:'))
+            ->setValueType('string')
+            ->setNamespace('global');
+        $customerUpdates = (new Customer())
+            ->setId($customer->getId())
+            ->setFirstName($newFirstName)
+            ->setNote('Customer is a great guy');
+
+        // Modify customer
+        $request = Factory::make(ModifyExistingCustomerRequest::class)
+            ->withCredentials($credentials)
+            ->withCustomer($customerUpdates)
+            ->withMetafields([$metafield]);
+        $service = Factory::make(CustomerService::class);
+        $modifiedCustomer = $service->modifyExistingCustomer($request);
+
+        // Test results
+        $this->assertEquals($customer->getId(), $modifiedCustomer->getId());
+        $this->assertNotEquals($customer->getFirstName(), $modifiedCustomer->getFirstName());
+        $this->assertEquals($newFirstName, $modifiedCustomer->getFirstName());
     }
 }

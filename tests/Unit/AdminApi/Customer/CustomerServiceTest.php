@@ -8,6 +8,7 @@ use Iterator;
 use PHPUnit\Framework\TestCase;
 use Yaspa\AdminApi\Customer\Builders\CreateNewCustomerRequest;
 use Yaspa\AdminApi\Customer\Builders\GetCustomersRequest;
+use Yaspa\AdminApi\Customer\Builders\ModifyExistingCustomerRequest;
 use Yaspa\AdminApi\Customer\Builders\SearchCustomersRequest;
 use Yaspa\AdminApi\Customer\CustomerService;
 use Yaspa\AdminApi\Customer\Models\Address;
@@ -201,6 +202,38 @@ class CustomerServiceTest extends TestCase
         // Test method
         $service = Factory::make(CustomerService::class);
         $customer = $service->createNewCustomer($request);
+        $this->assertInstanceOf(Customer::class, $customer);
+    }
+
+    public function testCanModifyExistingCustomer()
+    {
+        // Create mock client
+        $mockClientUtil = new MockGuzzleClient();
+        $client = $mockClientUtil->makeWithResponses(
+            [
+                $mockClientUtil->makeJsonResponse(200, [
+                    'customer' => [
+                        'id' => 3,
+                        'first_name' => 'foo',
+                    ],
+                ]),
+            ]
+        );
+        Factory::inject(Client::class, $client);
+
+        // Create parameters
+        $customer = (new Customer())
+            ->setId(3)
+            ->setFirstName('foo');
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makeOAuth('foo', 'bar');
+        $request = Factory::make(ModifyExistingCustomerRequest::class)
+            ->withCredentials($credentials)
+            ->withCustomer($customer);
+
+        // Test method
+        $service = Factory::make(CustomerService::class);
+        $customer = $service->modifyExistingCustomer($request);
         $this->assertInstanceOf(Customer::class, $customer);
     }
 }

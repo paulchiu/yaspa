@@ -128,6 +128,12 @@ class Factory
             AdminApi\Customer\Builders\GetCustomersRequest::class => function () {
                 return new AdminApi\Customer\Builders\GetCustomersRequest();
             },
+            AdminApi\Customer\Builders\ModifyExistingCustomerRequest::class => function () {
+                return new AdminApi\Customer\Builders\ModifyExistingCustomerRequest(
+                    self::make(AdminApi\Customer\Transformers\Customer::class),
+                    self::make(AdminApi\Metafield\Transformers\Metafield::class)
+                );
+            },
             AdminApi\Customer\Builders\SearchCustomersRequest::class => function () {
                 return new AdminApi\Customer\Builders\SearchCustomersRequest();
             },

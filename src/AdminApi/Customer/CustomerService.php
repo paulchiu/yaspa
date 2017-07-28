@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
 use Yaspa\AdminApi\Customer\Builders\CreateNewCustomerRequest;
 use Yaspa\AdminApi\Customer\Builders\GetCustomersRequest;
+use Yaspa\AdminApi\Customer\Builders\ModifyExistingCustomerRequest;
 use Yaspa\AdminApi\Customer\Builders\SearchCustomersRequest;
 use Yaspa\AdminApi\Customer\Models;
 use Yaspa\AdminApi\Customer\Transformers;
@@ -129,4 +130,39 @@ class CustomerService
             $request->toRequestOptions()
         );
     }
+
+    /**
+     * Modify an existing customer.
+     *
+     * @see https://help.shopify.com/api/reference/customer#update
+     * @param ModifyExistingCustomerRequest $request
+     * @return Models\Customer
+     */
+    public function modifyExistingCustomer(ModifyExistingCustomerRequest $request): Models\Customer
+    {
+        $response = $this->asyncModifyExistingCustomer($request)->wait();
+
+        return $this->customerTransformer->fromResponse($response);
+    }
+
+    /**
+     * Async version of self::updateExistingCustomer
+     *
+     * @see https://help.shopify.com/api/reference/customer#update
+     * @param ModifyExistingCustomerRequest $request
+     * @return PromiseInterface
+     */
+    public function asyncModifyExistingCustomer(ModifyExistingCustomerRequest $request): PromiseInterface
+    {
+        return $this->httpClient->sendAsync(
+            $request->toRequest(),
+            $request->toRequestOptions()
+        );
+    }
+
+    /**
+     * @todo Refactor out interface where dealing with id resource
+     * @todo Do trait that creates urls with id resource
+     * @todo Implement GetCustomer (singular)
+     */
 }
