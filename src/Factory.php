@@ -105,15 +105,8 @@ class Factory
                 return new AdminApi\Customer\CustomerService(
                     self::make(GuzzleHttp\Client::class),
                     self::make(AdminApi\Customer\Transformers\Customer::class),
-                    self::make(Builders\PagedResultsIterator::class)
-                );
-            },
-            AdminApi\Customer\Transformers\Address::class => function () {
-                return new AdminApi\Customer\Transformers\Address();
-            },
-            AdminApi\Customer\Transformers\Customer::class => function () {
-                return new AdminApi\Customer\Transformers\Customer(
-                    self::make(AdminApi\Customer\Transformers\Address::class)
+                    self::make(Builders\PagedResultsIterator::class),
+                    self::make(AdminApi\Customer\Builders\GetCustomerRequest::class)
                 );
             },
             AdminApi\Customer\Builders\CustomerFields::class => function () {
@@ -124,6 +117,9 @@ class Factory
                     self::make(AdminApi\Customer\Transformers\Customer::class),
                     self::make(AdminApi\Metafield\Transformers\Metafield::class)
                 );
+            },
+            AdminApi\Customer\Builders\GetCustomerRequest::class => function () {
+                return new AdminApi\Customer\Builders\GetCustomerRequest();
             },
             AdminApi\Customer\Builders\GetCustomersRequest::class => function () {
                 return new AdminApi\Customer\Builders\GetCustomersRequest();
@@ -136,6 +132,14 @@ class Factory
             },
             AdminApi\Customer\Builders\SearchCustomersRequest::class => function () {
                 return new AdminApi\Customer\Builders\SearchCustomersRequest();
+            },
+            AdminApi\Customer\Transformers\Address::class => function () {
+                return new AdminApi\Customer\Transformers\Address();
+            },
+            AdminApi\Customer\Transformers\Customer::class => function () {
+                return new AdminApi\Customer\Transformers\Customer(
+                    self::make(AdminApi\Customer\Transformers\Address::class)
+                );
             },
             AdminApi\Metafield\Transformers\Metafield::class => function () {
                 return new AdminApi\Metafield\Transformers\Metafield();

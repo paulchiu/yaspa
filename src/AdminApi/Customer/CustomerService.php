@@ -5,12 +5,14 @@ namespace Yaspa\AdminApi\Customer;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
 use Yaspa\AdminApi\Customer\Builders\CreateNewCustomerRequest;
+use Yaspa\AdminApi\Customer\Builders\GetCustomerRequest;
 use Yaspa\AdminApi\Customer\Builders\GetCustomersRequest;
 use Yaspa\AdminApi\Customer\Builders\ModifyExistingCustomerRequest;
 use Yaspa\AdminApi\Customer\Builders\SearchCustomersRequest;
 use Yaspa\AdminApi\Customer\Models;
 use Yaspa\AdminApi\Customer\Transformers;
 use Yaspa\Builders\PagedResultsIterator;
+use Yaspa\Interfaces\RequestCredentialsInterface;
 
 /**
  * Class CustomerService
@@ -25,6 +27,8 @@ class CustomerService
     protected $customerTransformer;
     /** @var PagedResultsIterator $pagedResultsIteratorBuilder */
     protected $pagedResultsIteratorBuilder;
+    /** @var GetCustomerRequest $getCustomerRequestBuilder */
+    protected $getCustomerRequestBuilder;
 
     /**
      * CustomerService constructor.
@@ -32,15 +36,18 @@ class CustomerService
      * @param Client $httpClient
      * @param Transformers\Customer $customerTransformer
      * @param PagedResultsIterator $pagedResultsIteratorBuilder
+     * @param GetCustomerRequest $getCustomerRequestBuilder
      */
     public function __construct(
         Client $httpClient,
         Transformers\Customer $customerTransformer,
-        PagedResultsIterator $pagedResultsIteratorBuilder
+        PagedResultsIterator $pagedResultsIteratorBuilder,
+        GetCustomerRequest $getCustomerRequestBuilder
     ) {
         $this->httpClient = $httpClient;
         $this->customerTransformer = $customerTransformer;
         $this->pagedResultsIteratorBuilder = $pagedResultsIteratorBuilder;
+        $this->getCustomerRequestBuilder = $getCustomerRequestBuilder;
     }
 
     /**
@@ -164,4 +171,35 @@ class CustomerService
      * @todo Refactor out reused constants such as POST, PUT, ContentType and Accepts
      * @todo Implement GetCustomer (singular)
      */
+    /**
+     * @param RequestCredentialsInterface $credentials
+     * @param int $customerId
+     * @return Models\Customer
+     */
+    public function getCustomer(RequestCredentialsInterface $credentials, int $customerId): Models\Customer
+    {
+        $response = $this->asyncGetCustomer($credentials, $customerId)->wait();
+
+        return $this->customerTransformer->fromResponse($response);
+    }
+
+    /**
+     * Async version of self::getCustomer
+     *
+     * @param RequestCredentialsInterface $credentials
+     * @param int $customerId
+     * @return PromiseInterface
+     */
+    public function asyncGetCustomer(RequestCredentialsInterface $credentials, int $customerId): PromiseInterface
+    {
+        $customer = (new Models\Customer())->setId($customerId);
+        $request = $this->getCustomerRequestBuilder
+            ->withCredentials($credentials)
+            ->withCustomer($customer);
+
+        return $this->httpClient->sendAsync(
+            $request->toResourceRequest(),
+            $request->toRequestOptions()
+        );
+    }
 }

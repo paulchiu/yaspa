@@ -444,4 +444,36 @@ class CustomerServiceTest extends TestCase
         $this->assertNotEquals($customer->getFirstName(), $modifiedCustomer->getFirstName());
         $this->assertEquals($newFirstName, $modifiedCustomer->getFirstName());
     }
+
+    /**
+     * @group integration
+     * @depends testCanCreateNewCustomer
+     * @param Customer $customer
+     */
+    public function testCanGetCustomer(Customer $customer)
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Test pre-state
+        $this->assertNotEmpty($customer->getId());
+
+        // Test service method
+        $service = Factory::make(CustomerService::class);
+        $retrievedCustomer = $service->getCustomer($credentials, $customer->getId());
+
+        // Test results
+        $this->assertEquals($customer->getId(), $retrievedCustomer->getId());
+        $this->assertEquals($customer->getEmail(), $retrievedCustomer->getEmail());
+    }
 }
