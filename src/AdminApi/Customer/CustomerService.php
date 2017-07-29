@@ -155,14 +155,13 @@ class CustomerService
     public function asyncModifyExistingCustomer(ModifyExistingCustomerRequest $request): PromiseInterface
     {
         return $this->httpClient->sendAsync(
-            $request->toRequest(),
+            $request->toResourceRequest(),
             $request->toRequestOptions()
         );
     }
 
     /**
-     * @todo Refactor out interface where dealing with id resource
-     * @todo Do trait that creates urls with id resource
+     * @todo Refactor out reused constants such as POST, PUT, ContentType and Accepts
      * @todo Implement GetCustomer (singular)
      */
 }

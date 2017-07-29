@@ -2,8 +2,6 @@
 
 namespace Yaspa\AdminApi\Customer\Builders;
 
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\RequestOptions;
 use Yaspa\AdminApi\Customer\Models\Customer as CustomerModel;
 use Yaspa\AdminApi\Customer\Transformers\Customer as CustomerTransformer;
@@ -11,16 +9,18 @@ use Yaspa\AdminApi\Metafield\Models\Metafield as MetafieldModel;
 use Yaspa\AdminApi\Metafield\Transformers\Metafield as MetafieldTransformer;
 use Yaspa\Interfaces\RequestBuilderInterface;
 use Yaspa\Traits\AuthorizedRequestBuilderTrait;
+use Yaspa\Traits\ResourceRequestBuilderTrait;
 
 /**
  * Class ModifyExistingCustomerRequest
  *
  * @package Yaspa\AdminApi\Customer\Builders
- * @see https://help.shopify.com/api/reference/customer#create
+ * @see https://help.shopify.com/api/reference/customer#update
  */
 class ModifyExistingCustomerRequest implements RequestBuilderInterface
 {
-    use AuthorizedRequestBuilderTrait;
+    use AuthorizedRequestBuilderTrait,
+        ResourceRequestBuilderTrait;
 
     const HEADERS = [
         'Accept' => 'application/json',
@@ -50,6 +50,7 @@ class ModifyExistingCustomerRequest implements RequestBuilderInterface
      * ModifyExistingCustomerRequest constructor.
      *
      * @param CustomerTransformer $customerTransformer
+     * @param MetafieldTransformer $metafieldTransformer
      */
     public function __construct(
         CustomerTransformer $customerTransformer,
@@ -67,22 +68,13 @@ class ModifyExistingCustomerRequest implements RequestBuilderInterface
     }
 
     /**
-     * Generate a Guzzle/PSR-7 request.
-     *
-     * @return Request
+     * @return int|null
      */
-    public function toRequest(): Request
+    public function toResourceId()
     {
-        // Create URI
-        $uri = new Uri(sprintf($this->uriTemplate, $this->credentials->getShop(), $this->customerModel->getId()));
-
-        // Create request
-        return new Request(
-            $this->httpMethod,
-            $uri,
-            $this->headers
-        );
+        return $this->customerModel->getId();
     }
+
 
     /**
      * @return array
