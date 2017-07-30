@@ -6,7 +6,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Promise\PromiseInterface;
 use Yaspa\Authentication\OAuth\Builders\NewDelegateAccessTokenRequest;
-use Yaspa\Authentication\OAuth\Builders\Scopes;
 use Yaspa\Authentication\OAuth\Exceptions\FailedSecurityChecksException;
 use Yaspa\Authentication\OAuth\Models\AccessToken;
 use Yaspa\Authentication\OAuth\Models\AuthorizationCode;
@@ -32,8 +31,6 @@ class OAuthService
     protected $authorizationCodeTransformer;
     /** @var AccessTokenTransformer $accessTokenTransformer */
     protected $accessTokenTransformer;
-    /** @var NewDelegateAccessTokenRequest $newDelegateAccessTokenRequestBuilder */
-    protected $newDelegateAccessTokenRequestBuilder;
 
     /**
      * Service constructor.
@@ -42,20 +39,17 @@ class OAuthService
      * @param SecurityChecks $securityChecks
      * @param AuthorizationCodeTransformer $authorizationCodeTransformer
      * @param AccessTokenTransformer $accessTokenTransformer
-     * @param NewDelegateAccessTokenRequest $newDelegateAccessTokenRequestBuilder
      */
     public function __construct(
         Client $httpClient,
         SecurityChecks $securityChecks,
         AuthorizationCodeTransformer $authorizationCodeTransformer,
-        AccessTokenTransformer $accessTokenTransformer,
-        NewDelegateAccessTokenRequest $newDelegateAccessTokenRequestBuilder
+        AccessTokenTransformer $accessTokenTransformer
     ) {
         $this->httpClient = $httpClient;
         $this->securityChecks = $securityChecks;
         $this->authorizationCodeTransformer = $authorizationCodeTransformer;
         $this->accessTokenTransformer = $accessTokenTransformer;
-        $this->newDelegateAccessTokenRequestBuilder = $newDelegateAccessTokenRequestBuilder;
     }
 
     /**
@@ -132,24 +126,11 @@ class OAuthService
      * and it will also be revoked once the parent is revoked.
      *
      * @see https://help.shopify.com/api/getting-started/authentication/oauth#delegating-access-to-subsystems
-     * @param string $shop The shop subdomain
-     * @param AccessToken $accessToken The primary access token we will create a delegate from
-     * @param Scopes $delegateScopes Scopes of the delegate, this is limited by the primary access token
-     * @param int $expiresIn Expire the delegate token in a number of seconds
+     * @param NewDelegateAccessTokenRequest $request
      * @return AccessToken
      */
-    public function createNewDelegateAccessToken(
-        string $shop,
-        AccessToken $accessToken,
-        Scopes $delegateScopes,
-        ?int $expiresIn = null
-    ): AccessToken {
-        $response = $this->asyncCreateNewDelegateAccessToken(
-            $shop,
-            $accessToken,
-            $delegateScopes,
-            $expiresIn
-        )->wait();
+    public function createNewDelegateAccessToken(NewDelegateAccessTokenRequest $request): AccessToken {
+        $response = $this->asyncCreateNewDelegateAccessToken($request)->wait();
 
         return $this->accessTokenTransformer->fromResponse($response);
     }
@@ -161,29 +142,15 @@ class OAuthService
      * example of how to use the access token transformer.
      *
      * @see https://help.shopify.com/api/getting-started/authentication/oauth#delegating-access-to-subsystems
-     * @param string $shop The shop subdomain
-     * @param AccessToken $accessToken The primary access token we will create a delegate from
-     * @param Scopes $delegateScopes Scopes of the delegate, this is limited by the primary access token
-     * @param int $expiresIn Expire the delegate token in a number of seconds
+     * @param NewDelegateAccessTokenRequest $request
      * @return PromiseInterface
      */
-    public function asyncCreateNewDelegateAccessToken(
-        string $shop,
-        AccessToken $accessToken,
-        Scopes $delegateScopes,
-        ?int $expiresIn = null
-    ): PromiseInterface {
-        // Build request
-        $delegateAccessTokenRequest = $this->newDelegateAccessTokenRequestBuilder
-            ->withShop($shop)
-            ->withAccessToken($accessToken)
-            ->withScopes($delegateScopes)
-            ->withExpiresIn($expiresIn);
-
+    public function asyncCreateNewDelegateAccessToken(NewDelegateAccessTokenRequest $request): PromiseInterface
+    {
         // Create new delegate access token request
         return $this->httpClient->sendAsync(
-            $delegateAccessTokenRequest->toRequest(),
-            $delegateAccessTokenRequest->toRequestOptions()
+            $request->toRequest(),
+            $request->toRequestOptions()
         );
     }
 }

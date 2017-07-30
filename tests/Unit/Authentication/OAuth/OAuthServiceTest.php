@@ -5,6 +5,7 @@ namespace Yaspa\Tests\Unit\Authentication\OAuth;
 use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
+use Yaspa\Authentication\OAuth\Builders\NewDelegateAccessTokenRequest;
 use Yaspa\Authentication\OAuth\Builders\Scopes;
 use Yaspa\Authentication\OAuth\Models\AccessToken;
 use Yaspa\Authentication\OAuth\Models\AuthorizationCode;
@@ -82,14 +83,17 @@ class OAuthServiceTest extends TestCase
             ->withWriteOrders()
             ->withWriteCustomers();
 
+        $delegateAccessTokenRequest = Factory::make(NewDelegateAccessTokenRequest::class)
+            ->withShop('bar')
+            ->withAccessToken($accessToken)
+            ->withScopes($scopes)
+            ->withExpiresIn(10);
+
         // Test method
         $instance = Factory::make(OAuthService::class);
-        $delegateToken = $instance->createNewDelegateAccessToken(
-            'bar',
-            $accessToken,
-            $scopes,
-            10
-        );
+        $delegateToken = $instance->createNewDelegateAccessToken($delegateAccessTokenRequest);
+
+        // Test results
         $this->assertInstanceOf(AccessToken::class, $delegateToken);
         $this->assertNotEmpty($delegateToken->getAccessToken());
         $this->assertNotEmpty($delegateToken->getScopes());
@@ -127,13 +131,16 @@ class OAuthServiceTest extends TestCase
             ->withWriteOrders()
             ->withWriteCustomers();
 
+        $delegateAccessTokenRequest = Factory::make(NewDelegateAccessTokenRequest::class)
+            ->withShop('bar')
+            ->withAccessToken($accessToken)
+            ->withScopes($scopes);
+
         // Test method
         $instance = Factory::make(OAuthService::class);
-        $delegateToken = $instance->createNewDelegateAccessToken(
-            'bar',
-            $accessToken,
-            $scopes
-        );
+        $delegateToken = $instance->createNewDelegateAccessToken($delegateAccessTokenRequest);
+
+        // Test results
         $this->assertInstanceOf(AccessToken::class, $delegateToken);
         $this->assertNotEmpty($delegateToken->getAccessToken());
         $this->assertNotEmpty($delegateToken->getScopes());

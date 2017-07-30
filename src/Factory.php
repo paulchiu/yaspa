@@ -198,8 +198,7 @@ class Factory
                     self::make(GuzzleHttp\Client::class),
                     self::make(Authentication\OAuth\SecurityChecks::class),
                     self::make(Authentication\OAuth\Transformers\AuthorizationCode::class),
-                    self::make(Authentication\OAuth\Transformers\AccessToken::class),
-                    self::make(Authentication\OAuth\Builders\NewDelegateAccessTokenRequest::class)
+                    self::make(Authentication\OAuth\Transformers\AccessToken::class)
                 );
             },
             Authentication\OAuth\Transformers\AccessToken::class => function () {

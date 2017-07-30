@@ -255,7 +255,6 @@ class CustomerService
     }
 
     /**
-     * @todo Refactor auth requests to adhere to rule of no more than 3 parameters, otherwise use builder
      * @todo https://help.shopify.com/api/reference/customer#send_invite
      */
 }
