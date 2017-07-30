@@ -2,8 +2,8 @@
 
 namespace Yaspa\AdminApi\Customer\Builders;
 
-use GuzzleHttp\RequestOptions;
 use Yaspa\AdminApi\Customer\Models\Customer as CustomerModel;
+use Yaspa\Constants\RequestBuilder;
 use Yaspa\Interfaces\RequestBuilderInterface;
 use Yaspa\Traits\AuthorizedRequestBuilderTrait;
 use Yaspa\Traits\ResourceRequestBuilderTrait;
@@ -19,13 +19,7 @@ class GetCustomerRequest implements RequestBuilderInterface
     use AuthorizedRequestBuilderTrait,
         ResourceRequestBuilderTrait;
 
-    const HEADERS = [
-        'Accept' => 'application/json',
-        'Content-Type' => 'application/json',
-    ];
-    const HTTP_METHOD = 'GET';
     const URI_TEMPLATE = 'https://%s.myshopify.com/admin/customers/%s.json';
-    const BODY_TYPE = RequestOptions::JSON;
 
     /**
      * Builder properties
@@ -38,10 +32,10 @@ class GetCustomerRequest implements RequestBuilderInterface
      */
     public function __construct()
     {
-        $this->httpMethod = self::HTTP_METHOD;
         $this->uriTemplate = self::URI_TEMPLATE;
-        $this->headers = self::HEADERS;
-        $this->bodyType = self::BODY_TYPE;
+        $this->httpMethod = RequestBuilder::GET_HTTP_METHOD;
+        $this->headers = RequestBuilder::JSON_HEADERS;
+        $this->bodyType = RequestBuilder::JSON_BODY_TYPE;
     }
 
     /**

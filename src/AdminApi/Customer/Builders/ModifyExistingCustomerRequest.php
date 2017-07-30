@@ -7,6 +7,7 @@ use Yaspa\AdminApi\Customer\Models\Customer as CustomerModel;
 use Yaspa\AdminApi\Customer\Transformers\Customer as CustomerTransformer;
 use Yaspa\AdminApi\Metafield\Models\Metafield as MetafieldModel;
 use Yaspa\AdminApi\Metafield\Transformers\Metafield as MetafieldTransformer;
+use Yaspa\Constants\RequestBuilder;
 use Yaspa\Interfaces\RequestBuilderInterface;
 use Yaspa\Traits\AuthorizedRequestBuilderTrait;
 use Yaspa\Traits\ResourceRequestBuilderTrait;
@@ -22,13 +23,7 @@ class ModifyExistingCustomerRequest implements RequestBuilderInterface
     use AuthorizedRequestBuilderTrait,
         ResourceRequestBuilderTrait;
 
-    const HEADERS = [
-        'Accept' => 'application/json',
-        'Content-Type' => 'application/json',
-    ];
-    const HTTP_METHOD = 'PUT';
     const URI_TEMPLATE = 'https://%s.myshopify.com/admin/customers/%s.json';
-    const BODY_TYPE = RequestOptions::JSON;
 
     /**
      * Dependencies
@@ -61,10 +56,10 @@ class ModifyExistingCustomerRequest implements RequestBuilderInterface
         $this->metafieldTransformer = $metafieldTransformer;
 
         // Set properties with defaults
-        $this->httpMethod = self::HTTP_METHOD;
         $this->uriTemplate = self::URI_TEMPLATE;
-        $this->headers = self::HEADERS;
-        $this->bodyType = self::BODY_TYPE;
+        $this->httpMethod = RequestBuilder::PUT_HTTP_METHOD;
+        $this->headers = RequestBuilder::JSON_HEADERS;
+        $this->bodyType = RequestBuilder::JSON_BODY_TYPE;
     }
 
     /**
