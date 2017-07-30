@@ -4,7 +4,7 @@
 
 ## Installation
 
-*Do no install this library. It is currently under active development
+*Do not install this library. It is currently under active development
 and is in no way stable.*
 
 ## Purpose
@@ -17,13 +17,16 @@ The goal of this project is to go one step beyond and provide something closer
 to a SDK whereby the library offers everything through PHP without the developer
 needing to think too much about the REST API.
 
-## Project objectives
+## Project objectives, opinions
 
 - Be truthful to the original API, do not rename, restructure, or
   otherwise modify terms where possible
-- Offer different levels of abstraction
+- Offer different levels of abstraction so that the user can utilise
+  lower-level library classes if desired
 - Work with native models where possible
 - Promises first, embrace async support in Guzzle
+- If a method accepts more than 3 parameters, use a builder
+- Minimise the number of dependencies
 
 # Examples
 

@@ -105,12 +105,17 @@ class Factory
                 return new AdminApi\Customer\CustomerService(
                     self::make(GuzzleHttp\Client::class),
                     self::make(AdminApi\Customer\Transformers\Customer::class),
+                    self::make(AdminApi\Customer\Transformers\AccountActivationUrl::class),
                     self::make(Builders\PagedResultsIterator::class),
-                    self::make(AdminApi\Customer\Builders\GetCustomerRequest::class)
+                    self::make(AdminApi\Customer\Builders\GetCustomerRequest::class),
+                    self::make(AdminApi\Customer\Builders\CreateAccountActivationUrlRequest::class)
                 );
             },
             AdminApi\Customer\Builders\CustomerFields::class => function () {
                 return new AdminApi\Customer\Builders\CustomerFields();
+            },
+            AdminApi\Customer\Builders\CreateAccountActivationUrlRequest::class => function () {
+                return new AdminApi\Customer\Builders\CreateAccountActivationUrlRequest();
             },
             AdminApi\Customer\Builders\CreateNewCustomerRequest::class => function () {
                 return new AdminApi\Customer\Builders\CreateNewCustomerRequest(
@@ -132,6 +137,9 @@ class Factory
             },
             AdminApi\Customer\Builders\SearchCustomersRequest::class => function () {
                 return new AdminApi\Customer\Builders\SearchCustomersRequest();
+            },
+            AdminApi\Customer\Transformers\AccountActivationUrl::class => function () {
+                return new AdminApi\Customer\Transformers\AccountActivationUrl();
             },
             AdminApi\Customer\Transformers\Address::class => function () {
                 return new AdminApi\Customer\Transformers\Address();

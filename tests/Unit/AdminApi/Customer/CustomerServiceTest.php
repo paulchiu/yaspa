@@ -265,4 +265,30 @@ class CustomerServiceTest extends TestCase
         $this->assertNotEmpty($retrievedCustomer->getId());
         $this->assertNotEmpty($retrievedCustomer->getEmail());
     }
+
+    public function testCanCreateAccountActivationUrl()
+    {
+        // Create mock client
+        $mockClientUtil = new MockGuzzleClient();
+        $client = $mockClientUtil->makeWithResponses(
+            [
+                $mockClientUtil->makeJsonResponse(200, [
+                    'account_activation_url' => 'http://foo.example.com/activate',
+                ]),
+            ]
+        );
+        Factory::inject(Client::class, $client);
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makeOAuth('foo', 'bar');
+
+        // Test service method
+        $service = Factory::make(CustomerService::class);
+        $url = $service->createAccountActivationUrl($credentials, 3);
+
+        // Test results
+        $this->assertNotEmpty($url->getHost());
+        $this->assertNotEmpty($url->getPath());
+    }
 }

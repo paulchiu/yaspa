@@ -4,6 +4,8 @@ namespace Yaspa\AdminApi\Customer;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
+use GuzzleHttp\Psr7\Uri;
+use Yaspa\AdminApi\Customer\Builders\CreateAccountActivationUrlRequest;
 use Yaspa\AdminApi\Customer\Builders\CreateNewCustomerRequest;
 use Yaspa\AdminApi\Customer\Builders\GetCustomerRequest;
 use Yaspa\AdminApi\Customer\Builders\GetCustomersRequest;
@@ -12,6 +14,7 @@ use Yaspa\AdminApi\Customer\Builders\SearchCustomersRequest;
 use Yaspa\AdminApi\Customer\Models;
 use Yaspa\AdminApi\Customer\Transformers;
 use Yaspa\Builders\PagedResultsIterator;
+use Yaspa\Exceptions\MissingExpectedAttributeException;
 use Yaspa\Interfaces\RequestCredentialsInterface;
 
 /**
@@ -25,29 +28,39 @@ class CustomerService
     protected $httpClient;
     /** @var Transformers\Customer $customerTransformer */
     protected $customerTransformer;
+    /** @var Transformers\AccountActivationUrl $accountActivationUrlTransformer */
+    protected $accountActivationUrlTransformer;
     /** @var PagedResultsIterator $pagedResultsIteratorBuilder */
     protected $pagedResultsIteratorBuilder;
     /** @var GetCustomerRequest $getCustomerRequestBuilder */
     protected $getCustomerRequestBuilder;
+    /** @var CreateAccountActivationUrlRequest $createAccountActivationUrlRequestBuilder */
+    protected $createAccountActivationUrlRequestBuilder;
 
     /**
      * CustomerService constructor.
      *
      * @param Client $httpClient
      * @param Transformers\Customer $customerTransformer
+     * @param Transformers\AccountActivationUrl $accountActivationUrlTransformer
      * @param PagedResultsIterator $pagedResultsIteratorBuilder
      * @param GetCustomerRequest $getCustomerRequestBuilder
+     * @param CreateAccountActivationUrlRequest $createAccountActivationUrlRequestBuilder
      */
     public function __construct(
         Client $httpClient,
         Transformers\Customer $customerTransformer,
+        Transformers\AccountActivationUrl $accountActivationUrlTransformer,
         PagedResultsIterator $pagedResultsIteratorBuilder,
-        GetCustomerRequest $getCustomerRequestBuilder
+        GetCustomerRequest $getCustomerRequestBuilder,
+        CreateAccountActivationUrlRequest $createAccountActivationUrlRequestBuilder
     ) {
         $this->httpClient = $httpClient;
         $this->customerTransformer = $customerTransformer;
+        $this->accountActivationUrlTransformer = $accountActivationUrlTransformer;
         $this->pagedResultsIteratorBuilder = $pagedResultsIteratorBuilder;
         $this->getCustomerRequestBuilder = $getCustomerRequestBuilder;
+        $this->createAccountActivationUrlRequestBuilder = $createAccountActivationUrlRequestBuilder;
     }
 
     /**
@@ -168,9 +181,6 @@ class CustomerService
     }
 
     /**
-     * @todo Refactor out reused constants such as POST, PUT, ContentType and Accepts
-     */
-    /**
      * @param RequestCredentialsInterface $credentials
      * @param int $customerId
      * @return Models\Customer
@@ -203,6 +213,49 @@ class CustomerService
     }
 
     /**
-     * @todo https://help.shopify.com/api/reference/customer#account_activation_url
+     * Create an account activation URL for an inactive customer.
+     *
+     * Please note that according to Shopify documentation the following constraints exist:
+     *
+     * - If a customer is enabled, an error will be returned.
+     * - The generated URL is only valid for 7 days.
+     *
+     * @see https://help.shopify.com/api/reference/customer#account_activation_url
+     * @param RequestCredentialsInterface $credentials
+     * @param int $customerId
+     * @return Uri
+     * @throws MissingExpectedAttributeException
+     */
+    public function createAccountActivationUrl(RequestCredentialsInterface $credentials, int $customerId): Uri
+    {
+        $response = $this->asyncCreateAccountActivationUrl($credentials, $customerId)->wait();
+
+        return $this->accountActivationUrlTransformer->fromResponse($response);
+    }
+
+    /**
+     * Async version of self::createAccountActivationUrl
+     *
+     * @see https://help.shopify.com/api/reference/customer#account_activation_url
+     * @param RequestCredentialsInterface $credentials
+     * @param int $customerId
+     * @return PromiseInterface
+     */
+    public function asyncCreateAccountActivationUrl(RequestCredentialsInterface $credentials, int $customerId): PromiseInterface
+    {
+        $customer = (new Models\Customer())->setId($customerId);
+        $request = $this->createAccountActivationUrlRequestBuilder
+            ->withCredentials($credentials)
+            ->withCustomer($customer);
+
+        return $this->httpClient->sendAsync(
+            $request->toResourceRequest(),
+            $request->toRequestOptions()
+        );
+    }
+
+    /**
+     * @todo Refactor auth requests to adhere to rule of no more than 3 parameters, otherwise use builder
+     * @todo https://help.shopify.com/api/reference/customer#send_invite
      */
 }
