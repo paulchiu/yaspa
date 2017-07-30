@@ -169,7 +169,6 @@ class CustomerService
 
     /**
      * @todo Refactor out reused constants such as POST, PUT, ContentType and Accepts
-     * @todo Implement GetCustomer (singular)
      */
     /**
      * @param RequestCredentialsInterface $credentials
@@ -202,4 +201,8 @@ class CustomerService
             $request->toRequestOptions()
         );
     }
+
+    /**
+     * @todo https://help.shopify.com/api/reference/customer#account_activation_url
+     */
 }
