@@ -4,7 +4,7 @@ namespace Yaspa\Authentication\OAuth\Builders;
 
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
-use GuzzleHttp\RequestOptions;
+use Yaspa\Constants\RequestBuilder;
 use Yaspa\Interfaces\RequestBuilderInterface;
 use Yaspa\Traits\RequestBuilderTrait;
 
@@ -21,8 +21,6 @@ class AccessTokenRequest implements RequestBuilderInterface
 {
     use RequestBuilderTrait;
 
-    const HEADERS = ['Accept' => 'application/json'];
-    const HTTP_METHOD = 'POST';
     const URI_TEMPLATE = 'https://%s/admin/oauth/access_token';
 
     /** @var string $shop */
@@ -40,9 +38,9 @@ class AccessTokenRequest implements RequestBuilderInterface
     public function __construct()
     {
         // Set properties with defaults
-        $this->httpMethod = self::HTTP_METHOD;
         $this->uriTemplate = self::URI_TEMPLATE;
-        $this->headers = self::HEADERS;
+        $this->httpMethod = RequestBuilder::POST_HTTP_METHOD;
+        $this->headers = RequestBuilder::ACCEPT_JSON_HEADERS;
     }
 
     /**
@@ -72,7 +70,7 @@ class AccessTokenRequest implements RequestBuilderInterface
     public function toRequestOptions(): array
     {
         return [
-            RequestOptions::MULTIPART => [
+            RequestBuilder::MULTIPART_BODY_TYPE => [
                 [
                     'name' => 'client_id',
                     'contents' => $this->clientId,

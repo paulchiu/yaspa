@@ -4,9 +4,9 @@ namespace Yaspa\Authentication\OAuth\Builders;
 
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
-use GuzzleHttp\RequestOptions;
 use Yaspa\Authentication\OAuth\Models\AccessToken;
 use Yaspa\Authentication\OAuth\Transformers\AccessToken as AccessTokenTransformer;
+use Yaspa\Constants\RequestBuilder;
 use Yaspa\Interfaces\RequestBuilderInterface;
 use Yaspa\Traits\RequestBuilderTrait;
 
@@ -23,9 +23,7 @@ class NewDelegateAccessTokenRequest implements RequestBuilderInterface
 {
     use RequestBuilderTrait;
 
-    const HTTP_METHOD = 'POST';
     const URI_TEMPLATE = 'https://%s.myshopify.com/admin/access_tokens/delegate';
-    const HEADERS = ['Accept' => 'application/json'];
 
     /**
      * Dependencies
@@ -56,9 +54,9 @@ class NewDelegateAccessTokenRequest implements RequestBuilderInterface
         $this->accessTokenTransformer = $accessTokenTransformer;
 
         // Set properties with defaults
-        $this->httpMethod = self::HTTP_METHOD;
         $this->uriTemplate = self::URI_TEMPLATE;
-        $this->headers = self::HEADERS;
+        $this->httpMethod = RequestBuilder::POST_HTTP_METHOD;
+        $this->headers = RequestBuilder::ACCEPT_JSON_HEADERS;
     }
 
     /**
@@ -113,7 +111,7 @@ class NewDelegateAccessTokenRequest implements RequestBuilderInterface
 
         // Return multipart body as options
         return [
-            RequestOptions::MULTIPART => $body,
+            RequestBuilder::MULTIPART_BODY_TYPE => $body,
         ];
     }
 
