@@ -13,6 +13,7 @@ use Yaspa\AdminApi\Customer\Builders\SearchCustomersRequest;
 use Yaspa\AdminApi\Customer\CustomerService;
 use Yaspa\AdminApi\Customer\Models\Address;
 use Yaspa\AdminApi\Customer\Models\Customer;
+use Yaspa\AdminApi\Customer\Models\CustomerInvite;
 use Yaspa\Authentication\Factory\ApiCredentials;
 use Yaspa\Factory;
 use Yaspa\Tests\Utils\MockGuzzleClient;
@@ -290,5 +291,39 @@ class CustomerServiceTest extends TestCase
         // Test results
         $this->assertNotEmpty($url->getHost());
         $this->assertNotEmpty($url->getPath());
+    }
+
+    public function testCanSendAccountInvite()
+    {
+        // Create mock client
+        $mockClientUtil = new MockGuzzleClient();
+        $client = $mockClientUtil->makeWithResponses(
+            [
+                $mockClientUtil->makeJsonResponse(200, [
+                    'customer_invite' => [
+                        'from' => 'foo@example.com',
+                        'to' => 'bar@example.com',
+                        'subject' => 'welcome to my new shop',
+                    ],
+                ]),
+            ]
+        );
+        Factory::inject(Client::class, $client);
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makeOAuth('foo', 'bar');
+        $invite = (new CustomerInvite())
+            ->setSubject('Welcome to my new shop')
+            ->setCustomMessage('My awesome new store');
+
+        // Test service method
+        $service = Factory::make(CustomerService::class);
+        $invite = $service->sendAccountInvite($credentials, 3, $invite);
+
+        // Test results
+        $this->assertNotEmpty($invite->getFrom());
+        $this->assertNotEmpty($invite->getTo());
+        $this->assertNotEmpty($invite->getSubject());
     }
 }

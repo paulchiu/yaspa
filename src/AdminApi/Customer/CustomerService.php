@@ -11,6 +11,7 @@ use Yaspa\AdminApi\Customer\Builders\GetCustomerRequest;
 use Yaspa\AdminApi\Customer\Builders\GetCustomersRequest;
 use Yaspa\AdminApi\Customer\Builders\ModifyExistingCustomerRequest;
 use Yaspa\AdminApi\Customer\Builders\SearchCustomersRequest;
+use Yaspa\AdminApi\Customer\Builders\SendAccountInviteRequest;
 use Yaspa\AdminApi\Customer\Models;
 use Yaspa\AdminApi\Customer\Transformers;
 use Yaspa\Builders\PagedResultsIterator;
@@ -30,12 +31,16 @@ class CustomerService
     protected $customerTransformer;
     /** @var Transformers\AccountActivationUrl $accountActivationUrlTransformer */
     protected $accountActivationUrlTransformer;
+    /** @var Transformers\CustomerInvite $customerInviteTransformer */
+    protected $customerInviteTransformer;
     /** @var PagedResultsIterator $pagedResultsIteratorBuilder */
     protected $pagedResultsIteratorBuilder;
     /** @var GetCustomerRequest $getCustomerRequestBuilder */
     protected $getCustomerRequestBuilder;
     /** @var CreateAccountActivationUrlRequest $createAccountActivationUrlRequestBuilder */
     protected $createAccountActivationUrlRequestBuilder;
+    /** @var SendAccountInviteRequest $sendAccountInviteRequestBuilder */
+    protected $sendAccountInviteRequestBuilder;
 
     /**
      * CustomerService constructor.
@@ -43,24 +48,30 @@ class CustomerService
      * @param Client $httpClient
      * @param Transformers\Customer $customerTransformer
      * @param Transformers\AccountActivationUrl $accountActivationUrlTransformer
+     * @param Transformers\CustomerInvite $customerInviteTransformer
      * @param PagedResultsIterator $pagedResultsIteratorBuilder
      * @param GetCustomerRequest $getCustomerRequestBuilder
      * @param CreateAccountActivationUrlRequest $createAccountActivationUrlRequestBuilder
+     * @param SendAccountInviteRequest $sendAccountInviteRequestBuilder
      */
     public function __construct(
         Client $httpClient,
         Transformers\Customer $customerTransformer,
         Transformers\AccountActivationUrl $accountActivationUrlTransformer,
+        Transformers\CustomerInvite $customerInviteTransformer,
         PagedResultsIterator $pagedResultsIteratorBuilder,
         GetCustomerRequest $getCustomerRequestBuilder,
-        CreateAccountActivationUrlRequest $createAccountActivationUrlRequestBuilder
+        CreateAccountActivationUrlRequest $createAccountActivationUrlRequestBuilder,
+        SendAccountInviteRequest $sendAccountInviteRequestBuilder
     ) {
         $this->httpClient = $httpClient;
         $this->customerTransformer = $customerTransformer;
         $this->accountActivationUrlTransformer = $accountActivationUrlTransformer;
+        $this->customerInviteTransformer = $customerInviteTransformer;
         $this->pagedResultsIteratorBuilder = $pagedResultsIteratorBuilder;
         $this->getCustomerRequestBuilder = $getCustomerRequestBuilder;
         $this->createAccountActivationUrlRequestBuilder = $createAccountActivationUrlRequestBuilder;
+        $this->sendAccountInviteRequestBuilder = $sendAccountInviteRequestBuilder;
     }
 
     /**
@@ -255,6 +266,51 @@ class CustomerService
     }
 
     /**
-     * @todo https://help.shopify.com/api/reference/customer#send_invite
+     * Send an invite email to a customer.
+     *
+     * @see https://help.shopify.com/api/reference/customer#send_invite
+     * @param RequestCredentialsInterface $credentials
+     * @param int $customerId
+     * @param null|Models\CustomerInvite $customerInvite
+     * @return Models\CustomerInvite
+     */
+    public function sendAccountInvite(
+        RequestCredentialsInterface $credentials,
+        int $customerId,
+        ?Models\CustomerInvite $customerInvite = null
+    ): Models\CustomerInvite {
+        $response = $this->asyncSendAccountInvite($credentials, $customerId, $customerInvite)->wait();
+
+        return $this->customerInviteTransformer->fromResponse($response);
+    }
+
+    /**
+     * Async version of self::sendAccountInvite
+     *
+     * @see https://help.shopify.com/api/reference/customer#send_invite
+     * @param RequestCredentialsInterface $credentials
+     * @param int $customerId
+     * @param null|Models\CustomerInvite $customerInvite
+     * @return PromiseInterface
+     */
+    public function asyncSendAccountInvite(
+        RequestCredentialsInterface $credentials,
+        int $customerId,
+        ?Models\CustomerInvite $customerInvite = null
+    ): PromiseInterface {
+        $customer = (new Models\Customer())->setId($customerId);
+        $request = $this->sendAccountInviteRequestBuilder
+            ->withCredentials($credentials)
+            ->withCustomer($customer)
+            ->withCustomerInvite($customerInvite);
+
+        return $this->httpClient->sendAsync(
+            $request->toResourceRequest(),
+            $request->toRequestOptions()
+        );
+    }
+
+    /**
+     * @todo https://help.shopify.com/api/reference/customer#destroy
      */
 }

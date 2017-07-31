@@ -106,9 +106,11 @@ class Factory
                     self::make(GuzzleHttp\Client::class),
                     self::make(AdminApi\Customer\Transformers\Customer::class),
                     self::make(AdminApi\Customer\Transformers\AccountActivationUrl::class),
+                    self::make(AdminApi\Customer\Transformers\CustomerInvite::class),
                     self::make(Builders\PagedResultsIterator::class),
                     self::make(AdminApi\Customer\Builders\GetCustomerRequest::class),
-                    self::make(AdminApi\Customer\Builders\CreateAccountActivationUrlRequest::class)
+                    self::make(AdminApi\Customer\Builders\CreateAccountActivationUrlRequest::class),
+                    self::make(AdminApi\Customer\Builders\SendAccountInviteRequest::class)
                 );
             },
             AdminApi\Customer\Builders\CustomerFields::class => function () {
@@ -138,6 +140,11 @@ class Factory
             AdminApi\Customer\Builders\SearchCustomersRequest::class => function () {
                 return new AdminApi\Customer\Builders\SearchCustomersRequest();
             },
+            AdminApi\Customer\Builders\SendAccountInviteRequest::class => function () {
+                return new AdminApi\Customer\Builders\SendAccountInviteRequest(
+                    self::make(AdminApi\Customer\Transformers\CustomerInvite::class)
+                );
+            },
             AdminApi\Customer\Transformers\AccountActivationUrl::class => function () {
                 return new AdminApi\Customer\Transformers\AccountActivationUrl();
             },
@@ -148,6 +155,9 @@ class Factory
                 return new AdminApi\Customer\Transformers\Customer(
                     self::make(AdminApi\Customer\Transformers\Address::class)
                 );
+            },
+            AdminApi\Customer\Transformers\CustomerInvite::class => function () {
+                return new AdminApi\Customer\Transformers\CustomerInvite();
             },
             AdminApi\Metafield\Transformers\Metafield::class => function () {
                 return new AdminApi\Metafield\Transformers\Metafield();

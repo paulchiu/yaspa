@@ -12,6 +12,7 @@ use Yaspa\AdminApi\Customer\Builders\SearchCustomersRequest;
 use Yaspa\AdminApi\Customer\CustomerService;
 use Yaspa\AdminApi\Customer\Models\Address;
 use Yaspa\AdminApi\Customer\Models\Customer;
+use Yaspa\AdminApi\Customer\Models\CustomerInvite;
 use Yaspa\AdminApi\Metafield\Models\Metafield;
 use Yaspa\Authentication\Factory\ApiCredentials;
 use Yaspa\Factory;
@@ -482,7 +483,7 @@ class CustomerServiceTest extends TestCase
      * @depends testCanCreateNewCustomer
      * @param Customer $customer
      */
-    public function testCreateAccountActivationUrl(Customer $customer)
+    public function testCanCreateAccountActivationUrl(Customer $customer)
     {
         // Get config
         $config = new TestConfig();
@@ -507,5 +508,100 @@ class CustomerServiceTest extends TestCase
         // Test results
         $this->assertNotEmpty($url->getHost());
         $this->assertNotEmpty($url->getPath());
+    }
+
+    /**
+     * @group integration
+     * @depends testCanCreateNewCustomer
+     */
+    public function testCanSendDefaultAccountInvite()
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Create service
+        $service = Factory::make(CustomerService::class);
+
+        // Create fixtures
+        $customer = (new Customer())
+            ->setFirstName('Steve')
+            ->setLastName('Lastnameson')
+            ->setEmail(uniqid().'@mailinator.com')
+            ->setVerifiedEmail(false);
+        $createCustomerRequest = Factory::make(CreateNewCustomerRequest::class)
+            ->withCredentials($credentials)
+            ->withCustomer($customer);
+        $customer = $service->createNewCustomer($createCustomerRequest);
+
+        // Create parameters
+        $service = Factory::make(CustomerService::class);
+
+        // Test pre-state
+        $this->assertNotEmpty($customer->getId());
+
+        // Test service method
+        $invite = $service->sendAccountInvite($credentials, $customer->getId());
+
+        // Test results
+        $this->assertNotEmpty($invite->getFrom());
+        $this->assertNotEmpty($invite->getTo());
+        $this->assertNotEmpty($invite->getSubject());
+    }
+
+    /**
+     * @group integration
+     * @depends testCanCreateNewCustomer
+     */
+    public function testCanSendCustomAccountInvite()
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Create service
+        $service = Factory::make(CustomerService::class);
+
+        // Create fixtures
+        $customer = (new Customer())
+            ->setFirstName('Steve')
+            ->setLastName('Lastnameson')
+            ->setEmail(uniqid().'@mailinator.com')
+            ->setVerifiedEmail(true);
+        $createCustomerRequest = Factory::make(CreateNewCustomerRequest::class)
+            ->withCredentials($credentials)
+            ->withCustomer($customer);
+        $customer = $service->createNewCustomer($createCustomerRequest);
+
+        // Create parameters
+        $service = Factory::make(CustomerService::class);
+        $invite = (new CustomerInvite())
+            ->setSubject('Welcome to my new shop')
+            ->setCustomMessage('My awesome new store');
+
+        // Test pre-state
+        $this->assertNotEmpty($customer->getId());
+
+        // Test service method
+        $invite = $service->sendAccountInvite($credentials, $customer->getId(), $invite);
+
+        // Test results
+        $this->assertNotEmpty($invite->getFrom());
+        $this->assertNotEmpty($invite->getTo());
+        $this->assertNotEmpty($invite->getSubject());
     }
 }
