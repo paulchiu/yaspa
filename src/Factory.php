@@ -110,7 +110,8 @@ class Factory
                     self::make(Builders\PagedResultsIterator::class),
                     self::make(AdminApi\Customer\Builders\GetCustomerRequest::class),
                     self::make(AdminApi\Customer\Builders\CreateAccountActivationUrlRequest::class),
-                    self::make(AdminApi\Customer\Builders\SendAccountInviteRequest::class)
+                    self::make(AdminApi\Customer\Builders\SendAccountInviteRequest::class),
+                    self::make(AdminApi\Customer\Builders\DeleteCustomerRequest::class)
                 );
             },
             AdminApi\Customer\Builders\CustomerFields::class => function () {
@@ -124,6 +125,9 @@ class Factory
                     self::make(AdminApi\Customer\Transformers\Customer::class),
                     self::make(AdminApi\Metafield\Transformers\Metafield::class)
                 );
+            },
+            AdminApi\Customer\Builders\DeleteCustomerRequest::class => function () {
+                return new AdminApi\Customer\Builders\DeleteCustomerRequest();
             },
             AdminApi\Customer\Builders\GetCustomerRequest::class => function () {
                 return new AdminApi\Customer\Builders\GetCustomerRequest();

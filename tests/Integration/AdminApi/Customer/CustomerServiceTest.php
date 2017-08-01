@@ -604,4 +604,34 @@ class CustomerServiceTest extends TestCase
         $this->assertNotEmpty($invite->getTo());
         $this->assertNotEmpty($invite->getSubject());
     }
+
+    /**
+     * @group integration
+     * @depends testCanCreateNewCustomer
+     * @param Customer $customer
+     */
+    public function testCanDeleteCustomer(Customer $customer)
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Test pre-state
+        $this->assertNotEmpty($customer->getId());
+
+        // Test service method
+        $service = Factory::make(CustomerService::class);
+        $result = $service->deleteCustomer($credentials, $customer->getId());
+        $this->assertTrue(is_object($result));
+        $this->assertEmpty(get_object_vars($result));
+    }
 }

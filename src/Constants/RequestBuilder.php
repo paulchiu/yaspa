@@ -21,6 +21,7 @@ class RequestBuilder
     const GET_HTTP_METHOD = 'GET';
     const POST_HTTP_METHOD = 'POST';
     const PUT_HTTP_METHOD = 'PUT';
+    const DELETE_HTTP_METHOD = 'DELETE';
     const JSON_BODY_TYPE = RequestOptions::JSON;
     const QUERY_BODY_TYPE = RequestOptions::QUERY;
     const MULTIPART_BODY_TYPE = RequestOptions::MULTIPART;

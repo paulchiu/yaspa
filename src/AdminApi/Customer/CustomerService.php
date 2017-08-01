@@ -7,6 +7,7 @@ use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\Uri;
 use Yaspa\AdminApi\Customer\Builders\CreateAccountActivationUrlRequest;
 use Yaspa\AdminApi\Customer\Builders\CreateNewCustomerRequest;
+use Yaspa\AdminApi\Customer\Builders\DeleteCustomerRequest;
 use Yaspa\AdminApi\Customer\Builders\GetCustomerRequest;
 use Yaspa\AdminApi\Customer\Builders\GetCustomersRequest;
 use Yaspa\AdminApi\Customer\Builders\ModifyExistingCustomerRequest;
@@ -41,6 +42,8 @@ class CustomerService
     protected $createAccountActivationUrlRequestBuilder;
     /** @var SendAccountInviteRequest $sendAccountInviteRequestBuilder */
     protected $sendAccountInviteRequestBuilder;
+    /** @var DeleteCustomerRequest $deleteCustomerRequestBuilder */
+    protected $deleteCustomerRequestBuilder;
 
     /**
      * CustomerService constructor.
@@ -53,6 +56,7 @@ class CustomerService
      * @param GetCustomerRequest $getCustomerRequestBuilder
      * @param CreateAccountActivationUrlRequest $createAccountActivationUrlRequestBuilder
      * @param SendAccountInviteRequest $sendAccountInviteRequestBuilder
+     * @param DeleteCustomerRequest $deleteCustomerRequestBuilder
      */
     public function __construct(
         Client $httpClient,
@@ -62,7 +66,8 @@ class CustomerService
         PagedResultsIterator $pagedResultsIteratorBuilder,
         GetCustomerRequest $getCustomerRequestBuilder,
         CreateAccountActivationUrlRequest $createAccountActivationUrlRequestBuilder,
-        SendAccountInviteRequest $sendAccountInviteRequestBuilder
+        SendAccountInviteRequest $sendAccountInviteRequestBuilder,
+        DeleteCustomerRequest $deleteCustomerRequestBuilder
     ) {
         $this->httpClient = $httpClient;
         $this->customerTransformer = $customerTransformer;
@@ -72,6 +77,7 @@ class CustomerService
         $this->getCustomerRequestBuilder = $getCustomerRequestBuilder;
         $this->createAccountActivationUrlRequestBuilder = $createAccountActivationUrlRequestBuilder;
         $this->sendAccountInviteRequestBuilder = $sendAccountInviteRequestBuilder;
+        $this->deleteCustomerRequestBuilder = $deleteCustomerRequestBuilder;
     }
 
     /**
@@ -192,6 +198,9 @@ class CustomerService
     }
 
     /**
+     * Get an individual customer.
+     *
+     * @see https://help.shopify.com/api/reference/customer#show
      * @param RequestCredentialsInterface $credentials
      * @param int $customerId
      * @return Models\Customer
@@ -206,6 +215,7 @@ class CustomerService
     /**
      * Async version of self::getCustomer
      *
+     * @see https://help.shopify.com/api/reference/customer#show
      * @param RequestCredentialsInterface $credentials
      * @param int $customerId
      * @return PromiseInterface
@@ -311,6 +321,49 @@ class CustomerService
     }
 
     /**
-     * @todo https://help.shopify.com/api/reference/customer#destroy
+     * Delete customer.
+     *
+     * Returns an empty object with no properties if successful.
+     *
+     * @see https://help.shopify.com/api/reference/customer#destroy
+     * @param RequestCredentialsInterface $credentials
+     * @param int $customerId
+     * @return object
+     */
+    public function deleteCustomer(
+        RequestCredentialsInterface $credentials,
+        int $customerId
+    ) {
+        $response = $this->asyncDeleteCustomer($credentials, $customerId)->wait();
+
+        return json_decode($response->getBody()->getContents());
+    }
+
+    /**
+     * Async version of self::deleteCustomer
+     *
+     * @see https://help.shopify.com/api/reference/customer#destroy
+     * @param RequestCredentialsInterface $credentials
+     * @param int $customerId
+     * @return PromiseInterface
+     */
+    public function asyncDeleteCustomer(
+        RequestCredentialsInterface $credentials,
+        int $customerId
+    ): PromiseInterface {
+        $customer = (new Models\Customer())->setId($customerId);
+        $request = $this->deleteCustomerRequestBuilder
+            ->withCredentials($credentials)
+            ->withCustomer($customer);
+
+        return $this->httpClient->sendAsync(
+            $request->toResourceRequest(),
+            $request->toRequestOptions()
+        );
+    }
+
+    /**
+     * @todo https://help.shopify.com/api/reference/customer#count
+     * @todo https://help.shopify.com/api/reference/customer#orders
      */
 }

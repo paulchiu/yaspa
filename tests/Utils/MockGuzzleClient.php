@@ -44,6 +44,17 @@ class MockGuzzleClient
     }
 
     /**
+     * Make a PSR response convenience method.
+     *
+     * @param int $responseStatus
+     * @return Response
+     */
+    public function makeEmptyJsonResponse(int $responseStatus): Response
+    {
+        return new Response($responseStatus, [], json_encode((object) []));
+    }
+
+    /**
      * Creates a Guzzle client with middlewares that return an array of mocked responses
      * as well as tracks requests.
      *
