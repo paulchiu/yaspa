@@ -5,6 +5,7 @@ namespace Yaspa\AdminApi\Customer;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\Uri;
+use Yaspa\AdminApi\Customer\Builders\CountAllCustomersRequest;
 use Yaspa\AdminApi\Customer\Builders\CreateAccountActivationUrlRequest;
 use Yaspa\AdminApi\Customer\Builders\CreateNewCustomerRequest;
 use Yaspa\AdminApi\Customer\Builders\DeleteCustomerRequest;
@@ -44,6 +45,8 @@ class CustomerService
     protected $sendAccountInviteRequestBuilder;
     /** @var DeleteCustomerRequest $deleteCustomerRequestBuilder */
     protected $deleteCustomerRequestBuilder;
+    /** @var CountAllCustomersRequest $countAllCustomersRequestBuilder */
+    protected $countAllCustomersRequestBuilder;
 
     /**
      * CustomerService constructor.
@@ -57,6 +60,7 @@ class CustomerService
      * @param CreateAccountActivationUrlRequest $createAccountActivationUrlRequestBuilder
      * @param SendAccountInviteRequest $sendAccountInviteRequestBuilder
      * @param DeleteCustomerRequest $deleteCustomerRequestBuilder
+     * @param CountAllCustomersRequest $countAllCustomersRequestBuilder
      */
     public function __construct(
         Client $httpClient,
@@ -67,7 +71,8 @@ class CustomerService
         GetCustomerRequest $getCustomerRequestBuilder,
         CreateAccountActivationUrlRequest $createAccountActivationUrlRequestBuilder,
         SendAccountInviteRequest $sendAccountInviteRequestBuilder,
-        DeleteCustomerRequest $deleteCustomerRequestBuilder
+        DeleteCustomerRequest $deleteCustomerRequestBuilder,
+        CountAllCustomersRequest $countAllCustomersRequestBuilder
     ) {
         $this->httpClient = $httpClient;
         $this->customerTransformer = $customerTransformer;
@@ -78,6 +83,7 @@ class CustomerService
         $this->createAccountActivationUrlRequestBuilder = $createAccountActivationUrlRequestBuilder;
         $this->sendAccountInviteRequestBuilder = $sendAccountInviteRequestBuilder;
         $this->deleteCustomerRequestBuilder = $deleteCustomerRequestBuilder;
+        $this->countAllCustomersRequestBuilder = $countAllCustomersRequestBuilder;
     }
 
     /**
@@ -363,7 +369,42 @@ class CustomerService
     }
 
     /**
-     * @todo https://help.shopify.com/api/reference/customer#count
+     * Count all customers in a store.
+     *
+     * @param RequestCredentialsInterface $credentials
+     * @return int
+     * @throws MissingExpectedAttributeException
+     */
+    public function countAllCustomers(RequestCredentialsInterface $credentials): int
+    {
+        $response = $this->asyncCountAllCustomers($credentials)->wait();
+
+        $count = json_decode($response->getBody()->getContents());
+
+        if (!property_exists($count, 'count')) {
+            throw new MissingExpectedAttributeException('count');
+        }
+
+        return intval($count->count);
+    }
+
+    /**
+     * Async version of self::countAllCustomers
+     *
+     * @param RequestCredentialsInterface $credentials
+     * @return PromiseInterface
+     */
+    public function asyncCountAllCustomers(RequestCredentialsInterface $credentials): PromiseInterface
+    {
+        $request = $this->countAllCustomersRequestBuilder->withCredentials($credentials);
+
+        return $this->httpClient->sendAsync(
+            $request->toRequest(),
+            $request->toRequestOptions()
+        );
+    }
+
+    /**
      * @todo https://help.shopify.com/api/reference/customer#orders
      */
 }

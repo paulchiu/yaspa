@@ -111,8 +111,12 @@ class Factory
                     self::make(AdminApi\Customer\Builders\GetCustomerRequest::class),
                     self::make(AdminApi\Customer\Builders\CreateAccountActivationUrlRequest::class),
                     self::make(AdminApi\Customer\Builders\SendAccountInviteRequest::class),
-                    self::make(AdminApi\Customer\Builders\DeleteCustomerRequest::class)
+                    self::make(AdminApi\Customer\Builders\DeleteCustomerRequest::class),
+                    self::make(AdminApi\Customer\Builders\CountAllCustomersRequest::class)
                 );
+            },
+            AdminApi\Customer\Builders\CountAllCustomersRequest::class => function () {
+                return new AdminApi\Customer\Builders\CountAllCustomersRequest();
             },
             AdminApi\Customer\Builders\CustomerFields::class => function () {
                 return new AdminApi\Customer\Builders\CustomerFields();

@@ -350,4 +350,29 @@ class CustomerServiceTest extends TestCase
         $this->assertTrue(is_object($result));
         $this->assertEmpty(get_object_vars($result));
     }
+
+    public function testCanCountAllCustomers()
+    {
+        // Create mock client
+        $mockClientUtil = new MockGuzzleClient();
+        $client = $mockClientUtil->makeWithResponses(
+            [
+                $mockClientUtil->makeJsonResponse(200, [
+                    'count' => 3,
+                ]),
+            ]
+        );
+        Factory::inject(Client::class, $client);
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makeOAuth('foo', 'bar');
+
+        // Test service method
+        $service = Factory::make(CustomerService::class);
+        $result = $service->countAllCustomers($credentials);
+
+        // Test results
+        $this->assertEquals(3, $result);
+    }
 }

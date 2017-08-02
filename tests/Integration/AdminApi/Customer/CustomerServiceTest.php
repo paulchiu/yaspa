@@ -634,4 +634,28 @@ class CustomerServiceTest extends TestCase
         $this->assertTrue(is_object($result));
         $this->assertEmpty(get_object_vars($result));
     }
+
+    /**
+     * @group integration
+     */
+    public function testCanCountAllCustomers()
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Test service method
+        $service = Factory::make(CustomerService::class);
+        $result = $service->countAllCustomers($credentials);
+        $this->assertGreaterThan(0, $result);
+    }
 }
