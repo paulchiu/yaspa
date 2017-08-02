@@ -17,46 +17,121 @@ The goal of this project is to go one step beyond and provide something closer
 to a SDK whereby the library offers everything through PHP without the developer
 needing to think too much about the REST API.
 
-## Project objectives, opinions
+## Examples
 
-- Be truthful to the original API, do not rename, restructure, or
-  otherwise modify terms where possible
-- Offer different levels of abstraction so that the user can utilise
-  lower-level library classes if desired
-- Work with native models where possible
-- Promises first, embrace async support in Guzzle
-- If a method accepts more than 3 parameters, use a builder
-- Minimise the number of dependencies
+The following examples show how CRUD works with the API. For full documentation,
+see the [Yaspa Gitbook][docs].
 
-# Examples
+Please note that all examples utilise private authentication.
 
-Please see `examples.index.html` for library usage examples. Please note
-that some examples are interactive, while others are purely code samples.
+### Create private authentication credentials
 
-# Testing
+Credentials are stored in a POPO model.
 
-To run tests, execute:
+All other examples assume the presence of the following code.
 
+```php
+use Yaspa\Authentication\Factory\ApiCredentials;
+use Yaspa\Factory;
+
+$credentials = Factory::make(ApiCredentials::class)
+    ->makePrivate(
+        'my-shop',
+        '4ac0000000000000000000000000035f',
+        '59c0000000000000000000000000007f'
+    );
 ```
-./vendor/bin/phpunit
+
+### Create a customer
+
+```php
+use Yaspa\AdminApi\Customer\Builders\CreateNewCustomerRequest;
+use Yaspa\AdminApi\Customer\CustomerService;
+use Yaspa\AdminApi\Customer\Models\Customer;
+use Yaspa\Factory;
+
+// Prepare creation request
+$customer = (new Customer())
+    ->setFirstName('Steve')
+    ->setLastName('Lastnameson')
+    ->setEmail(uniqid('steve-').'@example.com')
+    ->setTags(['foo', 'bar'])
+    ->setVerifiedEmail(true)
+    ->setAcceptsMarketing(true);
+$request = Factory::make(CreateNewCustomerRequest::class)
+    ->withCredentials($credentials)
+    ->withCustomer($customer);
+
+// Create new customer, $newCustomer is a Customer model
+$service = Factory::make(CustomerService::class);
+$newCustomer = $service->createNewCustomer($request);
+var_dump($newCustomer);
 ```
 
-## Integration testing
+### Get all customers created in the past 7 days
 
-Integration tests will hit the Shopify API. Please only run these
-against a purely development store as data modification will occur.
+```php
+use Yaspa\AdminApi\Customer\Builders\GetCustomersRequest;
+use Yaspa\AdminApi\Customer\CustomerService;
+use Yaspa\Factory;
 
-Integration tests requires `test-config.json` to exist. Please see
-`test-config.example.json` for expectations on how it should be filled.
+// Create request
+$request = Factory::make(GetCustomersRequest::class)
+    ->withCredentials($credentials)
+    ->withCreatedAtMin(new DateTime('-7 days'));
 
-To run integration tests, execute:
+// Get customers, $customers is an iterator
+$service = Factory::make(CustomerService::class);
+$customers = $service->getCustomers($request);
 
+// Loop through customers, each $customer is a Customer model
+// paging is automated
+foreach ($customers as $index => $customer) {
+    var_dump($customer);
+}
 ```
-./vendor/bin/phpunit --group=integration
+
+### Update a customer
+
+```php
+use Yaspa\AdminApi\Customer\Builders\ModifyExistingCustomerRequest;
+use Yaspa\AdminApi\Customer\CustomerService;
+use Yaspa\Factory;
+
+// Create request
+$customerUpdates = (new Customer())
+    ->setId(6820000675)
+    ->setFirstName('Alice')
+$request = Factory::make(ModifyExistingCustomerRequest::class)
+    ->withCredentials($credentials)
+    ->withCustomer($customerUpdates);
+
+// Modify an existing customer, $modifiedCustomer is a Customer model
+$service = Factory::make(CustomerService::class);
+$modifiedCustomer = $service->modifyExistingCustomer($request);
+var_dump($modifiedCustomer);
 ```
+
+### Delete a customer
+
+```php
+use Yaspa\AdminApi\Customer\CustomerService;
+use Yaspa\Factory;
+
+// Delete an existing customer
+$service = Factory::make(CustomerService::class);
+$service->deleteCustomer($credentials, 6820000675);
+```
+
+## Documentation
+
+For full documentation, please see https://paulchiu.gitbooks.io/yaspa/content/
+
+[docs]: https://paulchiu.gitbooks.io/yaspa/content/
 
 ## To do
 
+- [ ] Document endpoints (in progress)
 - [ ] Begin working with the admin api
     - [ ] Abandoned checkouts
     - [ ] ApplicationCharge
@@ -71,7 +146,7 @@ To run integration tests, execute:
     - [ ] Comment
     - [ ] Country
     - [ ] CustomCollection
-    - [ ] Customer (in progress)
+    - [x] Customer (90% complete)
     - [ ] CustomerAddress
     - [ ] CustomerSavedSearch
     - [ ] Discount SHOPIFY PLUS
@@ -90,7 +165,7 @@ To run integration tests, execute:
     - [ ] Page
     - [ ] Policy
     - [ ] PriceRule
-    - [ ] Product
+    - [ ] Product (in progress)
     - [ ] Product Image
     - [ ] Product Variant
     - [ ] ProductListing
