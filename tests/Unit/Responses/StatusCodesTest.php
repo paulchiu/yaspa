@@ -3,6 +3,7 @@
 namespace Yaspa\Tests\Responses;
 
 use PHPUnit\Framework\TestCase;
+use Yaspa\Factory;
 use Yaspa\Responses\Exceptions;
 use Yaspa\Responses\StatusCodes;
 
@@ -10,7 +11,7 @@ class StatusCodesTest extends TestCase
 {
     public function testCanFindReason()
     {
-        $instance = new StatusCodes();
+        $instance = Factory::make(StatusCodes::class);
         $result = $instance->findReason(200);
         $this->assertEquals(StatusCodes::DEFINITIONS['200'], $result);
     }
@@ -18,7 +19,7 @@ class StatusCodesTest extends TestCase
     public function testThrowsExceptionWhenCannotFindReason()
     {
         $this->expectException(Exceptions\StatusCodeDefinitionNotFoundException::class);
-        $instance = new StatusCodes();
+        $instance = Factory::make(StatusCodes::class);
         $instance->findReason(0);
     }
 }

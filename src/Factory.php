@@ -6,6 +6,7 @@ use GuzzleHttp;
 use UnexpectedValueException;
 use Yaspa\AdminApi;
 use Yaspa\Authentication;
+use Yaspa\Responses;
 
 /**
  * Class Factory
@@ -236,6 +237,9 @@ class Factory
             },
             Authentication\PrivateAuthentication\Transformers\Credentials::class => function () {
                 return new Authentication\PrivateAuthentication\Transformers\Credentials();
+            },
+            Responses\StatusCodes::class => function () {
+                return new Responses\StatusCodes();
             },
         ];
     }
