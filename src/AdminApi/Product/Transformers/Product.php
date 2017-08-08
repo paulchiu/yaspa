@@ -85,8 +85,7 @@ class Product implements ArrayResponseTransformerInterface
         }
 
         if (property_exists($shopifyJsonProduct, 'body_html')) {
-            $bodyHtmls = explode(',', $shopifyJsonProduct->body_html);
-            $product->setBodyHtmls($bodyHtmls);
+            $product->setBodyHtml($shopifyJsonProduct->body_html);
         }
 
         if (property_exists($shopifyJsonProduct, 'vendor')) {
