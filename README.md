@@ -129,6 +129,13 @@ For full documentation, please see https://paulchiu.gitbooks.io/yaspa/content/
 
 [docs]: https://paulchiu.gitbooks.io/yaspa/content/
 
+## Roadmap
+
+|Version|Status|Endpoints|Description|
+|-------|------|---------|-----------|
+|0.1.0|In progress|OAuth, Customer, Product, Order|Can manage customers and orders|
+|0.2.0|To do|TBD|TBD|
+
 ## To do
 
 - [ ] Document endpoints (in progress)

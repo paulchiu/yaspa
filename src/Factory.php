@@ -168,6 +168,18 @@ class Factory
             AdminApi\Customer\Transformers\CustomerInvite::class => function () {
                 return new AdminApi\Customer\Transformers\CustomerInvite();
             },
+            AdminApi\Product\Transformers\Product::class => function () {
+                return new AdminApi\Product\Transformers\Product(
+                    self::make(AdminApi\Product\Transformers\Image::class),
+                    self::make(AdminApi\Product\Transformers\Variant::class)
+                );
+            },
+            AdminApi\Product\Transformers\Image::class => function () {
+                return new AdminApi\Product\Transformers\Image();
+            },
+            AdminApi\Product\Transformers\Variant::class => function () {
+                return new AdminApi\Product\Transformers\Variant();
+            },
             AdminApi\Metafield\Transformers\Metafield::class => function () {
                 return new AdminApi\Metafield\Transformers\Metafield();
             },
