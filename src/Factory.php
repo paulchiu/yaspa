@@ -90,110 +90,37 @@ class Factory implements FactoryInterface
     {
         $self = new self();
 
-        return array_merge(
-            AdminApi\Customer\CustomerFactoryProvider::makeConstructors($self),
-            [
-                /**
-                 * External library constructors
-                 */
-                GuzzleHttp\Client::class => function () {
-                    return new GuzzleHttp\Client();
-                },
+        /**
+         * Constructors that belong to namespaces that do not warrant separate factory providers
+         */
+        $localConstructors = [
+            /**
+             * External library constructors
+             */
+            GuzzleHttp\Client::class => function () {
+                return new GuzzleHttp\Client();
+            },
 
-                /**
-                 * Yaspa constructors
-                 */
-                Builders\PagedResultsIterator::class => function () {
-                    return new Builders\PagedResultsIterator(
-                        self::make(GuzzleHttp\Client::class)
-                    );
-                },
-                AdminApi\Product\Transformers\Product::class => function () {
-                    return new AdminApi\Product\Transformers\Product(
-                        self::make(AdminApi\Product\Transformers\Image::class),
-                        self::make(AdminApi\Product\Transformers\Variant::class)
-                    );
-                },
-                AdminApi\Product\Transformers\Image::class => function () {
-                    return new AdminApi\Product\Transformers\Image();
-                },
-                AdminApi\Product\Transformers\Variant::class => function () {
-                    return new AdminApi\Product\Transformers\Variant();
-                },
-                AdminApi\Metafield\Transformers\Metafield::class => function () {
-                    return new AdminApi\Metafield\Transformers\Metafield();
-                },
-                AdminApi\Shop\ShopService::class => function () {
-                    return new AdminApi\Shop\ShopService(
-                        self::make(GuzzleHttp\Client::class),
-                        self::make(AdminApi\Shop\Builders\GetShopRequest::class),
-                        self::make(AdminApi\Shop\Transformers\Shop::class)
-                    );
-                },
-                AdminApi\Shop\Transformers\Shop::class => function () {
-                    return new AdminApi\Shop\Transformers\Shop();
-                },
-                AdminApi\Shop\Builders\GetShopRequest::class => function () {
-                    return new AdminApi\Shop\Builders\GetShopRequest();
-                },
-                Authentication\Builders\ApiCredentials::class => function () {
-                    return new Authentication\Builders\ApiCredentials(
-                        self::make(Authentication\OAuth\Transformers\AccessToken::class),
-                        self::make(Authentication\PrivateAuthentication\Transformers\Credentials::class)
-                    );
-                },
-                Authentication\Factory\ApiCredentials::class => function () {
-                    return new Authentication\Factory\ApiCredentials();
-                },
-                Authentication\OAuth\Builders\AccessTokenRequest::class => function () {
-                    return new Authentication\OAuth\Builders\AccessTokenRequest();
-                },
-                Authentication\OAuth\Builders\AuthorizePromptUri::class => function () {
-                    return new Authentication\OAuth\Builders\AuthorizePromptUri(
-                        self::make(Authentication\OAuth\Transformers\Scopes::class)
-                    );
-                },
-                Authentication\OAuth\Builders\NewDelegateAccessTokenRequest::class => function () {
-                    return new Authentication\OAuth\Builders\NewDelegateAccessTokenRequest(
-                        self::make(Authentication\OAuth\Transformers\AccessToken::class)
-                    );
-                },
-                Authentication\OAuth\Builders\Scopes::class => function () {
-                    return new Authentication\OAuth\Builders\Scopes();
-                },
-                Authentication\OAuth\SecurityChecks::class => function () {
-                    return new Authentication\OAuth\SecurityChecks();
-                },
-                Authentication\OAuth\OAuthService::class => function () {
-                    return new Authentication\OAuth\OAuthService(
-                        self::make(GuzzleHttp\Client::class),
-                        self::make(Authentication\OAuth\SecurityChecks::class),
-                        self::make(Authentication\OAuth\Transformers\AuthorizationCode::class),
-                        self::make(Authentication\OAuth\Transformers\AccessToken::class)
-                    );
-                },
-                Authentication\OAuth\Transformers\AccessToken::class => function () {
-                    return new Authentication\OAuth\Transformers\AccessToken(
-                        self::make(Authentication\OAuth\Transformers\AssociatedUser::class),
-                        self::make(Authentication\OAuth\Transformers\Scopes::class)
-                    );
-                },
-                Authentication\OAuth\Transformers\AssociatedUser::class => function () {
-                    return new Authentication\OAuth\Transformers\AssociatedUser();
-                },
-                Authentication\OAuth\Transformers\AuthorizationCode::class => function () {
-                    return new Authentication\OAuth\Transformers\AuthorizationCode();
-                },
-                Authentication\OAuth\Transformers\Scopes::class => function () {
-                    return new Authentication\OAuth\Transformers\Scopes();
-                },
-                Authentication\PrivateAuthentication\Transformers\Credentials::class => function () {
-                    return new Authentication\PrivateAuthentication\Transformers\Credentials();
-                },
-                Responses\StatusCodes::class => function () {
-                    return new Responses\StatusCodes();
-                },
-            ]
+            /**
+             * Yaspa constructors
+             */
+            Builders\PagedResultsIterator::class => function () {
+                return new Builders\PagedResultsIterator(
+                    self::make(GuzzleHttp\Client::class)
+                );
+            },
+            Responses\StatusCodes::class => function () {
+                return new Responses\StatusCodes();
+            },
+        ];
+
+        return array_merge(
+            $localConstructors,
+            AdminApi\Customer\CustomerFactoryProvider::makeConstructors($self),
+            AdminApi\Metafield\MetafieldFactoryProvider::makeConstructors($self),
+            AdminApi\Product\ProductFactoryProvider::makeConstructors($self),
+            AdminApi\Shop\ShopFactoryProvider::makeConstructors($self),
+            Authentication\AuthenticationFactoryProvider::makeConstructors($self)
         );
     }
 }
