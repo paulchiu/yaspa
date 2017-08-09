@@ -140,9 +140,7 @@ class Variant
         $array['sku'] = $variant->getSku();
         $array['position'] = $variant->getPosition();
         $array['grams'] = $variant->getGrams();
-        $array['inventory_policy'] = $variant->getInventoryPolicy();
         $array['compare_at_price'] = $variant->getCompareAtPrice();
-        $array['fulfillment_service'] = $variant->getFulfillmentService();
         $array['inventory_management'] = $variant->getInventoryManagement();
         $array['option1'] = $variant->getOption1();
         $array['option2'] = $variant->getOption2();
@@ -157,6 +155,17 @@ class Variant
         $array['weight_unit'] = $variant->getWeightUnit();
         $array['old_inventory_quantity'] = $variant->getOldInventoryQuantity();
         $array['requires_shipping'] = $variant->isRequiresShipping();
+
+        /**
+         * Attributes that cannot be empty
+         */
+        if ($variant->getFulfillmentService() !== null) {
+            $array['fulfillment_service'] = $variant->getFulfillmentService();
+        }
+
+        if ($variant->getInventoryPolicy() !== null) {
+            $array['inventory_policy'] = $variant->getInventoryPolicy();
+        }
 
         return $array;
     }

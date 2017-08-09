@@ -20,7 +20,7 @@ class Variant
     protected $productId;
     /** @var string $title */
     protected $title;
-    /** @var int $price */
+    /** @var float $price */
     protected $price;
     /** @var string $sku */
     protected $sku;
@@ -118,18 +118,18 @@ class Variant
     }
 
     /**
-     * @return int
+     * @return float
      */
-    public function getPrice():? int
+    public function getPrice():? float
     {
         return $this->price;
     }
 
     /**
-     * @param int $price
+     * @param float $price
      * @return Variant
      */
-    public function setPrice(int $price): Variant
+    public function setPrice(float $price): Variant
     {
         $this->price = $price;
         return $this;
@@ -183,7 +183,7 @@ class Variant
      * @param int $grams
      * @return Variant
      */
-    public function setGrams(int $grams): Variant
+    public function setGrams(?int $grams): Variant
     {
         $this->grams = $grams;
         return $this;
@@ -255,7 +255,7 @@ class Variant
      * @param string $inventoryManagement
      * @return Variant
      */
-    public function setInventoryManagement(string $inventoryManagement): Variant
+    public function setInventoryManagement(?string $inventoryManagement): Variant
     {
         $this->inventoryManagement = $inventoryManagement;
         return $this;
@@ -381,7 +381,7 @@ class Variant
      * @param string $barcode
      * @return Variant
      */
-    public function setBarcode(string $barcode): Variant
+    public function setBarcode(?string $barcode): Variant
     {
         $this->barcode = $barcode;
         return $this;
@@ -399,7 +399,7 @@ class Variant
      * @param int $imageId
      * @return Variant
      */
-    public function setImageId(int $imageId): Variant
+    public function setImageId(?int $imageId): Variant
     {
         $this->imageId = $imageId;
         return $this;

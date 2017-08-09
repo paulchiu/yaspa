@@ -123,6 +123,14 @@ class Product implements ArrayResponseTransformerInterface
             $product->setPublishedScope($shopifyJsonProduct->published_scope);
         }
 
+        if (property_exists($shopifyJsonProduct, 'metafields_global_title_tag')) {
+            $product->setMetafieldsGlobalTitleTag($shopifyJsonProduct->metafields_global_title_tag);
+        }
+
+        if (property_exists($shopifyJsonProduct, 'metafields_global_description_tag')) {
+            $product->setMetafieldsGlobalDescriptionTag($shopifyJsonProduct->metafields_global_description_tag);
+        }
+
         if (property_exists($shopifyJsonProduct, 'tags')) {
             $tags = explode(',', $shopifyJsonProduct->tags);
             $product->setTags($tags);
@@ -142,7 +150,8 @@ class Product implements ArrayResponseTransformerInterface
             $product->setImages($images);
         }
 
-        if (property_exists($shopifyJsonProduct, 'image')) {
+        if (property_exists($shopifyJsonProduct, 'image')
+            && !empty($shopifyJsonProduct->image)) {
             $image = $this->imageTransformer->fromShopifyJsonImage($shopifyJsonProduct->image);
             $product->setImage($image);
         }
@@ -168,9 +177,15 @@ class Product implements ArrayResponseTransformerInterface
         $array['updated_at'] = $product->getUpdatedAt();
         $array['published_at'] = $product->getPublishedAt();
         $array['template_suffix'] = $product->getTemplateSuffix();
-        $array['published_scope'] = $product->getPublishedScope();
-        $array['tags'] = $product->getTags();
+        $array['tags'] = implode(', ', $product->getTags());
         $array['options'] = $product->getOptions();
+
+        /**
+         * Attributes that cannot be empty
+         */
+        if ($product->getPublishedScope() !== null) {
+            $array['published_scope'] = $product->getPublishedScope();
+        }
 
         /**
          * Transform typed attributes

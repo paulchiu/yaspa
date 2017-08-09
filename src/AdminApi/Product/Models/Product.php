@@ -35,6 +35,10 @@ class Product
     protected $templateSuffix;
     /** @var string $publishedScope */
     protected $publishedScope;
+    /** @var string $metafieldsGlobalTitleTag */
+    protected $metafieldsGlobalTitleTag;
+    /** @var string $metafieldsGlobalDescriptionTag */
+    protected $metafieldsGlobalDescriptionTag;
     /** @var array|string[] $tags */
     protected $tags;
     /** @var array|Variant[] $variants */
@@ -254,6 +258,38 @@ class Product
     {
         $this->publishedScope = $publishedScope;
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMetafieldsGlobalTitleTag():? string
+    {
+        return $this->metafieldsGlobalTitleTag;
+    }
+
+    /**
+     * @param string $metafieldsGlobalTitleTag
+     */
+    public function setMetafieldsGlobalTitleTag(string $metafieldsGlobalTitleTag)
+    {
+        $this->metafieldsGlobalTitleTag = $metafieldsGlobalTitleTag;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMetafieldsGlobalDescriptionTag():? string
+    {
+        return $this->metafieldsGlobalDescriptionTag;
+    }
+
+    /**
+     * @param string $metafieldsGlobalDescriptionTag
+     */
+    public function setMetafieldsGlobalDescriptionTag(string $metafieldsGlobalDescriptionTag)
+    {
+        $this->metafieldsGlobalDescriptionTag = $metafieldsGlobalDescriptionTag;
     }
 
     /**

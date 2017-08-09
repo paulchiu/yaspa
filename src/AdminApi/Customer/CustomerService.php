@@ -24,6 +24,7 @@ use Yaspa\Interfaces\RequestCredentialsInterface;
  * Class CustomerService
  *
  * @package Yaspa\AdminApi\Customer
+ * @see https://help.shopify.com/api/reference/customer
  */
 class CustomerService
 {
