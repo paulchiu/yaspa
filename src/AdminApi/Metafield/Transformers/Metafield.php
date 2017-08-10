@@ -80,12 +80,16 @@ class Metafield implements ArrayResponseTransformerInterface
             $metafield->setOwnerId($shopifyJsonMetafield->owner_id);
         }
 
-        if (property_exists($shopifyJsonMetafield, 'created_at')) {
+        if (property_exists($shopifyJsonMetafield, 'created_at')
+            && !empty($shopifyJsonMetafield->created_at)
+        ) {
             $createdAt = new DateTime($shopifyJsonMetafield->created_at);
             $metafield->setCreatedAt($createdAt);
         }
 
-        if (property_exists($shopifyJsonMetafield, 'updated_at')) {
+        if (property_exists($shopifyJsonMetafield, 'updated_at')
+            && !empty($shopifyJsonMetafield->updated_at)
+        ) {
             $updatedAt = new DateTime($shopifyJsonMetafield->updated_at);
             $metafield->setUpdatedAt($updatedAt);
         }
@@ -112,8 +116,8 @@ class Metafield implements ArrayResponseTransformerInterface
         $array['value_type'] = $metafield->getValueType();
         $array['description'] = $metafield->getDescription();
         $array['owner_id'] = $metafield->getOwnerId();
-        $array['created_at'] = $metafield->getCreatedAt();
-        $array['updated_at'] = $metafield->getUpdatedAt();
+        $array['created_at'] = ($metafield->getCreatedAt()) ? $metafield->getCreatedAt()->format(DateTime::ISO8601) : null;
+        $array['updated_at'] = ($metafield->getUpdatedAt()) ? $metafield->getUpdatedAt()->format(DateTime::ISO8601) : null;
         $array['owner_resource'] = $metafield->getOwnerResource();
 
         return $array;

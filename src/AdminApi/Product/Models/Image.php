@@ -30,6 +30,8 @@ class Image
     protected $height;
     /** @var string $src */
     protected $src;
+    /** @var string $attachment */
+    protected $attachment;
     /** @var int[] $variantIds */
     protected $variantIds;
 
@@ -182,6 +184,24 @@ class Image
     public function setSrc(string $src): Image
     {
         $this->src = $src;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAttachment():? string
+    {
+        return $this->attachment;
+    }
+
+    /**
+     * @param string $attachment
+     * @return Image
+     */
+    public function setAttachment(string $attachment): Image
+    {
+        $this->attachment = $attachment;
         return $this;
     }
 

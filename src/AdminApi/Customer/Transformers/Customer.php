@@ -93,12 +93,16 @@ class Customer implements ArrayResponseTransformerInterface
             $customer->setAcceptsMarketing($shopifyJsonCustomer->accepts_marketing);
         }
 
-        if (property_exists($shopifyJsonCustomer, 'created_at')) {
+        if (property_exists($shopifyJsonCustomer, 'created_at')
+            && !empty($shopifyJsonCustomer->created_at)
+        ) {
             $createdAt = new DateTime($shopifyJsonCustomer->created_at);
             $customer->setCreatedAt($createdAt);
         }
 
-        if (property_exists($shopifyJsonCustomer, 'updated_at')) {
+        if (property_exists($shopifyJsonCustomer, 'updated_at')
+            && !empty($shopifyJsonCustomer->updated_at)
+        ) {
             $updatedAt = new DateTime($shopifyJsonCustomer->updated_at);
             $customer->setUpdatedAt($updatedAt);
         }
@@ -180,8 +184,8 @@ class Customer implements ArrayResponseTransformerInterface
         $array['id'] = $customer->getId();
         $array['email'] = $customer->getEmail();
         $array['accepts_marketing'] = $customer->isAcceptsMarketing();
-        $array['created_at'] = $customer->getCreatedAt();
-        $array['updated_at'] = $customer->getUpdatedAt();
+        $array['created_at'] = ($customer->getCreatedAt()) ? $customer->getCreatedAt()->format(DateTime::ISO8601) : null;
+        $array['updated_at'] = ($customer->getUpdatedAt()) ? $customer->getUpdatedAt()->format(DateTime::ISO8601) : null;
         $array['first_name'] = $customer->getFirstName();
         $array['last_name'] = $customer->getLastName();
         $array['orders_count'] = $customer->getOrdersCount();

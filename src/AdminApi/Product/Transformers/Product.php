@@ -96,7 +96,9 @@ class Product implements ArrayResponseTransformerInterface
             $product->setProductType($shopifyJsonProduct->product_type);
         }
 
-        if (property_exists($shopifyJsonProduct, 'created_at')) {
+        if (property_exists($shopifyJsonProduct, 'created_at')
+            && !empty($shopifyJsonProduct->created_at)
+        ) {
             $createdAt = new DateTime($shopifyJsonProduct->created_at);
             $product->setCreatedAt($createdAt);
         }
@@ -105,12 +107,16 @@ class Product implements ArrayResponseTransformerInterface
             $product->setHandle($shopifyJsonProduct->handle);
         }
 
-        if (property_exists($shopifyJsonProduct, 'updated_at')) {
+        if (property_exists($shopifyJsonProduct, 'updated_at')
+            && !empty($shopifyJsonProduct->updated_at)
+        ) {
             $updatedAt = new DateTime($shopifyJsonProduct->updated_at);
             $product->setUpdatedAt($updatedAt);
         }
 
-        if (property_exists($shopifyJsonProduct, 'published_at')) {
+        if (property_exists($shopifyJsonProduct, 'published_at')
+            && !empty($shopifyJsonProduct->published_at)
+        ) {
             $publishedAt = new DateTime($shopifyJsonProduct->published_at);
             $product->setPublishedAt($publishedAt);
         }
@@ -172,10 +178,10 @@ class Product implements ArrayResponseTransformerInterface
         $array['body_html'] = $product->getBodyHtml();
         $array['vendor'] = $product->getVendor();
         $array['product_type'] = $product->getProductType();
-        $array['created_at'] = $product->getCreatedAt();
+        $array['created_at'] = ($product->getCreatedAt()) ? $product->getCreatedAt()->format(DateTime::ISO8601) : null;
         $array['handle'] = $product->getHandle();
-        $array['updated_at'] = $product->getUpdatedAt();
-        $array['published_at'] = $product->getPublishedAt();
+        $array['updated_at'] = ($product->getUpdatedAt()) ? $product->getUpdatedAt()->format(DateTime::ISO8601) : null;
+        $array['published_at'] = ($product->getPublishedAt()) ? $product->getPublishedAt()->format(DateTime::ISO8601) : null;
         $array['template_suffix'] = $product->getTemplateSuffix();
         $array['tags'] = implode(', ', $product->getTags());
         $array['options'] = $product->getOptions();

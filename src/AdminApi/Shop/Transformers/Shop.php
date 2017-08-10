@@ -64,7 +64,9 @@ class Shop
             $shop->setDomain($shopifyJsonShop->domain);
         }
 
-        if (property_exists($shopifyJsonShop, 'created_at')) {
+        if (property_exists($shopifyJsonShop, 'created_at')
+            && !empty($shopifyJsonShop->created_at)
+        ) {
             $createdAt = new DateTime($shopifyJsonShop->created_at);
             $shop->setCreatedAt($createdAt);
         }
@@ -97,7 +99,9 @@ class Shop
             $shop->setPhone($shopifyJsonShop->phone);
         }
 
-        if (property_exists($shopifyJsonShop, 'updated_at')) {
+        if (property_exists($shopifyJsonShop, 'updated_at')
+            && !empty($shopifyJsonShop->updated_at)
+        ) {
             $updatedAt = new DateTime($shopifyJsonShop->updated_at);
             $shop->setUpdatedAt($updatedAt);
         }

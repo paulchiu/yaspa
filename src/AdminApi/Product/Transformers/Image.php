@@ -36,12 +36,16 @@ class Image
             $image->setPosition($shopifyJsonImage->position);
         }
 
-        if (property_exists($shopifyJsonImage, 'created_at')) {
+        if (property_exists($shopifyJsonImage, 'created_at')
+            && !empty($shopifyJsonImage->created_at)
+        ) {
             $createdAt = new DateTime($shopifyJsonImage->created_at);
             $image->setCreatedAt($createdAt);
         }
 
-        if (property_exists($shopifyJsonImage, 'updated_at')) {
+        if (property_exists($shopifyJsonImage, 'updated_at')
+            && !empty($shopifyJsonImage->updated_at)
+        ) {
             $updatedAt = new DateTime($shopifyJsonImage->updated_at);
             $image->setUpdatedAt($updatedAt);
         }
@@ -76,12 +80,16 @@ class Image
         $array['id'] = $image->getId();
         $array['product_id'] = $image->getProductId();
         $array['position'] = $image->getPosition();
-        $array['created_at'] = $image->getCreatedAt();
-        $array['updated_at'] = $image->getUpdatedAt();
+        $array['created_at'] = ($image->getCreatedAt()) ? $image->getCreatedAt()->format(DateTime::ISO8601) : null;
+        $array['updated_at'] = ($image->getUpdatedAt()) ? $image->getUpdatedAt()->format(DateTime::ISO8601) : null;
         $array['width'] = $image->getWidth();
         $array['height'] = $image->getHeight();
         $array['src'] = $image->getSrc();
         $array['variant_ids'] = $image->getVariantIds();
+
+        if ($image->getAttachment()) {
+            $array['attachment'] = $image->getAttachment();
+        }
 
         return $array;
     }

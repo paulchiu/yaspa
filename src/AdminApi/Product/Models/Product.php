@@ -381,4 +381,41 @@ class Product
         $this->image = $image;
         return $this;
     }
+
+    /**
+     * This is a getter to logically support self::setPublished
+     *
+     * @return bool
+     */
+    public function isPublished(): bool
+    {
+        if (is_null($this->publishedAt)) {
+            return false;
+        }
+
+        $now = new DateTime();
+        return intval($now->diff($this->publishedAt)->format('yMDHIS')) >= 0;
+    }
+
+    /**
+     * This is a setter to support the example "Create a new, but unpublished product".
+     *
+     * This is a computed setter because Shopify's "Product properties" table does not list
+     * `published` as an attribute. Furthermore, it seems redundant as `published_at` appears
+     * to be the primary indicator as to a product's published status.
+     *
+     * @see https://help.shopify.com/api/reference/product#create
+     * @param bool $published
+     * @return Product
+     */
+    public function setPublished(bool $published): Product
+    {
+        if ($published) {
+            $this->publishedAt = new DateTime();
+        } else {
+            $this->publishedAt = null;
+        }
+
+        return $this;
+    }
 }

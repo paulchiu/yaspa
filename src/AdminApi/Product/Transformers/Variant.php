@@ -80,12 +80,16 @@ class Variant
             $variant->setOption3($shopifyJsonVariant->option3);
         }
 
-        if (property_exists($shopifyJsonVariant, 'created_at')) {
+        if (property_exists($shopifyJsonVariant, 'created_at')
+            && !empty($shopifyJsonVariant->created_at)
+        ) {
             $createdAt = new DateTime($shopifyJsonVariant->created_at);
             $variant->setCreatedAt($createdAt);
         }
 
-        if (property_exists($shopifyJsonVariant, 'updated_at')) {
+        if (property_exists($shopifyJsonVariant, 'updated_at')
+            && !empty($shopifyJsonVariant->updated_at)
+        ) {
             $updatedAt = new DateTime($shopifyJsonVariant->updated_at);
             $variant->setUpdatedAt($updatedAt);
         }
@@ -145,8 +149,8 @@ class Variant
         $array['option1'] = $variant->getOption1();
         $array['option2'] = $variant->getOption2();
         $array['option3'] = $variant->getOption3();
-        $array['created_at'] = $variant->getCreatedAt();
-        $array['updated_at'] = $variant->getUpdatedAt();
+        $array['created_at'] = ($variant->getCreatedAt()) ? $variant->getCreatedAt()->format(DateTime::ISO8601) : null;
+        $array['updated_at'] = ($variant->getUpdatedAt()) ? $variant->getUpdatedAt()->format(DateTime::ISO8601) : null;
         $array['taxable'] = $variant->isTaxable();
         $array['barcode'] = $variant->getBarcode();
         $array['image_id'] = $variant->getImageId();
