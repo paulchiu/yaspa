@@ -143,7 +143,7 @@ class Product implements ArrayResponseTransformerInterface
         }
 
         if (property_exists($shopifyJsonProduct, 'tags')
-            && $shopifyJsonProduct->tags
+            && !empty($shopifyJsonProduct->tags)
         ) {
             $tags = array_map('trim', explode(',', $shopifyJsonProduct->tags));
             $product->setTags($tags);
