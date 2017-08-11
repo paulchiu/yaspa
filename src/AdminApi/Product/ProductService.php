@@ -5,8 +5,10 @@ namespace Yaspa\AdminApi\Product;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
 use Yaspa\AdminApi\Product\Builders\CreateNewProductRequest;
+use Yaspa\AdminApi\Product\Builders\GetProductsRequest;
 use Yaspa\AdminApi\Product\Models;
 use Yaspa\AdminApi\Product\Transformers;
+use Yaspa\Builders\PagedResultsIterator;
 use Yaspa\Interfaces\RequestCredentialsInterface;
 
 /**
@@ -23,6 +25,8 @@ class ProductService
     protected $productTransformer;
     /** @var CreateNewProductRequest $createNewProductRequestBuilder */
     protected $createNewProductRequestBuilder;
+    /** @var PagedResultsIterator $pagedResultsIteratorBuilder */
+    protected $pagedResultsIteratorBuilder;
 
     /**
      * ProductService constructor.
@@ -30,16 +34,54 @@ class ProductService
      * @param Client $httpClient
      * @param Transformers\Product $productTransformer
      * @param CreateNewProductRequest $createNewProductRequestBuilder
+     * @param PagedResultsIterator $pagedResultsIteratorBuilder
      */
     public function __construct(
         Client $httpClient,
         Transformers\Product $productTransformer,
-        CreateNewProductRequest $createNewProductRequestBuilder
+        CreateNewProductRequest $createNewProductRequestBuilder,
+        PagedResultsIterator $pagedResultsIteratorBuilder
     ) {
         $this->httpClient = $httpClient;
         $this->productTransformer = $productTransformer;
         $this->createNewProductRequestBuilder = $createNewProductRequestBuilder;
+        $this->pagedResultsIteratorBuilder = $pagedResultsIteratorBuilder;
     }
+
+    /**
+     * Get products based on parameters set in the request.
+     *
+     * @see https://help.shopify.com/api/reference/product#index
+     * @param GetProductsRequest $request
+     * @return PagedResultsIterator
+     */
+    public function getProducts(GetProductsRequest $request): PagedResultsIterator
+    {
+        return $this->pagedResultsIteratorBuilder
+            ->withRequestBuilder($request)
+            ->withTransformer($this->productTransformer);
+    }
+
+    /**
+     * Async version of self::getProducts
+     *
+     * Please note that results will have to be manually transformed.
+     *
+     * @see https://help.shopify.com/api/reference/product#index
+     * @param GetProductsRequest $request
+     * @return PromiseInterface
+     */
+    public function asyncGetProducts(GetProductsRequest $request): PromiseInterface
+    {
+        return $this->httpClient->sendAsync(
+            $request->toRequest(),
+            $request->toRequestOptions()
+        );
+    }
+
+    /**
+     * @todo Implement count https://help.shopify.com/api/reference/product#count
+     */
 
     /**
      * Create a new product

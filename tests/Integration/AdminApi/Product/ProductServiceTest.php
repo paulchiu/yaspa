@@ -4,6 +4,8 @@ namespace Yaspa\Tests\Integration\AdminApi\Product;
 
 use GuzzleHttp\Exception\ClientException;
 use Yaspa\AdminApi\Metafield\Models\Metafield;
+use Yaspa\AdminApi\Product\Builders\GetProductsRequest;
+use Yaspa\AdminApi\Product\Builders\ProductFields;
 use Yaspa\AdminApi\Product\Models\Image;
 use Yaspa\AdminApi\Product\Models\Product;
 use Yaspa\AdminApi\Product\Models\Variant;
@@ -316,4 +318,132 @@ class ProductServiceTest extends TestCase
         $this->assertNotEmpty($newProduct->getTags());
         $this->assertCount(1, $newProduct->getVariants());
     }
+
+    /**
+     * @depends testCanCreateNewProductWithMultipleProductVariants
+     * @group integration
+     */
+    public function testCanGetAllProductsShowingOnlySomeAttributes()
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Create request
+        /** @var ProductFields $fields */
+        $fields = Factory::make(ProductFields::class);
+        $fields = $fields
+            ->withId()
+            ->withImages()
+            ->withTitle();
+        /** @var GetProductsRequest $request */
+        $request = Factory::make(GetProductsRequest::class);
+        $request = $request
+            ->withCredentials($credentials)
+            ->withProductFields($fields)
+            ->withLimit(1);
+
+        // Get and test results
+        /** @var ProductService $service */
+        $service = Factory::make(ProductService::class);
+        /** @var Product[] $products */
+        $products = $service->getProducts($request);
+        $this->assertTrue(is_iterable($products));
+        foreach ($products as $product) {
+            $this->assertInstanceOf(Product::class, $product);
+            $this->assertNotEmpty($product->getId());
+            break;
+        }
+    }
+
+    /**
+     * @depends testCanCreateNewProductWithMultipleProductVariants
+     * @group integration
+     */
+    public function testCanGetAllProducts()
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Create request
+        /** @var GetProductsRequest $request */
+        $request = Factory::make(GetProductsRequest::class);
+        $request = $request
+            ->withCredentials($credentials)
+            ->withLimit(1);
+
+        // Get and test results
+        /** @var ProductService $service */
+        $service = Factory::make(ProductService::class);
+        /** @var Product[] $products */
+        $products = $service->getProducts($request);
+        $this->assertTrue(is_iterable($products));
+        foreach ($products as $product) {
+            $this->assertInstanceOf(Product::class, $product);
+            $this->assertNotEmpty($product->getId());
+            break;
+        }
+    }
+
+    /**
+     * @depends testCanCreateNewProductWithMultipleProductVariants
+     * @group integration
+     * @param Product $newProduct
+     */
+    public function testCanGetAListOfSpecificProducts(Product $newProduct)
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Create request
+        /** @var GetProductsRequest $request */
+        $request = Factory::make(GetProductsRequest::class);
+        $request = $request
+            ->withCredentials($credentials)
+            ->withIds([$newProduct->getId()]);
+
+        // Get and test results
+        /** @var ProductService $service */
+        $service = Factory::make(ProductService::class);
+        /** @var Product[] $products */
+        $products = $service->getProducts($request);
+        $this->assertTrue(is_iterable($products));
+        foreach ($products as $product) {
+            $this->assertInstanceOf(Product::class, $product);
+            $this->assertEquals($newProduct->getId(), $product->getId());
+        }
+    }
+
+    /**
+     * @todo Test fetch all products that belong to a certain collection once collection service is implemented
+     */
 }

@@ -4,6 +4,7 @@ namespace Yaspa\AdminApi\Product;
 
 use GuzzleHttp;
 use Yaspa\AdminApi\Metafield;
+use Yaspa\Builders\PagedResultsIterator;
 use Yaspa\Interfaces\FactoryInterface;
 use Yaspa\Interfaces\FactoryProviderInterface;
 
@@ -26,11 +27,18 @@ class ProductFactoryProvider implements FactoryProviderInterface
                     $factory::make(Transformers\Product::class)
                 );
             },
+            Builders\GetProductsRequest::class => function () {
+                return new Builders\GetProductsRequest();
+            },
+            Builders\ProductFields::class => function () {
+                return new Builders\ProductFields();
+            },
             ProductService::class => function () use ($factory) {
                 return new ProductService(
                     $factory::make(GuzzleHttp\Client::class),
                     $factory::make(Transformers\Product::class),
-                    $factory::make(Builders\CreateNewProductRequest::class)
+                    $factory::make(Builders\CreateNewProductRequest::class),
+                    $factory::make(PagedResultsIterator::class)
                 );
             },
             Transformers\Product::class => function () use ($factory) {

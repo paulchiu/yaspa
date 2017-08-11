@@ -3,7 +3,6 @@
 namespace Yaspa\AdminApi\Customer\Builders;
 
 use DateTime;
-use GuzzleHttp\RequestOptions;
 use Yaspa\Constants\RequestBuilder;
 use Yaspa\Interfaces\PagingRequestBuilderInterface;
 use Yaspa\Traits\AuthorizedRequestBuilderTrait;

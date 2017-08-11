@@ -16,4 +16,7 @@ class Product
         self::PUBLISHED_SCOPE_GLOBAL,
         self::PUBLISHED_SCOPE_WEB,
     ];
+    const PUBLISHED_STATUS_PUBLISHED = 'published';
+    const PUBLISHED_STATUS_UNPUBLISHED = 'unpublished';
+    const PUBLISHED_STATUS_ANY = 'any';
 }
