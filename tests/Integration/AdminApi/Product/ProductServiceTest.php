@@ -58,6 +58,7 @@ class ProductServiceTest extends TestCase
         $this->assertCount(2, $newProduct->getVariants());
         $this->assertCount(0, $newProduct->getImages());
         $this->assertFalse($newProduct->isPublished());
+        $this->assertEmpty($newProduct->getTags());
 
         return $newProduct;
     }
@@ -98,6 +99,7 @@ class ProductServiceTest extends TestCase
         $this->assertCount(1, $newProduct->getVariants());
         $this->assertCount(1, $newProduct->getImages());
         $this->assertFalse($newProduct->isPublished());
+        $this->assertEmpty($newProduct->getTags());
     }
 
     /**
@@ -137,6 +139,7 @@ class ProductServiceTest extends TestCase
         $this->assertCount(1, $newProduct->getVariants());
         $this->assertCount(1, $newProduct->getImages());
         $this->assertFalse($newProduct->isPublished());
+        $this->assertEmpty($newProduct->getTags());
     }
 
     /**
@@ -201,6 +204,7 @@ class ProductServiceTest extends TestCase
         $newProduct = $service->createNewProduct($credentials, $product);
         $this->assertInstanceOf(Product::class, $newProduct);
         $this->assertFalse($newProduct->isPublished());
+        $this->assertEmpty($newProduct->getTags());
     }
 
     /**
@@ -274,10 +278,42 @@ class ProductServiceTest extends TestCase
         $newProduct = $service->createNewProduct($credentials, $product);
         $this->assertInstanceOf(Product::class, $newProduct);
         $this->assertFalse($newProduct->isPublished());
+        $this->assertEmpty($newProduct->getTags());
         // @todo Test metafield exists when get metafields implemented; manually checked to work for now
     }
 
     /**
-     * @todo More tests....
+     * @group integration
      */
+    public function testCanCreateNewProductWithDefaultProductVariant()
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Create request parameters
+        $product = (new Product())
+            ->setTitle('Burton Custom Freestyle 151')
+            ->setBodyHtml('<strong>Good snowboard!</strong>')
+            ->setVendor('Burton')
+            ->setProductType('Snowboard')
+            ->setTags(['Barnes & Noble', 'John\'s Fav', 'Big Air']);
+
+        // Create new product
+        /** @var ProductService $service */
+        $service = Factory::make(ProductService::class);
+        $newProduct = $service->createNewProduct($credentials, $product);
+        $this->assertInstanceOf(Product::class, $newProduct);
+        $this->assertNotEmpty($newProduct->getTags());
+        $this->assertCount(1, $newProduct->getVariants());
+    }
 }
