@@ -4,6 +4,7 @@ namespace Yaspa\AdminApi\Product\Transformers;
 
 use DateTime;
 use Psr\Http\Message\ResponseInterface;
+use Yaspa\AdminApi\Metafield\Transformers\Metafield;
 use Yaspa\AdminApi\Product\Models\Product as ProductModel;
 use Yaspa\Exceptions\MissingExpectedAttributeException;
 use Yaspa\Interfaces\ArrayResponseTransformerInterface;
@@ -23,17 +24,21 @@ class Product implements ArrayResponseTransformerInterface
     protected $variantTransformer;
     /** @var Image $imageTransformer */
     protected $imageTransformer;
+    /** @var Metafield $metafieldTransformer */
+    protected $metafieldTransformer;
 
     /**
      * Product constructor.
      *
      * @param Variant $variantTransformer
      * @param Image $imageTransformer
+     * @param Metafield $metafieldTransformer
      */
-    public function __construct(Variant $variantTransformer, Image $imageTransformer)
+    public function __construct(Variant $variantTransformer, Image $imageTransformer, Metafield $metafieldTransformer)
     {
         $this->variantTransformer = $variantTransformer;
         $this->imageTransformer = $imageTransformer;
+        $this->metafieldTransformer = $metafieldTransformer;
     }
 
     /**
@@ -137,8 +142,10 @@ class Product implements ArrayResponseTransformerInterface
             $product->setMetafieldsGlobalDescriptionTag($shopifyJsonProduct->metafields_global_description_tag);
         }
 
-        if (property_exists($shopifyJsonProduct, 'tags')) {
-            $tags = explode(',', $shopifyJsonProduct->tags);
+        if (property_exists($shopifyJsonProduct, 'tags')
+            && $shopifyJsonProduct->tags
+        ) {
+            $tags = array_map('trim', explode(',', $shopifyJsonProduct->tags));
             $product->setTags($tags);
         }
 
@@ -206,6 +213,10 @@ class Product implements ArrayResponseTransformerInterface
 
         if ($product->getImage()) {
             $array['image'] = $this->imageTransformer->toArray($product->getImage());
+        }
+
+        if ($product->getMetafields()) {
+            $array['metafields'] = array_map([$this->metafieldTransformer, 'toArray'], $product->getMetafields());
         }
 
         return $array;

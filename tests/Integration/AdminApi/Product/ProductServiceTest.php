@@ -3,6 +3,7 @@
 namespace Yaspa\Tests\Integration\AdminApi\Product;
 
 use GuzzleHttp\Exception\ClientException;
+use Yaspa\AdminApi\Metafield\Models\Metafield;
 use Yaspa\AdminApi\Product\Models\Image;
 use Yaspa\AdminApi\Product\Models\Product;
 use Yaspa\AdminApi\Product\Models\Variant;
@@ -234,6 +235,46 @@ class ProductServiceTest extends TestCase
         $newProduct = $service->createNewProduct($credentials, $product);
         $this->assertInstanceOf(Product::class, $newProduct);
         $this->assertTrue($newProduct->isPublished());
+    }
+
+    /**
+     * @group integration
+     */
+    public function testCanCreateProductWithMetafield()
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Create request parameters
+        $metafield = (new Metafield())
+            ->setKey('new')
+            ->setValue('newvalue')
+            ->setValueType('string')
+            ->setNamespace('global');
+        $product = (new Product())
+            ->setTitle('Burton Custom Freestyle 151')
+            ->setBodyHtml('<strong>Good snowboard!</strong>')
+            ->setVendor('Burton')
+            ->setProductType('Snowboard')
+            ->setMetafields([$metafield]);
+
+        // Create new product
+        /** @var ProductService $service */
+        $service = Factory::make(ProductService::class);
+        $newProduct = $service->createNewProduct($credentials, $product);
+        $this->assertInstanceOf(Product::class, $newProduct);
+        $this->assertFalse($newProduct->isPublished());
+        // @todo Test metafield exists when get metafields implemented; manually checked to work for now
     }
 
     /**

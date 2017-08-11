@@ -4,6 +4,7 @@ namespace Yaspa\AdminApi\Product\Models;
 
 use DateTime;
 use stdClass;
+use Yaspa\AdminApi\Metafield\Models\Metafield;
 
 /**
  * Class Product
@@ -49,6 +50,8 @@ class Product
     protected $images;
     /** @var Image $image */
     protected $image;
+    /** @var array|Metafield[] $metafields */
+    protected $metafields;
 
     /**
      * Product constructor.
@@ -59,7 +62,8 @@ class Product
             ->setTags([])
             ->setVariants([])
             ->setOptions([])
-            ->setImages([]);
+            ->setImages([])
+            ->setMetafields([]);
     }
 
     /**
@@ -379,6 +383,24 @@ class Product
     public function setImage(Image $image): Product
     {
         $this->image = $image;
+        return $this;
+    }
+
+    /**
+     * @return array|Metafield[]
+     */
+    public function getMetafields(): array
+    {
+        return $this->metafields;
+    }
+
+    /**
+     * @param array|Metafield[] $metafields
+     * @return Product
+     */
+    public function setMetafields(array $metafields): Product
+    {
+        $this->metafields = $metafields;
         return $this;
     }
 
