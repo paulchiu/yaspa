@@ -140,7 +140,7 @@ class GetProductsRequest implements PagingRequestBuilderInterface
         }
 
         if (!is_null($this->productFields)) {
-            $array['product_fields'] = implode(',', $this->productFields->getFields());
+            $array['fields'] = implode(',', $this->productFields->getFields());
         }
 
         return $array;

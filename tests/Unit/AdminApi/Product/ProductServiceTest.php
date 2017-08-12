@@ -5,6 +5,7 @@ namespace Yaspa\Tests\Unit\AdminApi\Product;
 use GuzzleHttp\Client;
 use Yaspa\AdminApi\Product\Builders\CountProductsRequest;
 use Yaspa\AdminApi\Product\Builders\GetProductsRequest;
+use Yaspa\AdminApi\Product\Builders\ProductFields;
 use Yaspa\AdminApi\Product\Models\Product;
 use Yaspa\AdminApi\Product\ProductService;
 use PHPUnit\Framework\TestCase;
@@ -101,5 +102,62 @@ class ProductServiceTest extends TestCase
         $service = Factory::make(ProductService::class);
         $productsCount = $service->countProducts($request);
         $this->assertEquals(3, $productsCount);
+    }
+
+    public function testCanGetProductById()
+    {
+        // Create mock client
+        $mockClientUtil = new MockGuzzleClient();
+        $client = $mockClientUtil->makeWithResponses(
+            [
+                $mockClientUtil->makeJsonResponse(200, [
+                    'product' => [
+                        'id' => 3,
+                        'title' => 'foo',
+                    ],
+                ]),
+            ]
+        );
+        Factory::inject(Client::class, $client);
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makeOAuth('foo', 'bar');
+
+        // Test method
+        $service = Factory::make(ProductService::class);
+        $product = $service->getProduct($credentials, 3);
+        $this->assertEquals(3, $product->getId());
+        $this->assertEquals('foo', $product->getTitle());
+    }
+
+    public function testCanGetProductByIdWithParticularFields()
+    {
+        // Create mock client
+        $mockClientUtil = new MockGuzzleClient();
+        $client = $mockClientUtil->makeWithResponses(
+            [
+                $mockClientUtil->makeJsonResponse(200, [
+                    'product' => [
+                        'id' => 3,
+                        'title' => 'foo',
+                    ],
+                ]),
+            ]
+        );
+        Factory::inject(Client::class, $client);
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makeOAuth('foo', 'bar');
+        $fields = Factory::make(ProductFields::class)
+            ->withId()
+            ->withTitle();
+
+        // Test method
+        $service = Factory::make(ProductService::class);
+        $product = $service->getProduct($credentials, 3, $fields);
+        $this->assertEquals(3, $product->getId());
+        $this->assertEquals('foo', $product->getTitle());
     }
 }

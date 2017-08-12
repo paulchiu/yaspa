@@ -6,7 +6,9 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
 use Yaspa\AdminApi\Product\Builders\CountProductsRequest;
 use Yaspa\AdminApi\Product\Builders\CreateNewProductRequest;
+use Yaspa\AdminApi\Product\Builders\GetProductRequest;
 use Yaspa\AdminApi\Product\Builders\GetProductsRequest;
+use Yaspa\AdminApi\Product\Builders\ProductFields;
 use Yaspa\AdminApi\Product\Models;
 use Yaspa\AdminApi\Product\Models\Product;
 use Yaspa\AdminApi\Product\Transformers;
@@ -28,6 +30,8 @@ class ProductService
     protected $productTransformer;
     /** @var CreateNewProductRequest $createNewProductRequestBuilder */
     protected $createNewProductRequestBuilder;
+    /** @var GetProductRequest $getProductRequestBuilder */
+    protected $getProductRequestBuilder;
     /** @var PagedResultsIterator $pagedResultsIteratorBuilder */
     protected $pagedResultsIteratorBuilder;
 
@@ -37,17 +41,20 @@ class ProductService
      * @param Client $httpClient
      * @param Transformers\Product $productTransformer
      * @param CreateNewProductRequest $createNewProductRequestBuilder
+     * @param GetProductRequest $getProductRequestBuilder
      * @param PagedResultsIterator $pagedResultsIteratorBuilder
      */
     public function __construct(
         Client $httpClient,
         Transformers\Product $productTransformer,
         CreateNewProductRequest $createNewProductRequestBuilder,
+        GetProductRequest $getProductRequestBuilder,
         PagedResultsIterator $pagedResultsIteratorBuilder
     ) {
         $this->httpClient = $httpClient;
         $this->productTransformer = $productTransformer;
         $this->createNewProductRequestBuilder = $createNewProductRequestBuilder;
+        $this->getProductRequestBuilder = $getProductRequestBuilder;
         $this->pagedResultsIteratorBuilder = $pagedResultsIteratorBuilder;
     }
 
@@ -119,8 +126,50 @@ class ProductService
     }
 
     /**
-     * @todo https://help.shopify.com/api/reference/product#show
+     * Get an individual product.
+     *
+     * @param RequestCredentialsInterface $credentials
+     * @param int $productId
+     * @param null|ProductFields $productFields
+     * @return Product
      */
+    public function getProduct(
+        RequestCredentialsInterface $credentials,
+        int $productId,
+        ?ProductFields $productFields = null
+    ): Product {
+        $response = $this->asyncGetProduct($credentials, $productId, $productFields)->wait();
+
+        return $this->productTransformer->fromResponse($response);
+    }
+
+    /**
+     * Async version of self::getProduct
+     *
+     * @param RequestCredentialsInterface $credentials
+     * @param int $productId
+     * @param null|ProductFields $productFields
+     * @return PromiseInterface
+     */
+    public function asyncGetProduct(
+        RequestCredentialsInterface $credentials,
+        int $productId,
+        ?ProductFields $productFields = null
+    ): PromiseInterface {
+        $product = (new Product())->setId($productId);
+        $request = $this->getProductRequestBuilder
+            ->withCredentials($credentials)
+            ->withProduct($product);
+
+        if ($productFields) {
+            $request = $request->withProductFields($productFields);
+        }
+
+        return $this->httpClient->sendAsync(
+            $request->toResourceRequest(),
+            $request->toRequestOptions()
+        );
+    }
 
     /**
      * Create a new product
@@ -160,4 +209,8 @@ class ProductService
             $request->toRequestOptions()
         );
     }
+
+    /**
+     * @todo https://help.shopify.com/api/reference/product#update
+     */
 }

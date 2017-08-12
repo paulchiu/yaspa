@@ -428,7 +428,7 @@ class ProductServiceTest extends TestCase
      * @depends testCanCreateNewProductWithMultipleProductVariants
      * @group integration
      */
-    public function testCountAllProducts()
+    public function testCanCountAllProducts()
     {
         // Get config
         $config = new TestConfig();
@@ -451,6 +451,63 @@ class ProductServiceTest extends TestCase
         $service = Factory::make(ProductService::class);
         $productsCount = $service->countProducts($request);
         $this->assertGreaterThan(0, $productsCount);
+    }
+
+    /**
+     * @depends testCanCreateNewProductWithMultipleProductVariants
+     * @group integration
+     * @param Product $product
+     */
+    public function testCanGetProductById(Product $product)
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Get and test results
+        $service = Factory::make(ProductService::class);
+        $retrievedProduct = $service->getProduct($credentials, $product->getId());
+        $this->assertEquals($product->getId(), $retrievedProduct->getId());
+        $this->assertNotEmpty($retrievedProduct->getVendor());
+    }
+
+    /**
+     * @depends testCanCreateNewProductWithMultipleProductVariants
+     * @group integration
+     * @param Product $product
+     */
+    public function testCanGetProductByIdWithParticularFields(Product $product)
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+        $fields = Factory::make(ProductFields::class)
+            ->withId()
+            ->withTitle();
+
+        // Get and test results
+        $service = Factory::make(ProductService::class);
+        $retrievedProduct = $service->getProduct($credentials, $product->getId(), $fields);
+        $this->assertEquals($product->getId(), $retrievedProduct->getId());
+        $this->assertEmpty($retrievedProduct->getVendor());
     }
 
     /**

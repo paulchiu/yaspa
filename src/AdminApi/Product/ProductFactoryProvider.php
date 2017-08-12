@@ -30,6 +30,9 @@ class ProductFactoryProvider implements FactoryProviderInterface
                     $factory::make(Transformers\Product::class)
                 );
             },
+            Builders\GetProductRequest::class => function () {
+                return new Builders\GetProductRequest();
+            },
             Builders\GetProductsRequest::class => function () {
                 return new Builders\GetProductsRequest();
             },
@@ -41,6 +44,7 @@ class ProductFactoryProvider implements FactoryProviderInterface
                     $factory::make(GuzzleHttp\Client::class),
                     $factory::make(Transformers\Product::class),
                     $factory::make(Builders\CreateNewProductRequest::class),
+                    $factory::make(Builders\GetProductRequest::class),
                     $factory::make(PagedResultsIterator::class)
                 );
             },
