@@ -3,6 +3,7 @@
 namespace Yaspa\Tests\Unit\AdminApi\Product;
 
 use GuzzleHttp\Client;
+use Yaspa\AdminApi\Product\Builders\CountProductsRequest;
 use Yaspa\AdminApi\Product\Builders\GetProductsRequest;
 use Yaspa\AdminApi\Product\Models\Product;
 use Yaspa\AdminApi\Product\ProductService;
@@ -35,7 +36,6 @@ class ProductServiceTest extends TestCase
             ->makeOAuth('foo', 'bar');
 
         // Test method
-        /** @var ProductService $service */
         $service = Factory::make(ProductService::class);
         $newProduct = $service->createNewProduct($credentials, $product);
         $this->assertInstanceOf(Product::class, $newProduct);
@@ -69,7 +69,6 @@ class ProductServiceTest extends TestCase
             ->withCredentials($credentials);
 
         // Test method
-        /** @var ProductService $service */
         $service = Factory::make(ProductService::class);
         $products = $service->getProducts($request);
         $this->assertTrue(is_iterable($products));
@@ -77,5 +76,30 @@ class ProductServiceTest extends TestCase
             $this->assertInstanceOf(Product::class, $product);
             $this->assertNotEmpty($product->getId());
         }
+    }
+
+    public function testCanCountProducts()
+    {
+        // Create mock client
+        $mockClientUtil = new MockGuzzleClient();
+        $client = $mockClientUtil->makeWithResponses(
+            [
+                $mockClientUtil->makeJsonResponse(200, [
+                    'count' => 3,
+                ]),
+            ]
+        );
+        Factory::inject(Client::class, $client);
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makeOAuth('foo', 'bar');
+        $request = Factory::make(CountProductsRequest::class)
+            ->withCredentials($credentials);
+
+        // Test method
+        $service = Factory::make(ProductService::class);
+        $productsCount = $service->countProducts($request);
+        $this->assertEquals(3, $productsCount);
     }
 }

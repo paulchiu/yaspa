@@ -4,11 +4,14 @@ namespace Yaspa\AdminApi\Product;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
+use Yaspa\AdminApi\Product\Builders\CountProductsRequest;
 use Yaspa\AdminApi\Product\Builders\CreateNewProductRequest;
 use Yaspa\AdminApi\Product\Builders\GetProductsRequest;
 use Yaspa\AdminApi\Product\Models;
+use Yaspa\AdminApi\Product\Models\Product;
 use Yaspa\AdminApi\Product\Transformers;
 use Yaspa\Builders\PagedResultsIterator;
+use Yaspa\Exceptions\MissingExpectedAttributeException;
 use Yaspa\Interfaces\RequestCredentialsInterface;
 
 /**
@@ -53,7 +56,7 @@ class ProductService
      *
      * @see https://help.shopify.com/api/reference/product#index
      * @param GetProductsRequest $request
-     * @return PagedResultsIterator
+     * @return PagedResultsIterator|Product[]
      */
     public function getProducts(GetProductsRequest $request): PagedResultsIterator
     {
@@ -80,7 +83,43 @@ class ProductService
     }
 
     /**
-     * @todo Implement count https://help.shopify.com/api/reference/product#count
+     * Count products for a collection or search criteria.
+     *
+     * @see https://help.shopify.com/api/reference/product#count
+     * @param CountProductsRequest $request
+     * @return int
+     * @throws MissingExpectedAttributeException
+     */
+    public function countProducts(CountProductsRequest $request): int
+    {
+        $response = $this->asyncCountProducts($request)->wait();
+
+        $count = json_decode($response->getBody()->getContents());
+
+        if (!property_exists($count, 'count')) {
+            throw new MissingExpectedAttributeException('count');
+        }
+
+        return intval($count->count);
+    }
+
+    /**
+     * Async version of self::countProducts
+     *
+     * @see https://help.shopify.com/api/reference/product#count
+     * @param CountProductsRequest $request
+     * @return PromiseInterface
+     */
+    public function asyncCountProducts(CountProductsRequest $request): PromiseInterface
+    {
+        return $this->httpClient->sendAsync(
+            $request->toRequest(),
+            $request->toRequestOptions()
+        );
+    }
+
+    /**
+     * @todo https://help.shopify.com/api/reference/product#show
      */
 
     /**

@@ -78,32 +78,6 @@ class Factory implements FactoryInterface
     }
 
     /**
-     * Returns map array for use in a PHPSTORM_META declaration file.
-     *
-     * @return array
-     */
-    public static function toPhpStormMetaMap(): array
-    {
-        // Constructors is a singleton array
-        if (is_null(self::$constructors)) {
-            self::$constructors = self::makeConstructors();
-        }
-
-        // Make method will return an instance of the same class passed in
-        $classToKeyValMap = function (string $class): array {
-            $fullyQualifiedClassReference = sprintf('\\%s::class', $class);
-
-            return [$fullyQualifiedClassReference => $fullyQualifiedClassReference];
-        };
-
-        // Map with keys all classes defined by registered constructors
-        $classes = array_keys(self::$constructors);
-        $classesMap = call_user_func_array('array_merge', array_map($classToKeyValMap, $classes));
-
-        return $classesMap;
-    }
-
-    /**
      * Create constructors. Also imports and combines constructors from various factory providers
      * in the project.
      *

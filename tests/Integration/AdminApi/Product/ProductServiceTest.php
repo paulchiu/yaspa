@@ -4,6 +4,7 @@ namespace Yaspa\Tests\Integration\AdminApi\Product;
 
 use GuzzleHttp\Exception\ClientException;
 use Yaspa\AdminApi\Metafield\Models\Metafield;
+use Yaspa\AdminApi\Product\Builders\CountProductsRequest;
 use Yaspa\AdminApi\Product\Builders\GetProductsRequest;
 use Yaspa\AdminApi\Product\Builders\ProductFields;
 use Yaspa\AdminApi\Product\Models\Image;
@@ -52,7 +53,6 @@ class ProductServiceTest extends TestCase
             ->setVariants([$variant1, $variant2]);
 
         // Create new product
-        /** @var ProductService $service */
         $service = Factory::make(ProductService::class);
         $newProduct = $service->createNewProduct($credentials, $product);
         $this->assertInstanceOf(Product::class, $newProduct);
@@ -93,7 +93,6 @@ class ProductServiceTest extends TestCase
             ->setImages([$image]);
 
         // Create new product
-        /** @var ProductService $service */
         $service = Factory::make(ProductService::class);
         $newProduct = $service->createNewProduct($credentials, $product);
         $this->assertInstanceOf(Product::class, $newProduct);
@@ -133,7 +132,6 @@ class ProductServiceTest extends TestCase
             ->setImages([$image]);
 
         // Create new product
-        /** @var ProductService $service */
         $service = Factory::make(ProductService::class);
         $newProduct = $service->createNewProduct($credentials, $product);
         $this->assertInstanceOf(Product::class, $newProduct);
@@ -169,7 +167,6 @@ class ProductServiceTest extends TestCase
         $product = (new Product())->setBodyHtml('A mystery!');
 
         // Create new product
-        /** @var ProductService $service */
         $service = Factory::make(ProductService::class);
         $service->createNewProduct($credentials, $product);
     }
@@ -201,7 +198,6 @@ class ProductServiceTest extends TestCase
             ->setPublished(false);
 
         // Create new product
-        /** @var ProductService $service */
         $service = Factory::make(ProductService::class);
         $newProduct = $service->createNewProduct($credentials, $product);
         $this->assertInstanceOf(Product::class, $newProduct);
@@ -236,7 +232,6 @@ class ProductServiceTest extends TestCase
             ->setPublished(true);
 
         // Create new product
-        /** @var ProductService $service */
         $service = Factory::make(ProductService::class);
         $newProduct = $service->createNewProduct($credentials, $product);
         $this->assertInstanceOf(Product::class, $newProduct);
@@ -275,13 +270,14 @@ class ProductServiceTest extends TestCase
             ->setMetafields([$metafield]);
 
         // Create new product
-        /** @var ProductService $service */
         $service = Factory::make(ProductService::class);
         $newProduct = $service->createNewProduct($credentials, $product);
         $this->assertInstanceOf(Product::class, $newProduct);
         $this->assertFalse($newProduct->isPublished());
         $this->assertEmpty($newProduct->getTags());
-        // @todo Test metafield exists when get metafields implemented; manually checked to work for now
+        /**
+         * @todo Test metafield exists when get metafields implemented; manually checked to work for now
+         */
     }
 
     /**
@@ -311,7 +307,6 @@ class ProductServiceTest extends TestCase
             ->setTags(['Barnes & Noble', 'John\'s Fav', 'Big Air']);
 
         // Create new product
-        /** @var ProductService $service */
         $service = Factory::make(ProductService::class);
         $newProduct = $service->createNewProduct($credentials, $product);
         $this->assertInstanceOf(Product::class, $newProduct);
@@ -339,23 +334,17 @@ class ProductServiceTest extends TestCase
             );
 
         // Create request
-        /** @var ProductFields $fields */
-        $fields = Factory::make(ProductFields::class);
-        $fields = $fields
+        $fields = Factory::make(ProductFields::class)
             ->withId()
             ->withImages()
             ->withTitle();
-        /** @var GetProductsRequest $request */
-        $request = Factory::make(GetProductsRequest::class);
-        $request = $request
+        $request = Factory::make(GetProductsRequest::class)
             ->withCredentials($credentials)
             ->withProductFields($fields)
             ->withLimit(1);
 
         // Get and test results
-        /** @var ProductService $service */
         $service = Factory::make(ProductService::class);
-        /** @var Product[] $products */
         $products = $service->getProducts($request);
         $this->assertTrue(is_iterable($products));
         foreach ($products as $product) {
@@ -385,16 +374,12 @@ class ProductServiceTest extends TestCase
             );
 
         // Create request
-        /** @var GetProductsRequest $request */
-        $request = Factory::make(GetProductsRequest::class);
-        $request = $request
+        $request = Factory::make(GetProductsRequest::class)
             ->withCredentials($credentials)
             ->withLimit(1);
 
         // Get and test results
-        /** @var ProductService $service */
         $service = Factory::make(ProductService::class);
-        /** @var Product[] $products */
         $products = $service->getProducts($request);
         $this->assertTrue(is_iterable($products));
         foreach ($products as $product) {
@@ -425,16 +410,12 @@ class ProductServiceTest extends TestCase
             );
 
         // Create request
-        /** @var GetProductsRequest $request */
-        $request = Factory::make(GetProductsRequest::class);
-        $request = $request
+        $request = Factory::make(GetProductsRequest::class)
             ->withCredentials($credentials)
             ->withIds([$newProduct->getId()]);
 
         // Get and test results
-        /** @var ProductService $service */
         $service = Factory::make(ProductService::class);
-        /** @var Product[] $products */
         $products = $service->getProducts($request);
         $this->assertTrue(is_iterable($products));
         foreach ($products as $product) {
@@ -444,6 +425,36 @@ class ProductServiceTest extends TestCase
     }
 
     /**
+     * @depends testCanCreateNewProductWithMultipleProductVariants
+     * @group integration
+     */
+    public function testCountAllProducts()
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Create request
+        $request = Factory::make(CountProductsRequest::class)
+            ->withCredentials($credentials);
+
+        // Get and test results
+        $service = Factory::make(ProductService::class);
+        $productsCount = $service->countProducts($request);
+        $this->assertGreaterThan(0, $productsCount);
+    }
+
+    /**
      * @todo Test fetch all products that belong to a certain collection once collection service is implemented
+     * @todo Test count all products that belong to a certain collection
      */
 }

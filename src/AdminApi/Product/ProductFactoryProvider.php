@@ -22,6 +22,9 @@ class ProductFactoryProvider implements FactoryProviderInterface
     public static function makeConstructors(FactoryInterface $factory): array
     {
         return [
+            Builders\CountProductsRequest::class => function () {
+                return new Builders\CountProductsRequest();
+            },
             Builders\CreateNewProductRequest::class => function () use ($factory) {
                 return new Builders\CreateNewProductRequest(
                     $factory::make(Transformers\Product::class)
