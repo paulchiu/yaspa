@@ -1,60 +1,56 @@
 <?php
 
-namespace Yaspa\AdminApi\Customer\Builders;
+namespace Yaspa\AdminApi\Product\Builders;
 
-use Yaspa\AdminApi\Customer\Models\Customer as CustomerModel;
-use Yaspa\AdminApi\Customer\Transformers\Customer as CustomerTransformer;
 use Yaspa\AdminApi\Metafield\Models\Metafield as MetafieldModel;
 use Yaspa\AdminApi\Metafield\Transformers\Metafield as MetafieldTransformer;
+use Yaspa\AdminApi\Product\Models\Product as ProductModel;
+use Yaspa\AdminApi\Product\Models\Product;
+use Yaspa\AdminApi\Product\Transformers\Product as ProductTransformer;
 use Yaspa\Constants\RequestBuilder;
 use Yaspa\Interfaces\RequestBuilderInterface;
 use Yaspa\Traits\AuthorizedRequestBuilderTrait;
 use Yaspa\Traits\ResourceRequestBuilderTrait;
 
 /**
- * Class ModifyExistingCustomerRequest
+ * Class ModifyExistingProductRequest
  *
  * @package Yaspa\AdminApi\Customer\Builders
- * @see https://help.shopify.com/api/reference/customer#update
+ * @see https://help.shopify.com/api/reference/product#update
  */
-class ModifyExistingCustomerRequest implements RequestBuilderInterface
+class ModifyExistingProductRequest implements RequestBuilderInterface
 {
     use AuthorizedRequestBuilderTrait,
         ResourceRequestBuilderTrait;
 
-    const URI_TEMPLATE = 'https://%s.myshopify.com/admin/customers/%s.json';
+    const URI_TEMPLATE = 'https://%s.myshopify.com/admin/products/%s.json';
 
     /**
      * Dependencies
      */
-    /** @var CustomerTransformer */
-    protected $customerTransformer;
+    /** @var ProductTransformer $productTransformer */
+    protected $productTransformer;
     /** @var MetafieldTransformer */
     protected $metafieldTransformer;
 
     /**
      * Builder properties
      */
-    /** @var CustomerModel $customerModel */
-    protected $customerModel;
+    /** @var  ProductModel $productModel */
+    protected $productModel;
     /** @var array|MetafieldModel[] $metafields */
     protected $metafields;
 
     /**
-     * ModifyExistingCustomerRequest constructor.
+     * ModifyExistingProductRequest constructor.
      *
-     * @param CustomerTransformer $customerTransformer
+     * @param ProductTransformer $productTransformer
      * @param MetafieldTransformer $metafieldTransformer
      */
-    public function __construct(
-        CustomerTransformer $customerTransformer,
-        MetafieldTransformer $metafieldTransformer
-    ) {
-        // Set dependencies
-        $this->customerTransformer = $customerTransformer;
+    public function __construct(ProductTransformer $productTransformer, MetafieldTransformer $metafieldTransformer)
+    {
+        $this->productTransformer = $productTransformer;
         $this->metafieldTransformer = $metafieldTransformer;
-
-        // Set properties with defaults
         $this->uriTemplate = self::URI_TEMPLATE;
         $this->httpMethod = RequestBuilder::PUT_HTTP_METHOD;
         $this->headers = RequestBuilder::JSON_HEADERS;
@@ -66,7 +62,7 @@ class ModifyExistingCustomerRequest implements RequestBuilderInterface
      */
     public function toResourceId()
     {
-        return $this->customerModel->getId();
+        return $this->productModel->getId();
     }
 
     /**
@@ -76,8 +72,8 @@ class ModifyExistingCustomerRequest implements RequestBuilderInterface
     {
         $array = [];
 
-        if (!is_null($this->customerModel)) {
-            $array = $this->customerTransformer->toArray($this->customerModel);
+        if (!is_null($this->productModel)) {
+            $array = $this->productTransformer->toArray($this->productModel);
         }
 
         if (!empty($this->metafields)) {
@@ -86,26 +82,26 @@ class ModifyExistingCustomerRequest implements RequestBuilderInterface
 
         $array = array_filter($array);
 
-        return ['customer' => $array];
+        return ['product' => $array];
     }
 
     /**
-     * @param CustomerModel $customerModel
-     * @return ModifyExistingCustomerRequest
+     * @param Product $product
+     * @return ModifyExistingProductRequest
      */
-    public function withCustomer(CustomerModel $customerModel): ModifyExistingCustomerRequest
+    public function withProduct(ProductModel $product): ModifyExistingProductRequest
     {
         $new = clone $this;
-        $new->customerModel = $customerModel;
+        $new->productModel = $product;
 
         return $new;
     }
 
     /**
      * @param array|MetafieldModel[] $metafields
-     * @return ModifyExistingCustomerRequest
+     * @return ModifyExistingProductRequest
      */
-    public function withMetafields(array $metafields): ModifyExistingCustomerRequest
+    public function withMetafields(array $metafields): ModifyExistingProductRequest
     {
         $new = clone $this;
         $new->metafields = $metafields;

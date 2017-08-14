@@ -36,6 +36,12 @@ class ProductFactoryProvider implements FactoryProviderInterface
             Builders\GetProductsRequest::class => function () {
                 return new Builders\GetProductsRequest();
             },
+            Builders\ModifyExistingProductRequest::class => function () use ($factory) {
+                return new Builders\ModifyExistingProductRequest(
+                    $factory::make(Transformers\Product::class),
+                    $factory::make(Metafield\Transformers\Metafield::class)
+                );
+            },
             Builders\ProductFields::class => function () {
                 return new Builders\ProductFields();
             },

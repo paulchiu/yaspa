@@ -8,6 +8,7 @@ use Yaspa\AdminApi\Product\Builders\CountProductsRequest;
 use Yaspa\AdminApi\Product\Builders\CreateNewProductRequest;
 use Yaspa\AdminApi\Product\Builders\GetProductRequest;
 use Yaspa\AdminApi\Product\Builders\GetProductsRequest;
+use Yaspa\AdminApi\Product\Builders\ModifyExistingProductRequest;
 use Yaspa\AdminApi\Product\Builders\ProductFields;
 use Yaspa\AdminApi\Product\Models;
 use Yaspa\AdminApi\Product\Models\Product;
@@ -211,6 +212,35 @@ class ProductService
     }
 
     /**
-     * @todo https://help.shopify.com/api/reference/product#update
+     * Modify an existing customer.
+     *
+     * @see https://help.shopify.com/api/reference/product#update
+     * @param ModifyExistingProductRequest $request
+     * @return Models\Product
+     */
+    public function modifyExistingProduct(ModifyExistingProductRequest $request): Models\Product
+    {
+        $response = $this->asyncModifyExistingProduct($request)->wait();
+
+        return $this->productTransformer->fromResponse($response);
+    }
+
+    /**
+     * Async version of self::updateExistingProduct
+     *
+     * @see https://help.shopify.com/api/reference/product#update
+     * @param ModifyExistingProductRequest $request
+     * @return PromiseInterface
+     */
+    public function asyncModifyExistingProduct(ModifyExistingProductRequest $request): PromiseInterface
+    {
+        return $this->httpClient->sendAsync(
+            $request->toResourceRequest(),
+            $request->toRequestOptions()
+        );
+    }
+
+    /**
+     * @todo Write tests for modify existing products
      */
 }

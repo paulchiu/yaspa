@@ -6,6 +6,7 @@ use GuzzleHttp\Exception\ClientException;
 use Yaspa\AdminApi\Metafield\Models\Metafield;
 use Yaspa\AdminApi\Product\Builders\CountProductsRequest;
 use Yaspa\AdminApi\Product\Builders\GetProductsRequest;
+use Yaspa\AdminApi\Product\Builders\ModifyExistingProductRequest;
 use Yaspa\AdminApi\Product\Builders\ProductFields;
 use Yaspa\AdminApi\Product\Models\Image;
 use Yaspa\AdminApi\Product\Models\Product;
@@ -511,7 +512,61 @@ class ProductServiceTest extends TestCase
     }
 
     /**
+     * @depends testCanCreateNewProductWithMultipleProductVariants
+     * @group integration
+     * @param Product $originalProduct
+     * @todo Fix error {"errors":{"inventory_quantity":["Ambiguous argument combination: inventory_quantity_adjustment sent and is not equal to (truncated...)
+     */
+    public function testCanUpdateAProductAndOneOfItsVariants(Product $originalProduct)
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Check pre-conditions
+        $this->assertCount(2, $originalProduct->getVariants());
+        [$originalVariant1, $originalVariant2] = $originalProduct->getVariants();
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+        $toBeUpdatedVariants = [];
+        $toBeUpdatedVariants[0] = (new Variant())
+            ->setId($originalVariant1->getId())
+            ->setPrice(2000.00)
+            ->setSku('Updating the Product SKU');
+        $toBeUpdatedVariants[1] = (new Variant())
+            ->setId($originalVariant2->getId());
+        $toBeUpdatedProduct = (new Product())
+            ->setId($originalProduct->getId())
+            ->setTitle('Updated Product Title')
+            ->setVariants($toBeUpdatedVariants);
+        $request = Factory::make(ModifyExistingProductRequest::class)
+            ->withCredentials($credentials)
+            ->withProduct($toBeUpdatedProduct);
+
+        // Get and test results
+        $service = Factory::make(ProductService::class);
+        $updatedProduct = $service->modifyExistingProduct($request);
+        $this->assertEquals($toBeUpdatedProduct->getId(), $updatedProduct->getId());
+        $this->assertEquals($toBeUpdatedProduct->getTitle(), $updatedProduct->getTitle());
+        $this->assertNotEmpty($updatedProduct->getVendor());
+        [$updatedVariant1, $updatedVariant2] = $updatedProduct->getVariants();
+        $this->assertEquals($toBeUpdatedVariants[0]->getId(), $updatedVariant1->getId());
+        $this->assertEquals($toBeUpdatedVariants[0]->getSku(), $updatedVariant1->getSku());
+        $this->assertEquals(1, $updatedVariant1->getPosition());
+        $this->assertEquals(2, $updatedVariant2->getPosition());
+    }
+
+    /**
      * @todo Test fetch all products that belong to a certain collection once collection service is implemented
      * @todo Test count all products that belong to a certain collection
      */
+
+
 }
