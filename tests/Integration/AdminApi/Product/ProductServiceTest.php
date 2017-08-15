@@ -650,7 +650,7 @@ class ProductServiceTest extends TestCase
      * @param Product $originalProduct
      * @return Product
      */
-    public function testCanUpdateAProductAddingANewProductImage(Product $originalProduct)
+    public function testCanUpdateAProductAddingANewProductImage($originalProduct)
     {
         // Get config
         $config = new TestConfig();
@@ -762,52 +762,6 @@ class ProductServiceTest extends TestCase
     }
 
     /**
-     * @depends testCanUpdateAProductAddingANewProductImage
-     * @group integration
-     * @param Product $originalProduct
-     * @todo Figure out why this fails when running full test suite
-     */
-    public function testCanUpdateAProductReorderingProductImage(Product $originalProduct)
-    {
-        // Get config
-        $config = new TestConfig();
-        $shop = $config->get('shopifyShop');
-        $privateApp = $config->get('shopifyShopApp');
-
-        // Check pre-conditions
-        $this->assertCount(2, $originalProduct->getImages());
-        [$image1, $image2] = $originalProduct->getImages();
-
-        // Create parameters
-        $credentials = Factory::make(ApiCredentials::class)
-            ->makePrivate(
-                $shop->myShopifySubdomainName,
-                $privateApp->apiKey,
-                $privateApp->password
-            );
-        $toBeUpdatedImage1 = (new Image())
-            ->setId($image1->getId())
-            ->setPosition(2);
-        $toBeUpdatedImage2 = (new Image())
-            ->setId($image2->getId())
-            ->setPosition(1);
-        $toBeUpdatedProduct = (new Product())
-            ->setId($originalProduct->getId())
-            ->setImages([$toBeUpdatedImage1, $toBeUpdatedImage2]);
-        $request = Factory::make(ModifyExistingProductRequest::class)
-            ->withCredentials($credentials)
-            ->withProduct($toBeUpdatedProduct);
-
-        // Get and test results
-        $service = Factory::make(ProductService::class);
-        $updatedProduct = $service->modifyExistingProduct($request);
-        $this->assertCount(2, $updatedProduct->getImages());
-        [$updatedImage1, $updatedImage2] = $updatedProduct->getImages();
-        $this->assertEquals($image2->getId(), $updatedImage1->getId());
-        $this->assertEquals($image1->getId(), $updatedImage2->getId());
-    }
-
-    /**
      * @depends testCanCreateNewProductWithDefaultVariant
      * @group integration
      * @param Product $originalProduct
@@ -840,6 +794,57 @@ class ProductServiceTest extends TestCase
         $service = Factory::make(ProductService::class);
         $updatedProduct = $service->modifyExistingProduct($request);
         $this->assertEmpty($updatedProduct->getImages());
+    }
+
+    /**
+     * @depends testCanCreateNewProductWithMultipleProductVariants
+     * @group integration
+     */
+    public function testCanUpdateAProductReorderingProductImage()
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+        $service = Factory::make(ProductService::class);
+
+        // Check pre-conditions
+        $originalImage1 = (new Image())->setSrc('http://via.placeholder.com/301x301');
+        $originalImage2 = (new Image())->setSrc('http://via.placeholder.com/302x302');
+        $originalProduct = (new Product())
+            ->setTitle('Burton Custom Freestyle 151')
+            ->setBodyHtml('<strong>Good snowboard!</strong>')
+            ->setImages([$originalImage1, $originalImage2]);
+        $originalProduct = $service->createNewProduct($credentials, $originalProduct);
+        $this->assertCount(2, $originalProduct->getImages());
+        [$image1, $image2] = $originalProduct->getImages();
+
+        // Create parameters
+        $toBeUpdatedImage1 = (new Image())
+            ->setId($image1->getId())
+            ->setPosition(2);
+        $toBeUpdatedImage2 = (new Image())
+            ->setId($image2->getId())
+            ->setPosition(1);
+        $toBeUpdatedProduct = (new Product())
+            ->setId($originalProduct->getId())
+            ->setImages([$toBeUpdatedImage1, $toBeUpdatedImage2]);
+        $request = Factory::make(ModifyExistingProductRequest::class)
+            ->withCredentials($credentials)
+            ->withProduct($toBeUpdatedProduct);
+
+        // Get and test results
+        $updatedProduct = $service->modifyExistingProduct($request);
+        $this->assertCount(2, $updatedProduct->getImages());
+        [$updatedImage1, $updatedImage2] = $updatedProduct->getImages();
+        $this->assertEquals($image2->getId(), $updatedImage1->getId());
+        $this->assertEquals($image1->getId(), $updatedImage2->getId());
     }
 
     /**

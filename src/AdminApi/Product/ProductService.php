@@ -241,6 +241,6 @@ class ProductService
     }
 
     /**
-     * @todo Write tests for modify existing products
+     * @todo https://help.shopify.com/api/reference/product#destroy
      */
 }

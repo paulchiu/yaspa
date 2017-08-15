@@ -5,6 +5,7 @@ namespace Yaspa\Tests\Unit\AdminApi\Product;
 use GuzzleHttp\Client;
 use Yaspa\AdminApi\Product\Builders\CountProductsRequest;
 use Yaspa\AdminApi\Product\Builders\GetProductsRequest;
+use Yaspa\AdminApi\Product\Builders\ModifyExistingProductRequest;
 use Yaspa\AdminApi\Product\Builders\ProductFields;
 use Yaspa\AdminApi\Product\Models\Product;
 use Yaspa\AdminApi\Product\ProductService;
@@ -159,5 +160,35 @@ class ProductServiceTest extends TestCase
         $product = $service->getProduct($credentials, 3, $fields);
         $this->assertEquals(3, $product->getId());
         $this->assertEquals('foo', $product->getTitle());
+    }
+
+    public function testCanUpdateAProduct()
+    {
+        // Create mock client
+        $mockClientUtil = new MockGuzzleClient();
+        $client = $mockClientUtil->makeWithResponses(
+            [
+                $mockClientUtil->makeJsonResponse(200, [
+                    'product' => [
+                        'id' => 3,
+                        'title' => 'foo',
+                    ],
+                ]),
+            ]
+        );
+        Factory::inject(Client::class, $client);
+
+        // Create parameters
+        $product = (new Product())->setTitle('foo');
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makeOAuth('foo', 'bar');
+        $request = Factory::make(ModifyExistingProductRequest::class)
+            ->withCredentials($credentials)
+            ->withProduct($product);
+
+        // Test method
+        $service = Factory::make(ProductService::class);
+        $updatedProduct = $service->modifyExistingProduct($request);
+        $this->assertInstanceOf(Product::class, $updatedProduct);
     }
 }
