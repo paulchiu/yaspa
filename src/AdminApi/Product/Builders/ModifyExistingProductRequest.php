@@ -80,7 +80,19 @@ class ModifyExistingProductRequest implements RequestBuilderInterface
             $array['metafields'] = array_map([$this->metafieldTransformer, 'toArray'], $this->metafields);
         }
 
-        $array = array_filter($array);
+        // Filter out empty, but preserve booleans, and arrays so their values can be emptied on update
+        $array = array_filter($array, function ($value) {
+            return $value || is_bool($value) || is_array($value);
+        });
+
+        // Deeply remove unused values from variant data
+        if (!empty($array['variants'])) {
+            $array['variants'] = array_map('array_filter', $array['variants']);
+        }
+
+        if (!empty($array['images'])) {
+            $array['images'] = array_map('array_filter', $array['images']);
+        }
 
         return ['product' => $array];
     }

@@ -102,6 +102,8 @@ class ProductServiceTest extends TestCase
         $this->assertCount(1, $newProduct->getImages());
         $this->assertFalse($newProduct->isPublished());
         $this->assertEmpty($newProduct->getTags());
+
+        return $newProduct;
     }
 
     /**
@@ -174,6 +176,7 @@ class ProductServiceTest extends TestCase
 
     /**
      * @group integration
+     * @return Product
      */
     public function testCanCreateNewButUnpublishedProduct()
     {
@@ -204,6 +207,8 @@ class ProductServiceTest extends TestCase
         $this->assertInstanceOf(Product::class, $newProduct);
         $this->assertFalse($newProduct->isPublished());
         $this->assertEmpty($newProduct->getTags());
+
+        return $newProduct;
     }
 
     /**
@@ -237,6 +242,8 @@ class ProductServiceTest extends TestCase
         $newProduct = $service->createNewProduct($credentials, $product);
         $this->assertInstanceOf(Product::class, $newProduct);
         $this->assertTrue($newProduct->isPublished());
+
+        return $newProduct;
     }
 
     /**
@@ -515,7 +522,6 @@ class ProductServiceTest extends TestCase
      * @depends testCanCreateNewProductWithMultipleProductVariants
      * @group integration
      * @param Product $originalProduct
-     * @todo Fix error {"errors":{"inventory_quantity":["Ambiguous argument combination: inventory_quantity_adjustment sent and is not equal to (truncated...)
      */
     public function testCanUpdateAProductAndOneOfItsVariants(Product $originalProduct)
     {
@@ -535,17 +541,16 @@ class ProductServiceTest extends TestCase
                 $privateApp->apiKey,
                 $privateApp->password
             );
-        $toBeUpdatedVariants = [];
-        $toBeUpdatedVariants[0] = (new Variant())
+        $toBeUpdatedVariant1 = (new Variant())
             ->setId($originalVariant1->getId())
             ->setPrice(2000.00)
             ->setSku('Updating the Product SKU');
-        $toBeUpdatedVariants[1] = (new Variant())
+        $toBeUpdatedVariant2 = (new Variant())
             ->setId($originalVariant2->getId());
         $toBeUpdatedProduct = (new Product())
             ->setId($originalProduct->getId())
             ->setTitle('Updated Product Title')
-            ->setVariants($toBeUpdatedVariants);
+            ->setVariants([$toBeUpdatedVariant1, $toBeUpdatedVariant2]);
         $request = Factory::make(ModifyExistingProductRequest::class)
             ->withCredentials($credentials)
             ->withProduct($toBeUpdatedProduct);
@@ -557,16 +562,324 @@ class ProductServiceTest extends TestCase
         $this->assertEquals($toBeUpdatedProduct->getTitle(), $updatedProduct->getTitle());
         $this->assertNotEmpty($updatedProduct->getVendor());
         [$updatedVariant1, $updatedVariant2] = $updatedProduct->getVariants();
-        $this->assertEquals($toBeUpdatedVariants[0]->getId(), $updatedVariant1->getId());
-        $this->assertEquals($toBeUpdatedVariants[0]->getSku(), $updatedVariant1->getSku());
+        $this->assertEquals($toBeUpdatedVariant1->getId(), $updatedVariant1->getId());
+        $this->assertEquals($toBeUpdatedVariant1->getSku(), $updatedVariant1->getSku());
         $this->assertEquals(1, $updatedVariant1->getPosition());
         $this->assertEquals(2, $updatedVariant2->getPosition());
     }
 
     /**
+     * @depends testCanCreateNewProductWithMultipleProductVariants
+     * @group integration
+     * @param Product $originalProduct
+     */
+    public function testCanUpdateAProductReorderingTheProductVariants(Product $originalProduct)
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Check pre-conditions
+        $this->assertCount(2, $originalProduct->getVariants());
+        [$originalVariant1, $originalVariant2] = $originalProduct->getVariants();
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+        $toBeUpdatedVariant1 = (new Variant())->setId($originalVariant1->getId());
+        $toBeUpdatedVariant2 = (new Variant())->setId($originalVariant2->getId());
+        $toBeUpdatedProduct = (new Product())
+            ->setId($originalProduct->getId())
+            ->setVariants([$toBeUpdatedVariant2, $toBeUpdatedVariant1]);
+        $request = Factory::make(ModifyExistingProductRequest::class)
+            ->withCredentials($credentials)
+            ->withProduct($toBeUpdatedProduct);
+
+        // Get and test results
+        $service = Factory::make(ProductService::class);
+        $updatedProduct = $service->modifyExistingProduct($request);
+        $this->assertEquals($toBeUpdatedProduct->getId(), $updatedProduct->getId());
+        [$updatedVariant1, $updatedVariant2] = $updatedProduct->getVariants();
+        $this->assertEquals($toBeUpdatedVariant1->getId(), $updatedVariant2->getId());
+        $this->assertEquals($toBeUpdatedVariant2->getId(), $updatedVariant1->getId());
+    }
+
+    /**
+     * @depends testCanCreateNewProductWithMultipleProductVariants
+     * @group integration
+     * @param Product $originalProduct
+     */
+    public function testCanUpdateAProductsTags(Product $originalProduct)
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Check pre-conditions
+        $this->assertEmpty($originalProduct->getTags());
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+        $toBeUpdatedProduct = (new Product())
+            ->setId($originalProduct->getId())
+            ->setTags(['Barnes & Noble', "John's Fav"]);
+        $request = Factory::make(ModifyExistingProductRequest::class)
+            ->withCredentials($credentials)
+            ->withProduct($toBeUpdatedProduct);
+
+        // Get and test results
+        $service = Factory::make(ProductService::class);
+        $updatedProduct = $service->modifyExistingProduct($request);
+        $this->assertCount(2, $updatedProduct->getTags());
+    }
+
+    /**
+     * @depends testCanCreateNewProductWithDefaultVariant
+     * @group integration
+     * @param Product $originalProduct
+     * @return Product
+     */
+    public function testCanUpdateAProductAddingANewProductImage(Product $originalProduct)
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Check pre-conditions
+        $this->assertCount(1, $originalProduct->getImages());
+        [$originalImage] = $originalProduct->getImages();
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+        $toBeUpdatedOriginalImage = (new Image())->setId($originalImage->getId());
+        $additionalImage = (new Image())->setSrc('http://via.placeholder.com/303x303');
+        $toBeUpdatedProduct = (new Product())
+            ->setId($originalProduct->getId())
+            ->setImages([$toBeUpdatedOriginalImage, $additionalImage]);
+        $request = Factory::make(ModifyExistingProductRequest::class)
+            ->withCredentials($credentials)
+            ->withProduct($toBeUpdatedProduct);
+
+        // Get and test results
+        $service = Factory::make(ProductService::class);
+        $updatedProduct = $service->modifyExistingProduct($request);
+        $this->assertCount(2, $updatedProduct->getImages());
+        [$updatedImage1, $updatedImage2] = $updatedProduct->getImages();
+        $this->assertEquals($originalImage->getId(), $updatedImage1->getId());
+
+        return $updatedProduct;
+    }
+
+    /**
+     * @depends testCanCreateNewPublishedProduct
+     * @group integration
+     * @param Product $originalProduct
+     */
+    public function testCanHideAPublishedProduct(Product $originalProduct)
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Check pre-conditions
+        $this->assertTrue($originalProduct->isPublished());
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+        $toBeUpdatedProduct = (new Product())
+            ->setId($originalProduct->getId())
+            ->setPublished(false);
+        $request = Factory::make(ModifyExistingProductRequest::class)
+            ->withCredentials($credentials)
+            ->withProduct($toBeUpdatedProduct);
+
+        // Get and test results
+        $service = Factory::make(ProductService::class);
+        $updatedProduct = $service->modifyExistingProduct($request);
+        $this->assertFalse($updatedProduct->isPublished());
+    }
+
+    /**
+     * @depends testCanCreateNewProductWithDefaultVariant
+     * @group integration
+     * @param Product $originalProduct
+     */
+    public function testCanUpdateAProductsSEOTitleAndDescription(Product $originalProduct)
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Check pre-conditions
+        $this->assertEmpty($originalProduct->getMetafieldsGlobalTitleTag());
+        $this->assertEmpty($originalProduct->getMetafieldsGlobalDescriptionTag());
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+        $toBeUpdatedProduct = (new Product())
+            ->setId($originalProduct->getId())
+            ->setMetafieldsGlobalTitleTag('Brand new title')
+            ->setMetafieldsGlobalDescriptionTag('Brand new description');
+        $request = Factory::make(ModifyExistingProductRequest::class)
+            ->withCredentials($credentials)
+            ->withProduct($toBeUpdatedProduct);
+
+        // Get and test results
+        $service = Factory::make(ProductService::class);
+        $updatedProduct = $service->modifyExistingProduct($request);
+        /**
+         * @todo Figure out how to verify meta titles as it is not returned as part of a product resource
+         */
+    }
+
+    /**
+     * @depends testCanUpdateAProductAddingANewProductImage
+     * @group integration
+     * @param Product $originalProduct
+     * @todo Figure out why this fails when running full test suite
+     */
+    public function testCanUpdateAProductReorderingProductImage(Product $originalProduct)
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Check pre-conditions
+        $this->assertCount(2, $originalProduct->getImages());
+        [$image1, $image2] = $originalProduct->getImages();
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+        $toBeUpdatedImage1 = (new Image())
+            ->setId($image1->getId())
+            ->setPosition(2);
+        $toBeUpdatedImage2 = (new Image())
+            ->setId($image2->getId())
+            ->setPosition(1);
+        $toBeUpdatedProduct = (new Product())
+            ->setId($originalProduct->getId())
+            ->setImages([$toBeUpdatedImage1, $toBeUpdatedImage2]);
+        $request = Factory::make(ModifyExistingProductRequest::class)
+            ->withCredentials($credentials)
+            ->withProduct($toBeUpdatedProduct);
+
+        // Get and test results
+        $service = Factory::make(ProductService::class);
+        $updatedProduct = $service->modifyExistingProduct($request);
+        $this->assertCount(2, $updatedProduct->getImages());
+        [$updatedImage1, $updatedImage2] = $updatedProduct->getImages();
+        $this->assertEquals($image2->getId(), $updatedImage1->getId());
+        $this->assertEquals($image1->getId(), $updatedImage2->getId());
+    }
+
+    /**
+     * @depends testCanCreateNewProductWithDefaultVariant
+     * @group integration
+     * @param Product $originalProduct
+     */
+    public function testCanUpdateAProductClearingProductImages(Product $originalProduct)
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Check pre-conditions
+        $this->assertCount(1, $originalProduct->getImages());
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+        $toBeUpdatedProduct = (new Product())
+            ->setId($originalProduct->getId())
+            ->setImages([]);
+        $request = Factory::make(ModifyExistingProductRequest::class)
+            ->withCredentials($credentials)
+            ->withProduct($toBeUpdatedProduct);
+
+        // Get and test results
+        $service = Factory::make(ProductService::class);
+        $updatedProduct = $service->modifyExistingProduct($request);
+        $this->assertEmpty($updatedProduct->getImages());
+    }
+
+    /**
+     * @depends testCanCreateNewButUnpublishedProduct
+     * @group integration
+     * @param Product $originalProduct
+     */
+    public function testCanShowAHiddenProduct(Product $originalProduct)
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Check pre-conditions
+        $this->assertFalse($originalProduct->isPublished());
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+        $toBeUpdatedProduct = (new Product())
+            ->setId($originalProduct->getId())
+            ->setPublished(true);
+        $request = Factory::make(ModifyExistingProductRequest::class)
+            ->withCredentials($credentials)
+            ->withProduct($toBeUpdatedProduct);
+
+        // Get and test results
+        $service = Factory::make(ProductService::class);
+        $updatedProduct = $service->modifyExistingProduct($request);
+        $this->assertTrue($updatedProduct->isPublished());
+    }
+
+    /**
      * @todo Test fetch all products that belong to a certain collection once collection service is implemented
      * @todo Test count all products that belong to a certain collection
+     * @todo Test Can add metafield to an existing product when get metafields is implemented
      */
-
-
 }

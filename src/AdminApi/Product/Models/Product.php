@@ -32,6 +32,8 @@ class Product
     protected $updatedAt;
     /** @var DateTime $publishedAt */
     protected $publishedAt;
+    /** @var bool $published */
+    protected $published;
     /** @var string $templateSuffix */
     protected $templateSuffix;
     /** @var string $publishedScope */
@@ -52,19 +54,6 @@ class Product
     protected $image;
     /** @var array|Metafield[] $metafields */
     protected $metafields;
-
-    /**
-     * Product constructor.
-     */
-    public function __construct()
-    {
-        $this
-            ->setTags([])
-            ->setVariants([])
-            ->setOptions([])
-            ->setImages([])
-            ->setMetafields([]);
-    }
 
     /**
      * @return int
@@ -274,10 +263,12 @@ class Product
 
     /**
      * @param string $metafieldsGlobalTitleTag
+     * @return Product
      */
-    public function setMetafieldsGlobalTitleTag(string $metafieldsGlobalTitleTag)
+    public function setMetafieldsGlobalTitleTag(string $metafieldsGlobalTitleTag): Product
     {
         $this->metafieldsGlobalTitleTag = $metafieldsGlobalTitleTag;
+        return $this;
     }
 
     /**
@@ -290,10 +281,12 @@ class Product
 
     /**
      * @param string $metafieldsGlobalDescriptionTag
+     * @return Product
      */
-    public function setMetafieldsGlobalDescriptionTag(string $metafieldsGlobalDescriptionTag)
+    public function setMetafieldsGlobalDescriptionTag(string $metafieldsGlobalDescriptionTag): Product
     {
         $this->metafieldsGlobalDescriptionTag = $metafieldsGlobalDescriptionTag;
+        return $this;
     }
 
     /**
@@ -389,7 +382,7 @@ class Product
     /**
      * @return array|Metafield[]
      */
-    public function getMetafields(): array
+    public function getMetafields():? array
     {
         return $this->metafields;
     }
@@ -420,13 +413,28 @@ class Product
     }
 
     /**
-     * This is a setter to support the example "Create a new, but unpublished product".
+     * @return bool
+     */
+    public function getPublished():? bool
+    {
+        return $this->published;
+    }
+
+    /**
+     * This is a setter to support the example "Create a new, but unpublished product"
+     * as well as "Hide a published product by changing the published attribute to false"
      *
-     * This is a computed setter because Shopify's "Product properties" table does not list
-     * `published` as an attribute. Furthermore, it seems redundant as `published_at` appears
-     * to be the primary indicator as to a product's published status.
+     * This attribute appears to only exist on request resources and is never returned as
+     * a boolean. Therefore, self::isPublished is used to determined published status of a
+     * response, but both this and self::getPublished can be used to determine the published
+     * status of a request.
+     *
+     * Another peculiarity with this method is that only appears in examples to be used
+     * for setting published status to false. This means that true can only be set by setting
+     * `published_at`.
      *
      * @see https://help.shopify.com/api/reference/product#create
+     * @see https://help.shopify.com/api/reference/product#update
      * @param bool $published
      * @return Product
      */
@@ -435,7 +443,7 @@ class Product
         if ($published) {
             $this->publishedAt = new DateTime();
         } else {
-            $this->publishedAt = null;
+            $this->published = $published;
         }
 
         return $this;

@@ -190,7 +190,7 @@ class Product implements ArrayResponseTransformerInterface
         $array['updated_at'] = ($product->getUpdatedAt()) ? $product->getUpdatedAt()->format(DateTime::ISO8601) : null;
         $array['published_at'] = ($product->getPublishedAt()) ? $product->getPublishedAt()->format(DateTime::ISO8601) : null;
         $array['template_suffix'] = $product->getTemplateSuffix();
-        $array['tags'] = implode(', ', $product->getTags());
+        $array['tags'] = $product->getTags() ? implode(', ', $product->getTags()) : null;
         $array['options'] = $product->getOptions();
 
         /**
@@ -198,6 +198,18 @@ class Product implements ArrayResponseTransformerInterface
          */
         if ($product->getPublishedScope() !== null) {
             $array['published_scope'] = $product->getPublishedScope();
+        }
+
+        if ($product->getPublished() !== null) {
+            $array['published'] = $product->getPublished();
+        }
+
+        if ($product->getMetafieldsGlobalTitleTag() !== null) {
+            $array['metafields_global_title_tag'] = $product->getMetafieldsGlobalTitleTag();
+        }
+
+        if ($product->getMetafieldsGlobalDescriptionTag() !== null) {
+            $array['metafields_global_description_tag'] = $product->getMetafieldsGlobalDescriptionTag();
         }
 
         /**
@@ -209,6 +221,8 @@ class Product implements ArrayResponseTransformerInterface
 
         if ($product->getImages()) {
             $array['images'] = array_map([$this->imageTransformer, 'toArray'], $product->getImages());
+        } else {
+            $array['images'] = [];
         }
 
         if ($product->getImage()) {
