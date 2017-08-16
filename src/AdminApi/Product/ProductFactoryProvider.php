@@ -30,6 +30,9 @@ class ProductFactoryProvider implements FactoryProviderInterface
                     $factory::make(Transformers\Product::class)
                 );
             },
+            Builders\DeleteProductRequest::class => function () {
+                return new Builders\DeleteProductRequest();
+            },
             Builders\GetProductRequest::class => function () {
                 return new Builders\GetProductRequest();
             },
@@ -51,6 +54,7 @@ class ProductFactoryProvider implements FactoryProviderInterface
                     $factory::make(Transformers\Product::class),
                     $factory::make(Builders\CreateNewProductRequest::class),
                     $factory::make(Builders\GetProductRequest::class),
+                    $factory::make(Builders\DeleteProductRequest::class),
                     $factory::make(PagedResultsIterator::class)
                 );
             },

@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
 use Yaspa\AdminApi\Product\Builders\CountProductsRequest;
 use Yaspa\AdminApi\Product\Builders\CreateNewProductRequest;
+use Yaspa\AdminApi\Product\Builders\DeleteProductRequest;
 use Yaspa\AdminApi\Product\Builders\GetProductRequest;
 use Yaspa\AdminApi\Product\Builders\GetProductsRequest;
 use Yaspa\AdminApi\Product\Builders\ModifyExistingProductRequest;
@@ -33,6 +34,8 @@ class ProductService
     protected $createNewProductRequestBuilder;
     /** @var GetProductRequest $getProductRequestBuilder */
     protected $getProductRequestBuilder;
+    /** @var DeleteProductRequest $deleteProductRequestBuilder */
+    protected $deleteProductRequestBuilder;
     /** @var PagedResultsIterator $pagedResultsIteratorBuilder */
     protected $pagedResultsIteratorBuilder;
 
@@ -43,6 +46,7 @@ class ProductService
      * @param Transformers\Product $productTransformer
      * @param CreateNewProductRequest $createNewProductRequestBuilder
      * @param GetProductRequest $getProductRequestBuilder
+     * @param DeleteProductRequest $deleteProductRequestBuilder
      * @param PagedResultsIterator $pagedResultsIteratorBuilder
      */
     public function __construct(
@@ -50,12 +54,14 @@ class ProductService
         Transformers\Product $productTransformer,
         CreateNewProductRequest $createNewProductRequestBuilder,
         GetProductRequest $getProductRequestBuilder,
+        DeleteProductRequest $deleteProductRequestBuilder,
         PagedResultsIterator $pagedResultsIteratorBuilder
     ) {
         $this->httpClient = $httpClient;
         $this->productTransformer = $productTransformer;
         $this->createNewProductRequestBuilder = $createNewProductRequestBuilder;
         $this->getProductRequestBuilder = $getProductRequestBuilder;
+        $this->deleteProductRequestBuilder = $deleteProductRequestBuilder;
         $this->pagedResultsIteratorBuilder = $pagedResultsIteratorBuilder;
     }
 
@@ -241,6 +247,49 @@ class ProductService
     }
 
     /**
-     * @todo https://help.shopify.com/api/reference/product#destroy
+     * Delete product.
+     *
+     * Returns an empty object with no properties if successful.
+     *
+     * @see https://help.shopify.com/api/reference/product#destroy
+     * @param RequestCredentialsInterface $credentials
+     * @param int $productId
+     * @return object
+     */
+    public function deleteProduct(
+        RequestCredentialsInterface $credentials,
+        int $productId
+    ) {
+        $response = $this->asyncDeleteProduct($credentials, $productId)->wait();
+
+        return json_decode($response->getBody()->getContents());
+    }
+
+    /**
+     * Async version of self::deleteProduct
+     *
+     * @see https://help.shopify.com/api/reference/product#destroy
+     * @param RequestCredentialsInterface $credentials
+     * @param int $productId
+     * @return PromiseInterface
+     */
+    public function asyncDeleteProduct(
+        RequestCredentialsInterface $credentials,
+        int $productId
+    ): PromiseInterface {
+        $product = (new Models\Product())->setId($productId);
+        $request = $this->deleteProductRequestBuilder
+            ->withCredentials($credentials)
+            ->withProduct($product);
+
+        return $this->httpClient->sendAsync(
+            $request->toResourceRequest(),
+            $request->toRequestOptions()
+        );
+    }
+
+    /**
+     * @todo Refactor out constructors in all models that can be used for updating resources
+     * @todo Refactor all transformers or requests to use filter that preserve boolean and array values
      */
 }

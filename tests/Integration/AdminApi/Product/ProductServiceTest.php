@@ -883,6 +883,36 @@ class ProductServiceTest extends TestCase
     }
 
     /**
+     * @depends testCanCreateNewProductWithMultipleProductVariants
+     * @group integration
+     * @param Product $originalProduct
+     */
+    public function testCanDeleteProduct(Product $originalProduct)
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Test pre-state
+        $this->assertNotEmpty($originalProduct->getId());
+
+        // Test service method
+        $service = Factory::make(ProductService::class);
+        $result = $service->deleteProduct($credentials, $originalProduct->getId());
+        $this->assertTrue(is_object($result));
+        $this->assertEmpty(get_object_vars($result));
+    }
+
+    /**
      * @todo Test fetch all products that belong to a certain collection once collection service is implemented
      * @todo Test count all products that belong to a certain collection
      * @todo Test Can add metafield to an existing product when get metafields is implemented

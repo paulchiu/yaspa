@@ -191,4 +191,29 @@ class ProductServiceTest extends TestCase
         $updatedProduct = $service->modifyExistingProduct($request);
         $this->assertInstanceOf(Product::class, $updatedProduct);
     }
+
+    public function testCanDeleteProduct()
+    {
+        // Create mock client
+        $mockClientUtil = new MockGuzzleClient();
+        $client = $mockClientUtil->makeWithResponses(
+            [
+                $mockClientUtil->makeEmptyJsonResponse(200),
+            ]
+        );
+        Factory::inject(Client::class, $client);
+
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makeOAuth('foo', 'bar');
+
+        // Test service method
+        $service = Factory::make(ProductService::class);
+        $result = $service->deleteProduct($credentials, 3);
+
+        // Test results
+        $this->assertTrue(is_object($result));
+        $this->assertEmpty(get_object_vars($result));
+    }
 }
