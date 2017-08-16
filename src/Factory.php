@@ -2,12 +2,10 @@
 
 namespace Yaspa;
 
+use function foo\func;
 use GuzzleHttp;
 use UnexpectedValueException;
-use Yaspa\AdminApi;
-use Yaspa\Authentication;
 use Yaspa\Interfaces\FactoryInterface;
-use Yaspa\Responses;
 
 /**
  * Class Factory
@@ -110,6 +108,9 @@ class Factory implements FactoryInterface
                 return new Builders\PagedResultsIterator(
                     self::make(GuzzleHttp\Client::class)
                 );
+            },
+            Filters\ArrayFilters::class => function () {
+                return new Filters\ArrayFilters();
             },
             Responses\StatusCodes::class => function () {
                 return new Responses\StatusCodes();

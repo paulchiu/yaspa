@@ -8,6 +8,7 @@ use Yaspa\AdminApi\Product\Models\Product as ProductModel;
 use Yaspa\AdminApi\Product\Models\Product;
 use Yaspa\AdminApi\Product\Transformers\Product as ProductTransformer;
 use Yaspa\Constants\RequestBuilder;
+use Yaspa\Filters\ArrayFilters as ArrayFilters;
 use Yaspa\Interfaces\RequestBuilderInterface;
 use Yaspa\Traits\AuthorizedRequestBuilderTrait;
 use Yaspa\Traits\ResourceRequestBuilderTrait;
@@ -32,6 +33,8 @@ class ModifyExistingProductRequest implements RequestBuilderInterface
     protected $productTransformer;
     /** @var MetafieldTransformer */
     protected $metafieldTransformer;
+    /** @var ArrayFilters $arrayFilters */
+    protected $arrayFilters;
 
     /**
      * Builder properties
@@ -46,11 +49,16 @@ class ModifyExistingProductRequest implements RequestBuilderInterface
      *
      * @param ProductTransformer $productTransformer
      * @param MetafieldTransformer $metafieldTransformer
+     * @param ArrayFilters $arrayFilters
      */
-    public function __construct(ProductTransformer $productTransformer, MetafieldTransformer $metafieldTransformer)
-    {
+    public function __construct(
+        ProductTransformer $productTransformer,
+        MetafieldTransformer $metafieldTransformer,
+        ArrayFilters $arrayFilters
+    ) {
         $this->productTransformer = $productTransformer;
         $this->metafieldTransformer = $metafieldTransformer;
+        $this->arrayFilters = $arrayFilters;
         $this->uriTemplate = self::URI_TEMPLATE;
         $this->httpMethod = RequestBuilder::PUT_HTTP_METHOD;
         $this->headers = RequestBuilder::JSON_HEADERS;
@@ -72,27 +80,18 @@ class ModifyExistingProductRequest implements RequestBuilderInterface
     {
         $array = [];
 
+        // Transform model
         if (!is_null($this->productModel)) {
             $array = $this->productTransformer->toArray($this->productModel);
         }
 
+        // Transform nested models
         if (!empty($this->metafields)) {
             $array['metafields'] = array_map([$this->metafieldTransformer, 'toArray'], $this->metafields);
         }
 
-        // Filter out empty, but preserve booleans, and arrays so their values can be emptied on update
-        $array = array_filter($array, function ($value) {
-            return $value || is_bool($value) || is_array($value);
-        });
-
-        // Deeply remove unused values from variant data
-        if (!empty($array['variants'])) {
-            $array['variants'] = array_map('array_filter', $array['variants']);
-        }
-
-        if (!empty($array['images'])) {
-            $array['images'] = array_map('array_filter', $array['images']);
-        }
+        // Retain only not null values
+        $array = $this->arrayFilters->arrayFilterRecursive($array, [$this->arrayFilters, 'notNull']);
 
         return ['product' => $array];
     }
