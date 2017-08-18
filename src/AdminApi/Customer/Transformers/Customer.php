@@ -200,13 +200,19 @@ class Customer implements ArrayResponseTransformerInterface
         $array['multipass_identifier'] = $customer->getMultipassIdentifier();
         $array['tax_exempt'] = $customer->isTaxExempt();
         $array['phone'] = $customer->getPhone();
-        $array['tags'] = empty($customer->getTags()) ? null : implode(',', $customer->getTags());
         $array['last_order_name'] = $customer->getLastOrderName();
-        $array['addresses'] = array_map([$this->addressTransformer, 'toArray'], $customer->getAddresses());
 
         // Only provide default address is one
-        if ($customer->getDefaultAddress()) {
+        if ($customer->getDefaultAddress() !== null) {
             $array['default_address'] = $this->addressTransformer->toArray($customer->getDefaultAddress());
+        }
+
+        if ($customer->getTags() !== null) {
+            $array['tags'] = implode(',', $customer->getTags());
+        }
+
+        if ($customer->getAddresses() !== null) {
+            $array['addresses'] = array_map([$this->addressTransformer, 'toArray'], $customer->getAddresses());
         }
 
         return $array;

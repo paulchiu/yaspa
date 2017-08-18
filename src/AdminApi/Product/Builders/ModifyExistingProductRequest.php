@@ -8,7 +8,7 @@ use Yaspa\AdminApi\Product\Models\Product as ProductModel;
 use Yaspa\AdminApi\Product\Models\Product;
 use Yaspa\AdminApi\Product\Transformers\Product as ProductTransformer;
 use Yaspa\Constants\RequestBuilder;
-use Yaspa\Filters\ArrayFilters as ArrayFilters;
+use Yaspa\Filters\ArrayFilters;
 use Yaspa\Interfaces\RequestBuilderInterface;
 use Yaspa\Traits\AuthorizedRequestBuilderTrait;
 use Yaspa\Traits\ResourceRequestBuilderTrait;

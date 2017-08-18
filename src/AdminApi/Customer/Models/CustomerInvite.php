@@ -22,14 +22,6 @@ class CustomerInvite
     protected $customMessage;
 
     /**
-     * CustomerInvite constructor.
-     */
-    public function __construct()
-    {
-        $this->bcc = [];
-    }
-
-    /**
      * @return string
      */
     public function getTo():? string

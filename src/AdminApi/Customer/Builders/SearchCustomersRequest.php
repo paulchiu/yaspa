@@ -72,7 +72,6 @@ class SearchCustomersRequest implements PagingRequestBuilderInterface
             $array['customer_fields'] = $this->customerFields;
         }
 
-
         return $array;
     }
 

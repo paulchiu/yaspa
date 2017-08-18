@@ -6,6 +6,7 @@ use Yaspa\AdminApi\Customer\Models\Customer;
 use Yaspa\AdminApi\Customer\Models\CustomerInvite;
 use Yaspa\AdminApi\Customer\Transformers;
 use Yaspa\Constants\RequestBuilder;
+use Yaspa\Filters\ArrayFilters;
 use Yaspa\Interfaces\RequestBuilderInterface;
 use Yaspa\Traits\AuthorizedRequestBuilderTrait;
 use Yaspa\Traits\ResourceRequestBuilderTrait;
@@ -27,6 +28,8 @@ class SendAccountInviteRequest implements RequestBuilderInterface
      */
     /** @var Transformers\CustomerInvite $customerInviteTransformer */
     protected $customerInviteTransformer;
+    /** @var ArrayFilters $arrayFilters */
+    protected $arrayFilters;
 
     /**
      * Builder properties
@@ -40,10 +43,14 @@ class SendAccountInviteRequest implements RequestBuilderInterface
      * SendAccountInviteRequest constructor.
      *
      * @param Transformers\CustomerInvite $customerInviteTransformer
+     * @param ArrayFilters $arrayFilters
      */
-    public function __construct(Transformers\CustomerInvite $customerInviteTransformer)
-    {
+    public function __construct(
+        Transformers\CustomerInvite $customerInviteTransformer,
+        ArrayFilters $arrayFilters
+    ) {
         $this->customerInviteTransformer = $customerInviteTransformer;
+        $this->arrayFilters = $arrayFilters;
         $this->uriTemplate = self::URI_TEMPLATE;
         $this->httpMethod = RequestBuilder::POST_HTTP_METHOD;
         $this->headers = RequestBuilder::JSON_HEADERS;
@@ -67,6 +74,7 @@ class SendAccountInviteRequest implements RequestBuilderInterface
 
         if (!is_null($this->customerInvite)) {
             $array = $this->customerInviteTransformer->toArray($this->customerInvite);
+            $array = $this->arrayFilters->arrayFilterRecursive($array, [$this->arrayFilters, 'notNull']);
         }
 
         return ['customer_invite' => $array];

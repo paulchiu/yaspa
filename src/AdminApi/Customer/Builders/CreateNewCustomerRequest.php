@@ -7,6 +7,7 @@ use Yaspa\AdminApi\Customer\Transformers\Customer as CustomerTransformer;
 use Yaspa\AdminApi\Metafield\Models\Metafield as MetafieldModel;
 use Yaspa\AdminApi\Metafield\Transformers\Metafield as MetafieldTransformer;
 use Yaspa\Constants\RequestBuilder;
+use Yaspa\Filters\ArrayFilters;
 use Yaspa\Interfaces\RequestBuilderInterface;
 use Yaspa\Traits\AuthorizedRequestBuilderTrait;
 
@@ -29,6 +30,8 @@ class CreateNewCustomerRequest implements RequestBuilderInterface
     protected $customerTransformer;
     /** @var MetafieldTransformer */
     protected $metafieldTransformer;
+    /** @var ArrayFilters $arrayFilters */
+    protected $arrayFilters;
 
     /**
      * Builder properties
@@ -49,14 +52,17 @@ class CreateNewCustomerRequest implements RequestBuilderInterface
      *
      * @param CustomerTransformer $customerTransformer
      * @param MetafieldTransformer $metafieldTransformer
+     * @param ArrayFilters $arrayFilters
      */
     public function __construct(
         CustomerTransformer $customerTransformer,
-        MetafieldTransformer $metafieldTransformer
+        MetafieldTransformer $metafieldTransformer,
+        ArrayFilters $arrayFilters
     ) {
         // Set dependencies
         $this->customerTransformer = $customerTransformer;
         $this->metafieldTransformer = $metafieldTransformer;
+        $this->arrayFilters = $arrayFilters;
 
         // Set properties with defaults
         $this->uriTemplate = self::URI_TEMPLATE;
@@ -92,7 +98,7 @@ class CreateNewCustomerRequest implements RequestBuilderInterface
             $array['password_confirmation'] = $this->passwordConfirmation;
         }
 
-        $array = array_filter($array);
+        $array = $this->arrayFilters->arrayFilterRecursive($array, [$this->arrayFilters, 'notNull']);
 
         return ['customer' => $array];
     }

@@ -5,6 +5,7 @@ namespace Yaspa\AdminApi\Customer;
 use GuzzleHttp;
 use Yaspa\AdminApi;
 use Yaspa\Builders\PagedResultsIterator;
+use Yaspa\Filters;
 use Yaspa\Interfaces\FactoryInterface;
 use Yaspa\Interfaces\FactoryProviderInterface;
 
@@ -48,7 +49,8 @@ class CustomerFactoryProvider implements FactoryProviderInterface
             Builders\CreateNewCustomerRequest::class => function () use ($factory) {
                 return new Builders\CreateNewCustomerRequest(
                     $factory::make(Transformers\Customer::class),
-                    $factory::make(AdminApi\Metafield\Transformers\Metafield::class)
+                    $factory::make(AdminApi\Metafield\Transformers\Metafield::class),
+                    $factory::make(Filters\ArrayFilters::class)
                 );
             },
             Builders\DeleteCustomerRequest::class => function () {
@@ -63,7 +65,8 @@ class CustomerFactoryProvider implements FactoryProviderInterface
             Builders\ModifyExistingCustomerRequest::class => function () use ($factory) {
                 return new Builders\ModifyExistingCustomerRequest(
                     $factory::make(Transformers\Customer::class),
-                    $factory::make(AdminApi\Metafield\Transformers\Metafield::class)
+                    $factory::make(AdminApi\Metafield\Transformers\Metafield::class),
+                    $factory::make(Filters\ArrayFilters::class)
                 );
             },
             Builders\SearchCustomersRequest::class => function () {
@@ -71,7 +74,8 @@ class CustomerFactoryProvider implements FactoryProviderInterface
             },
             Builders\SendAccountInviteRequest::class => function () use ($factory) {
                 return new Builders\SendAccountInviteRequest(
-                    $factory::make(Transformers\CustomerInvite::class)
+                    $factory::make(Transformers\CustomerInvite::class),
+                    $factory::make(Filters\ArrayFilters::class)
                 );
             },
             Transformers\AccountActivationUrl::class => function () {

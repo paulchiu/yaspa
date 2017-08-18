@@ -54,16 +54,6 @@ class Customer
     protected $defaultAddress;
 
     /**
-     * Customer constructor.
-     */
-    public function __construct()
-    {
-        $this->addresses = [];
-        $this->tags = [];
-    }
-
-
-    /**
      * @return int
      */
     public function getId():? int
