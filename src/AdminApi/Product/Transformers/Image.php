@@ -85,10 +85,13 @@ class Image
         $array['width'] = $image->getWidth();
         $array['height'] = $image->getHeight();
         $array['src'] = $image->getSrc();
-        $array['variant_ids'] = $image->getVariantIds();
 
-        if ($image->getAttachment()) {
+        if ($image->getAttachment() !== null) {
             $array['attachment'] = $image->getAttachment();
+        }
+
+        if ($image->getVariantIds() !== null) {
+            $array['variant_ids'] = $image->getVariantIds();
         }
 
         return $array;

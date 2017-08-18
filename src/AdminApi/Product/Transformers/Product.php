@@ -190,8 +190,6 @@ class Product implements ArrayResponseTransformerInterface
         $array['updated_at'] = ($product->getUpdatedAt()) ? $product->getUpdatedAt()->format(DateTime::ISO8601) : null;
         $array['published_at'] = ($product->getPublishedAt()) ? $product->getPublishedAt()->format(DateTime::ISO8601) : null;
         $array['template_suffix'] = $product->getTemplateSuffix();
-        $array['tags'] = $product->getTags() ? implode(', ', $product->getTags()) : null;
-        $array['options'] = $product->getOptions();
 
         /**
          * Attributes that cannot be empty
@@ -212,24 +210,32 @@ class Product implements ArrayResponseTransformerInterface
             $array['metafields_global_description_tag'] = $product->getMetafieldsGlobalDescriptionTag();
         }
 
+        if ($product->getTags() !== null) {
+            $array['tags'] = implode(', ', $product->getTags());
+        }
+
+        if ($product->getOptions() !== null) {
+            $array['options'] = $product->getOptions();
+        }
+
         /**
          * Transform typed attributes
          */
-        if ($product->getVariants()) {
+        if ($product->getVariants() !== null) {
             $array['variants'] = array_map([$this->variantTransformer, 'toArray'], $product->getVariants());
         }
 
-        if ($product->getImages()) {
+        if ($product->getImages() !== null) {
             $array['images'] = array_map([$this->imageTransformer, 'toArray'], $product->getImages());
         } else {
             $array['images'] = [];
         }
 
-        if ($product->getImage()) {
+        if ($product->getImage() !== null) {
             $array['image'] = $this->imageTransformer->toArray($product->getImage());
         }
 
-        if ($product->getMetafields()) {
+        if ($product->getMetafields() !== null) {
             $array['metafields'] = array_map([$this->metafieldTransformer, 'toArray'], $product->getMetafields());
         }
 

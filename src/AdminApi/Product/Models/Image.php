@@ -36,14 +36,6 @@ class Image
     protected $variantIds;
 
     /**
-     * Image constructor.
-     */
-    public function __construct()
-    {
-        $this->setVariantIds([]);
-    }
-
-    /**
      * @return int
      */
     public function getId():? int
