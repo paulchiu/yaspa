@@ -179,7 +179,8 @@ class ProductService
     }
 
     /**
-     * @todo Get product metafields
+     * @todo Get product metafields, create and use metafield request builder for GetResourceMetafields
+     * @todo Each type of resource should be a build method, see \Yaspa\AdminApi\Metafield\Constants\Metafield
      */
 
     /**
