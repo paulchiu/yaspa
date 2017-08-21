@@ -2,7 +2,6 @@
 
 namespace Yaspa;
 
-use function foo\func;
 use GuzzleHttp;
 use UnexpectedValueException;
 use Yaspa\Interfaces\FactoryInterface;

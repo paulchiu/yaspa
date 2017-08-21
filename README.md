@@ -133,7 +133,7 @@ For full documentation, please see https://paulchiu.gitbooks.io/yaspa/content/
 
 |Version|Status|Endpoints|Description|
 |-------|------|---------|-----------|
-|0.1.0|In progress|OAuth, Customer, Product, Order|Can manage customers and orders|
+|0.1.0|In progress|OAuth, Customer, Product, Order, Metafields|Can manage customers and orders|
 |0.2.0|To do|TBD|TBD|
 
 ## To do
@@ -165,14 +165,14 @@ For full documentation, please see https://paulchiu.gitbooks.io/yaspa/content/
     - [ ] Gift Card SHOPIFY PLUS
     - [ ] Location
     - [ ] Marketing Event
-    - [ ] Metafield
+    - [ ] Metafield (in progress)
     - [ ] Multipass SHOPIFY PLUS
     - [ ] Order
     - [ ] Order Risks
     - [ ] Page
     - [ ] Policy
     - [ ] PriceRule
-    - [ ] Product (in progress)
+    - [x] Product (90% complete)
     - [ ] Product Image
     - [ ] Product Variant
     - [ ] ProductListing
