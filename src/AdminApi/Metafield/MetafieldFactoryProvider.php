@@ -20,6 +20,11 @@ class MetafieldFactoryProvider implements FactoryProviderInterface
     public static function makeConstructors(FactoryInterface $factory): array
     {
         return [
+            Builders\CreateNewMetafieldRequest::class => function () use ($factory) {
+                return new Builders\CreateNewMetafieldRequest(
+                    $factory::make(Transformers\Metafield::class)
+                );
+            },
             Builders\GetMetafieldsRequest::class => function () {
                 return new Builders\GetMetafieldsRequest();
             },
@@ -29,7 +34,8 @@ class MetafieldFactoryProvider implements FactoryProviderInterface
             MetafieldService::class => function () use ($factory) {
                 return new MetafieldService(
                     $factory::make(GuzzleHttp\Client::class),
-                    $factory::make(Transformers\Metafield::class)
+                    $factory::make(Transformers\Metafield::class),
+                    $factory::make(Builders\CreateNewMetafieldRequest::class)
                 );
             },
             Transformers\Metafield::class => function () {

@@ -3,6 +3,7 @@
 namespace Yaspa\AdminApi\Metafield\Builders;
 
 use DateTime;
+use Yaspa\AdminApi\Metafield\Constants\Metafield;
 use Yaspa\Constants\RequestBuilder;
 use Yaspa\Traits\AuthorizedRequestBuilderTrait;
 
@@ -34,7 +35,7 @@ class GetMetafieldsRequest
     protected $key;
     /** @var string $namespace */
     protected $namespace;
-    /** @var string $valueType */
+    /** @var string $valueType Should be one of \Yaspa\AdminApi\Metafield\Constants\Metafield::VALUE_TYPES */
     protected $valueType;
     /** @var MetafieldFields $metafieldFields */
     protected $metafieldFields;
@@ -206,6 +207,28 @@ class GetMetafieldsRequest
     {
         $new = clone $this;
         $new->valueType = $valueType;
+
+        return $new;
+    }
+
+    /**
+     * @return GetMetafieldsRequest
+     */
+    public function withValueTypeInteger(): GetMetafieldsRequest
+    {
+        $new = clone $this;
+        $new->valueType = Metafield::VALUE_TYPE_INTEGER;
+
+        return $new;
+    }
+
+    /**
+     * @return GetMetafieldsRequest
+     */
+    public function withValueTypeString(): GetMetafieldsRequest
+    {
+        $new = clone $this;
+        $new->valueType = Metafield::VALUE_TYPE_STRING;
 
         return $new;
     }

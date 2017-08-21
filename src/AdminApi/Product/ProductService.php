@@ -179,6 +179,10 @@ class ProductService
     }
 
     /**
+     * @todo Get product metafields
+     */
+
+    /**
      * Create a new product
      *
      * @see https://help.shopify.com/api/reference/product#create
