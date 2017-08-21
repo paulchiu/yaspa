@@ -287,9 +287,4 @@ class ProductService
             $request->toRequestOptions()
         );
     }
-
-    /**
-     * @todo Refactor out constructors in all models that can be used for updating resources
-     * @todo Refactor all transformers or requests to use filter that preserve boolean and array values
-     */
 }
