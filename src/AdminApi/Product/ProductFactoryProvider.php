@@ -54,9 +54,11 @@ class ProductFactoryProvider implements FactoryProviderInterface
                 return new ProductService(
                     $factory::make(GuzzleHttp\Client::class),
                     $factory::make(Transformers\Product::class),
+                    $factory::make(Metafield\Transformers\Metafield::class),
                     $factory::make(Builders\CreateNewProductRequest::class),
                     $factory::make(Builders\GetProductRequest::class),
                     $factory::make(Builders\DeleteProductRequest::class),
+                    $factory::make(Metafield\Builders\GetResourceMetafieldsRequest::class),
                     $factory::make(PagedResultsIterator::class)
                 );
             },

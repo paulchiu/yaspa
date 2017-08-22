@@ -283,9 +283,37 @@ class ProductServiceTest extends TestCase
         $this->assertInstanceOf(Product::class, $newProduct);
         $this->assertFalse($newProduct->isPublished());
         $this->assertEmpty($newProduct->getTags());
-        /**
-         * @todo Test metafield exists when get metafields implemented; manually checked to work for now
-         */
+
+        return $newProduct;
+    }
+
+    /**
+     * @depends testCanCreateProductWithMetafield
+     * @group integration
+     * @param Product $product
+     */
+    public function testCanGetProductMetafields(Product $product)
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Test method
+        $service = Factory::make(ProductService::class);
+        $metafields = $service->getProductMetafields($credentials, $product->getId());
+        foreach ($metafields as $metafield) {
+            $this->assertNotEmpty($metafield->getId());
+            $this->assertInstanceOf(Metafield::class, $metafield);
+        }
     }
 
     /**

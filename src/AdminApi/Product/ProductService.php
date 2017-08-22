@@ -4,6 +4,9 @@ namespace Yaspa\AdminApi\Product;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
+use Yaspa\AdminApi\Metafield\Builders\GetResourceMetafieldsRequest;
+use Yaspa\AdminApi\Metafield\Transformers\Metafield as MetafieldTransformer;
+use Yaspa\AdminApi\Metafield\Models\Metafield;
 use Yaspa\AdminApi\Product\Builders\CountProductsRequest;
 use Yaspa\AdminApi\Product\Builders\CreateNewProductRequest;
 use Yaspa\AdminApi\Product\Builders\DeleteProductRequest;
@@ -30,12 +33,16 @@ class ProductService
     protected $httpClient;
     /** @var Transformers\Product $productTransformer */
     protected $productTransformer;
+    /** @var MetafieldTransformer $metafieldsTransformer */
+    protected $metafieldsTransformer;
     /** @var CreateNewProductRequest $createNewProductRequestBuilder */
     protected $createNewProductRequestBuilder;
     /** @var GetProductRequest $getProductRequestBuilder */
     protected $getProductRequestBuilder;
     /** @var DeleteProductRequest $deleteProductRequestBuilder */
     protected $deleteProductRequestBuilder;
+    /** @var GetResourceMetafieldsRequest $getResourceMetafieldsBuilder */
+    protected $getResourceMetafieldsBuilder;
     /** @var PagedResultsIterator $pagedResultsIteratorBuilder */
     protected $pagedResultsIteratorBuilder;
 
@@ -44,24 +51,30 @@ class ProductService
      *
      * @param Client $httpClient
      * @param Transformers\Product $productTransformer
+     * @param MetafieldTransformer $metafieldsTransformer
      * @param CreateNewProductRequest $createNewProductRequestBuilder
      * @param GetProductRequest $getProductRequestBuilder
      * @param DeleteProductRequest $deleteProductRequestBuilder
+     * @param GetResourceMetafieldsRequest $getResourceMetafieldsBuilder
      * @param PagedResultsIterator $pagedResultsIteratorBuilder
      */
     public function __construct(
         Client $httpClient,
         Transformers\Product $productTransformer,
+        MetafieldTransformer $metafieldsTransformer,
         CreateNewProductRequest $createNewProductRequestBuilder,
         GetProductRequest $getProductRequestBuilder,
         DeleteProductRequest $deleteProductRequestBuilder,
+        GetResourceMetafieldsRequest $getResourceMetafieldsBuilder,
         PagedResultsIterator $pagedResultsIteratorBuilder
     ) {
         $this->httpClient = $httpClient;
         $this->productTransformer = $productTransformer;
+        $this->metafieldsTransformer = $metafieldsTransformer;
         $this->createNewProductRequestBuilder = $createNewProductRequestBuilder;
         $this->getProductRequestBuilder = $getProductRequestBuilder;
         $this->deleteProductRequestBuilder = $deleteProductRequestBuilder;
+        $this->getResourceMetafieldsBuilder = $getResourceMetafieldsBuilder;
         $this->pagedResultsIteratorBuilder = $pagedResultsIteratorBuilder;
     }
 
@@ -180,8 +193,35 @@ class ProductService
 
     /**
      * @todo Get product metafields, create and use metafield request builder for GetResourceMetafields
-     * @todo Each type of resource should be a build method, see \Yaspa\AdminApi\Metafield\Constants\Metafield
      */
+    /**
+     * @param RequestCredentialsInterface $credentials
+     * @param int $productId
+     * @return array|Metafield[]
+     */
+    public function getProductMetafields(RequestCredentialsInterface $credentials, int $productId): array
+    {
+        $response = $this->asyncGetProductMetafields($credentials, $productId)->wait();
+
+        return $this->metafieldsTransformer->fromArrayResponse($response);
+    }
+
+    /**
+     * @param RequestCredentialsInterface $credentials
+     * @param int $productId
+     * @return PromiseInterface
+     */
+    public function asyncGetProductMetafields(RequestCredentialsInterface $credentials, int $productId): PromiseInterface
+    {
+        $request = $this->getResourceMetafieldsBuilder
+            ->withCredentials($credentials)
+            ->forProduct($productId);
+
+        return $this->httpClient->sendAsync(
+            $request->toRequest(),
+            $request->toRequestOptions()
+        );
+    }
 
     /**
      * Create a new product
