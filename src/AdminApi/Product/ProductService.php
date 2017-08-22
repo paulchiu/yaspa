@@ -192,7 +192,7 @@ class ProductService
     }
 
     /**
-     * @todo Get product metafields, create and use metafield request builder for GetResourceMetafields
+     * @todo Get product metafields, do unit test
      */
     /**
      * @param RequestCredentialsInterface $credentials

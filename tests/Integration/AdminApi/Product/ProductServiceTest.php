@@ -944,5 +944,6 @@ class ProductServiceTest extends TestCase
      * @todo Test fetch all products that belong to a certain collection once collection service is implemented
      * @todo Test count all products that belong to a certain collection
      * @todo Test Can add metafield to an existing product when get metafields is implemented
+     * @todo Test get all metafields that belong to the images of a product
      */
 }

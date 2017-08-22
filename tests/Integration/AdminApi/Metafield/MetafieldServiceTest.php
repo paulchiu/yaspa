@@ -12,6 +12,16 @@ use Yaspa\Authentication\Factory\ApiCredentials;
 use Yaspa\Factory;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class MetafieldServiceTest
+ *
+ * @package Yaspa\Tests\Integration\AdminApi\Metafield
+ *
+ * Please note that resource related tests at in resource specific tests. Theyse are:
+ *
+ * - Get metafields that belong to a product
+ * - Get metafields that belong to a product image
+ */
 class MetafieldServiceTest extends TestCase
 {
     /**
@@ -128,8 +138,4 @@ class MetafieldServiceTest extends TestCase
         $metafields = $service->getMetafields($request);
         $this->assertCount(1, $metafields);
     }
-
-    /**
-     * @todo Test get all metafields that belong to the images of a product
-     */
 }
