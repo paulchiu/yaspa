@@ -3,6 +3,7 @@
 namespace Yaspa\AdminApi\Metafield\Builders;
 
 use Yaspa\AdminApi\Metafield\Constants\Metafield;
+use Yaspa\AdminApi\Product\Models\Product;
 use Yaspa\Constants\RequestBuilder;
 use Yaspa\Traits\AuthorizedRequestBuilderTrait;
 
@@ -11,6 +12,7 @@ use Yaspa\Traits\AuthorizedRequestBuilderTrait;
  *
  * @package Yaspa\AdminApi\Product\Builders
  * @see https://help.shopify.com/api/reference/metafield#index
+ * @todo Follow objective of "Work with native models where possible", add model methods as resource integrations are done
  */
 class GetResourceMetafieldsRequest
 {
@@ -35,7 +37,7 @@ class GetResourceMetafieldsRequest
      * @param int $articleId
      * @return GetResourceMetafieldsRequest
      */
-    public function forArticle(int $blogId, int $articleId): GetResourceMetafieldsRequest
+    public function forArticleId(int $blogId, int $articleId): GetResourceMetafieldsRequest
     {
         $new = clone $this;
         $new->uriTemplate = self::URI_TEMPLATE . sprintf(Metafield::RESOURCE_LOCATION_URI_TEMPLATE_ARTICLES, $blogId, $articleId);
@@ -47,7 +49,7 @@ class GetResourceMetafieldsRequest
      * @param int $blogId
      * @return GetResourceMetafieldsRequest
      */
-    public function forBlog(int $blogId): GetResourceMetafieldsRequest
+    public function forBlogId(int $blogId): GetResourceMetafieldsRequest
     {
         $new = clone $this;
         $new->uriTemplate = self::URI_TEMPLATE . sprintf(Metafield::RESOURCE_LOCATION_URI_TEMPLATE_BLOGS, $blogId);
@@ -59,7 +61,7 @@ class GetResourceMetafieldsRequest
      * @param int $collectionId
      * @return GetResourceMetafieldsRequest
      */
-    public function forCollection(int $collectionId): GetResourceMetafieldsRequest
+    public function forCollectionId(int $collectionId): GetResourceMetafieldsRequest
     {
         $new = clone $this;
         $new->uriTemplate = self::URI_TEMPLATE . sprintf(Metafield::RESOURCE_LOCATION_URI_TEMPLATE_COLLECTIONS, $collectionId);
@@ -71,7 +73,7 @@ class GetResourceMetafieldsRequest
      * @param int $customerId
      * @return GetResourceMetafieldsRequest
      */
-    public function forCustomer(int $customerId): GetResourceMetafieldsRequest
+    public function forCustomerId(int $customerId): GetResourceMetafieldsRequest
     {
         $new = clone $this;
         $new->uriTemplate = self::URI_TEMPLATE . sprintf(Metafield::RESOURCE_LOCATION_URI_TEMPLATE_CUSTOMERS, $customerId);
@@ -83,7 +85,7 @@ class GetResourceMetafieldsRequest
      * @param int $draftOrderId
      * @return GetResourceMetafieldsRequest
      */
-    public function forDraftOrder(int $draftOrderId): GetResourceMetafieldsRequest
+    public function forDraftOrderId(int $draftOrderId): GetResourceMetafieldsRequest
     {
         $new = clone $this;
         $new->uriTemplate = self::URI_TEMPLATE . sprintf(Metafield::RESOURCE_LOCATION_URI_TEMPLATE_DRAFT_ORDERS, $draftOrderId);
@@ -95,7 +97,7 @@ class GetResourceMetafieldsRequest
      * @param int $orderId
      * @return GetResourceMetafieldsRequest
      */
-    public function forOrder(int $orderId): GetResourceMetafieldsRequest
+    public function forOrderId(int $orderId): GetResourceMetafieldsRequest
     {
         $new = clone $this;
         $new->uriTemplate = self::URI_TEMPLATE . sprintf(Metafield::RESOURCE_LOCATION_URI_TEMPLATE_ORDERS, $orderId);
@@ -107,7 +109,7 @@ class GetResourceMetafieldsRequest
      * @param int $pageId
      * @return GetResourceMetafieldsRequest
      */
-    public function forPage(int $pageId): GetResourceMetafieldsRequest
+    public function forPageId(int $pageId): GetResourceMetafieldsRequest
     {
         $new = clone $this;
         $new->uriTemplate = self::URI_TEMPLATE . sprintf(Metafield::RESOURCE_LOCATION_URI_TEMPLATE_PAGES, $pageId);
@@ -119,7 +121,7 @@ class GetResourceMetafieldsRequest
      * @param int $productId
      * @return GetResourceMetafieldsRequest
      */
-    public function forProduct(int $productId): GetResourceMetafieldsRequest
+    public function forProductId(int $productId): GetResourceMetafieldsRequest
     {
         $new = clone $this;
         $new->uriTemplate = self::URI_TEMPLATE . sprintf(Metafield::RESOURCE_LOCATION_URI_TEMPLATE_PRODUCTS, $productId);
@@ -128,11 +130,22 @@ class GetResourceMetafieldsRequest
     }
 
     /**
+     * This is a convenience wrapper for self::forProductId
+     *
+     * @param Product $product
+     * @return GetResourceMetafieldsRequest
+     */
+    public function forProduct(Product $product): GetResourceMetafieldsRequest
+    {
+        return $this->forProductId($product->getId());
+    }
+
+    /**
      * @param int $productId
      * @param int $variantId
      * @return GetResourceMetafieldsRequest
      */
-    public function forProductVariant(int $productId, int $variantId): GetResourceMetafieldsRequest
+    public function forProductVariantId(int $productId, int $variantId): GetResourceMetafieldsRequest
     {
         $new = clone $this;
         $new->uriTemplate = self::URI_TEMPLATE . sprintf(Metafield::RESOURCE_LOCATION_URI_TEMPLATE_PRODUCT_VARIANTS, $productId, $variantId);
@@ -155,7 +168,7 @@ class GetResourceMetafieldsRequest
      * @param int $collectionId
      * @return GetResourceMetafieldsRequest
      */
-    public function forSmartCollection(int $collectionId): GetResourceMetafieldsRequest
+    public function forSmartCollectionId(int $collectionId): GetResourceMetafieldsRequest
     {
         $new = clone $this;
         $new->uriTemplate = self::URI_TEMPLATE . sprintf(Metafield::RESOURCE_LOCATION_URI_TEMPLATE_SMART_COLLECTIONS, $collectionId);

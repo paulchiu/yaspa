@@ -212,7 +212,7 @@ class ProductService
     {
         $request = $this->getResourceMetafieldsBuilder
             ->withCredentials($credentials)
-            ->forProduct($productId);
+            ->forProductId($productId);
 
         return $this->httpClient->sendAsync(
             $request->toRequest(),
