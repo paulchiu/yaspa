@@ -913,6 +913,49 @@ class ProductServiceTest extends TestCase
     /**
      * @depends testCanCreateNewProductWithMultipleProductVariants
      * @group integration
+     * @param Product $product
+     */
+    public function testCanAddAMetafieldToAnExistingProduct(Product $product)
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+        $service = Factory::make(ProductService::class);
+
+        // Get pre-update-state
+        $preUpdateMetafields = $service->getProductMetafields($credentials, $product->getId());
+
+        // Create update parameters
+        $metafield = (new Metafield())
+            ->setKey('new')
+            ->setValue('newvalue')
+            ->setValueType('string')
+            ->setNamespace('global');
+        $toBeUpdatedProduct = (new Product)
+            ->setId($product->getId())
+            ->setMetafields([$metafield]);
+        $request = Factory::make(ModifyExistingProductRequest::class)
+            ->withCredentials($credentials)
+            ->withProduct($toBeUpdatedProduct);
+
+        // Test update
+        $updatedProduct = $service->modifyExistingProduct($request);
+        $postUpdateMetafields = $service->getProductMetafields($credentials, $updatedProduct->getId());
+        $this->assertEquals(count($preUpdateMetafields) + 1, count($postUpdateMetafields));
+    }
+
+    /**
+     * @depends testCanCreateNewProductWithMultipleProductVariants
+     * @group integration
      * @param Product $originalProduct
      */
     public function testCanDeleteProduct(Product $originalProduct)
@@ -943,7 +986,6 @@ class ProductServiceTest extends TestCase
     /**
      * @todo Test fetch all products that belong to a certain collection once collection service is implemented
      * @todo Test count all products that belong to a certain collection
-     * @todo Test Can add metafield to an existing product when get metafields is implemented
      * @todo Test get all metafields that belong to the images of a product
      */
 }

@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  *
  * @package Yaspa\Tests\Integration\AdminApi\Metafield
  *
- * Please note that resource related tests at in resource specific tests. Theyse are:
+ * Please note that resource related tests at in resource specific tests. These are:
  *
  * - Get metafields that belong to a product
  * - Get metafields that belong to a product image
