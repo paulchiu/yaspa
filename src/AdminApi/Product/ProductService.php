@@ -192,9 +192,6 @@ class ProductService
     }
 
     /**
-     * @todo Get product metafields, do unit test
-     */
-    /**
      * @param RequestCredentialsInterface $credentials
      * @param int $productId
      * @return array|Metafield[]

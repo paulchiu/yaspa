@@ -11,6 +11,17 @@ use Yaspa\Authentication\Factory\ApiCredentials;
 use Yaspa\Factory;
 use Yaspa\Tests\Utils\MockGuzzleClient;
 
+/**
+ * Class MetafieldServiceTest
+ *
+ * @package Yaspa\Tests\Unit\AdminApi\Metafield
+ *
+ * Get resource metafields are tested in resource specific test cases.
+ *
+ * For example, getting product metafields are tested in:
+ *
+ * `\Yaspa\Tests\Unit\AdminApi\Product\ProductServiceTest::testCanGetProductMetafields`
+ */
 class MetafieldServiceTest extends TestCase
 {
     public function testCanCreateNewMetafield()

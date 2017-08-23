@@ -216,4 +216,36 @@ class ProductServiceTest extends TestCase
         $this->assertTrue(is_object($result));
         $this->assertEmpty(get_object_vars($result));
     }
+
+    public function testCanGetProductMetafields()
+    {
+        // Create mock client
+        $mockClientUtil = new MockGuzzleClient();
+        $client = $mockClientUtil->makeWithResponses(
+            [
+                $mockClientUtil->makeJsonResponse(200, [
+                    'metafields' => [
+                        [
+                            'id' => 3,
+                            'key' => 'foo',
+                        ],
+                        [
+                            'id' => 5,
+                            'key' => 'bar',
+                        ],
+                    ],
+                ]),
+            ]
+        );
+        Factory::inject(Client::class, $client);
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makeOAuth('foo', 'bar');
+
+        // Get and test results
+        $service = Factory::make(ProductService::class);
+        $metafields = $service->getProductMetafields($credentials, 7);
+        $this->assertNotEmpty($metafields);
+    }
 }

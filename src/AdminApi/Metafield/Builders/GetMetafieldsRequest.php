@@ -19,6 +19,10 @@ class GetMetafieldsRequest
 
     const URI_TEMPLATE = 'https://%s.myshopify.com/admin/metafields.json';
 
+    /**
+     * @todo Add support for owner id and owner resource id
+     * @see "Get all metafields that belong to the images of a product"
+     */
     /** @var int $limit */
     protected $limit;
     /** @var int $sinceId */

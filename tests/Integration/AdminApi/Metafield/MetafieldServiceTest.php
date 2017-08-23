@@ -3,7 +3,6 @@
 namespace Yaspa\Tests\Integration\AdminApi\Metafield;
 
 use GuzzleHttp\Exception\ClientException;
-use Yaspa\AdminApi\Metafield\Builders\MetafieldFields;
 use Yaspa\AdminApi\Metafield\MetafieldService;
 use Yaspa\AdminApi\Metafield\Builders\GetMetafieldsRequest;
 use Yaspa\AdminApi\Metafield\Models\Metafield;
