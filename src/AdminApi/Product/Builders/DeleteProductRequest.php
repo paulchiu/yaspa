@@ -11,7 +11,7 @@ use Yaspa\Traits\ResourceRequestBuilderTrait;
 /**
  * Class DeleteProductRequest
  *
- * @package Yaspa\AdminApi\Customer\Builders
+ * @package Yaspa\AdminApi\Product\Builders
  * @see https://help.shopify.com/api/reference/product#destroy
  */
 class DeleteProductRequest implements RequestBuilderInterface
