@@ -44,11 +44,11 @@ class ScriptTag implements ArrayResponseTransformerInterface
     {
         $stdClass = json_decode($response->getBody()->getContents());
 
-        if (!property_exists($stdClass, 'script_tag')) {
-            throw new MissingExpectedAttributeException('script_tag');
+        if (!property_exists($stdClass, 'script_tags')) {
+            throw new MissingExpectedAttributeException('script_tags');
         }
 
-        return array_map([$this, 'fromShopifyJsonScriptTag'], $stdClass->script_tag);
+        return array_map([$this, 'fromShopifyJsonScriptTag'], $stdClass->script_tags);
     }
 
     /**
