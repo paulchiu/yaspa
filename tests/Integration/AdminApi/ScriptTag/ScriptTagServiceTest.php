@@ -8,7 +8,7 @@ use Yaspa\AdminApi\ScriptTag\Builders\GetScriptTagsRequest;
 use Yaspa\AdminApi\ScriptTag\Builders\ModifyExistingScriptTagRequest;
 use Yaspa\AdminApi\ScriptTag\Builders\ScriptTagFields;
 use Yaspa\AdminApi\ScriptTag\Models\ScriptTag;
-use Yaspa\AdminApi\ScriptTag\ProductService;
+use Yaspa\AdminApi\ScriptTag\ScriptTagService;
 use Yaspa\Tests\Utils\Config as TestConfig;
 use Yaspa\Authentication\Factory\ApiCredentials;
 use Yaspa\Factory;
@@ -49,7 +49,7 @@ class ScriptTagServiceTest extends TestCase
         $this->assertNotEmpty($newScriptTag->getEvent());
         $this->assertNotEmpty($newScriptTag->getDisplayScope());
 
-        return $newProduct;
+        return $newScriptTag;
     }
 
     /**
@@ -77,7 +77,7 @@ class ScriptTagServiceTest extends TestCase
 
         // Test service method
         $service = Factory::make(ScriptTagService::class);
-        $result = $service->deleteProduct($credentials, $originalScriptTag->getId());
+        $result = $service->deleteScriptTag($credentials, $originalScriptTag->getId());
         $this->assertTrue(is_object($result));
         $this->assertEmpty(get_object_vars($result));
     }
