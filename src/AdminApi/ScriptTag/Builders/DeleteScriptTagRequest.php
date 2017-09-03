@@ -50,7 +50,7 @@ class DeleteScriptTagRequest implements RequestBuilderInterface
      * @param ScriptTagModel $scriptTag
      * @return DeleteScriptTagRequest
      */
-    public function with(ScriptTagModel $scriptTag): DeleteScriptTagRequest
+    public function withScriptTag(ScriptTagModel $scriptTag): DeleteScriptTagRequest
     {
         $new = clone $this;
         $new->scriptTagModel = $scriptTag;
