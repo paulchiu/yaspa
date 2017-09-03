@@ -18,7 +18,7 @@ class CreateNewScriptTagRequest implements RequestBuilderInterface
 {
     use AuthorizedRequestBuilderTrait;
 
-    const URI_TEMPLATE = 'https://%s.myshopify.com/admin/scripttag.json';
+    const URI_TEMPLATE = 'https://%s.myshopify.com/admin/script_tags.json';
 
     /**
      * Dependencies

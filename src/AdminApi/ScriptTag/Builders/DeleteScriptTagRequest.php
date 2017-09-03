@@ -19,7 +19,7 @@ class DeleteScriptTagRequest implements RequestBuilderInterface
     use AuthorizedRequestBuilderTrait,
         ResourceRequestBuilderTrait;
 
-    const URI_TEMPLATE = 'https://%s.myshopify.com/admin/scripttag/%s.json';
+    const URI_TEMPLATE = 'https://%s.myshopify.com/admin/script_tags/%s.json';
 
     /**
      * Builder properties

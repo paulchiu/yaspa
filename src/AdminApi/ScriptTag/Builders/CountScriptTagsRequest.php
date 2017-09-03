@@ -17,7 +17,7 @@ class CountScriptTagsRequest
 {
     use AuthorizedRequestBuilderTrait;
 
-    const URI_TEMPLATE = 'https://%s.myshopify.com/admin/scripttags/count.json';
+    const URI_TEMPLATE = 'https://%s.myshopify.com/admin/script_tags/count.json';
 
     /** @var string $src */
     protected $src;
