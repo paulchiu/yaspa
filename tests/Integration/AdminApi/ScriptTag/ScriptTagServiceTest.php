@@ -53,6 +53,175 @@ class ScriptTagServiceTest extends TestCase
     }
 
     /**
+     * @group integration
+     */
+    public function testCannotCreateAScriptTagWithoutSrc()
+    {
+        // Expect Guzzle client exception due to response 422
+        $this->expectException(ClientException::class);
+
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Create request parameters
+        $scriptTag = (new ScriptTag())->setEvent('onload')
+            ->setDisplayScope('online_store');
+
+        // Create new scripttag
+        $service = Factory::make(ScriptTagService::class);
+        $service->createNewScriptTag($credentials, $scriptTag);
+    }
+
+    /**
+     * @depends testCanCreateNewScriptTag
+     * @group integration
+     */
+    public function testCanGetAllScriptTagsShowingOnlySomeAttributes()
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Create request
+        $fields = Factory::make(ScriptTagFields::class)
+            ->withId()
+            ->withSrc()
+            ->withEvent();
+        $request = Factory::make(GetScriptTagsRequest::class)
+            ->withCredentials($credentials)
+            ->withScriptTagFields($fields)
+            ->withLimit(1);
+
+        // Get and test results
+        $service = Factory::make(ScriptTagService::class);
+        $scriptTags = $service->getScriptTags($request);
+        $this->assertTrue(is_iterable($scriptTags));
+        foreach ($scriptTags as $scriptTag) {
+            $this->assertInstanceOf(ScriptTag::class, $scriptTag);
+            $this->assertNotEmpty($scriptTag->getId());
+            break;
+        }
+    }
+
+    /**
+     * @depends testCanCreateNewScriptTag
+     * @group integration
+     */
+    public function testCanGetAllScriptTags()
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Create request
+        $request = Factory::make(GetScriptTagsRequest::class)
+            ->withCredentials($credentials)
+            ->withLimit(20);
+
+        // Get and test results
+        $service = Factory::make(ScriptTagService::class);
+        $scriptTags = $service->getScriptTags($request);
+        $this->assertTrue(is_iterable($scriptTags));
+        foreach ($scriptTags as $scriptTag) {
+            $this->assertInstanceOf(ScriptTag::class, $scriptTag);
+            $this->assertNotEmpty($scriptTag->getId());
+            break;
+        }
+    }
+
+    /**
+     * @depends testCanCreateNewScriptTag
+     * @group integration
+     * @param ScriptTag $newScriptTag
+     */
+    public function testCanGetAListOfSpecificScriptTags(ScriptTag $newScriptTag)
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Create request
+        $request = Factory::make(GetScriptTagsRequest::class)
+            ->withCredentials($credentials)
+            ->withIds([$newScriptTag->getId()]);
+
+        // Get and test results
+        $service = Factory::make(ScriptTagService::class);
+        $scriptTags = $service->getScriptTags($request);
+        $this->assertTrue(is_iterable($scriptTags));
+        foreach ($scriptTags as $scriptTag) {
+            $this->assertInstanceOf(ScriptTag::class, $scriptTag);
+            $this->assertEquals($newScriptTag->getId(), $scriptTag->getId());
+        }
+    }
+
+    /**
+     * @depends testCanCreateNewScriptTag
+     * @group integration
+     */
+    public function testCanCountAllScriptTags()
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Create request
+        $request = Factory::make(CountScriptTagsRequest::class)
+            ->withCredentials($credentials);
+
+        // Get and test results
+        $service = Factory::make(ScriptTagService::class);
+        $scriptTagsCount = $service->countScriptTags($request);
+        $this->assertGreaterThan(0, $scriptTagsCount);
+    }
+
+    /**
      * @depends testCanCreateNewScriptTag
      * @group integration
      * @param ScriptTag $originalScriptTag
