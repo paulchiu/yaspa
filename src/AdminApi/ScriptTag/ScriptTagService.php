@@ -4,13 +4,19 @@ namespace Yaspa\AdminApi\ScriptTag;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
+use Yaspa\AdminApi\ScriptTag\Transformers;
+use Yaspa\AdminApi\ScriptTag\Builders\CountScriptTagsRequest;
+use Yaspa\AdminApi\ScriptTag\Builders\CreateNewScriptTagRequest;
+use Yaspa\AdminApi\ScriptTag\Builders\DeleteScriptTagRequest;
 use Yaspa\AdminApi\ScriptTag\Builders\GetScriptTagRequest;
+use Yaspa\AdminApi\ScriptTag\Builders\GetScriptTagsRequest;
+use Yaspa\AdminApi\ScriptTag\Builders\ModifyExistingScriptTagRequest;
+use Yaspa\Builders\PagedResultsIterator;
 use Yaspa\AdminApi\ScriptTag\Models\ScriptTag;
-use Yaspa\AdminApi\ScriptTag\Transformers\ScriptTag as ScriptTagTransformer;
 use Yaspa\Interfaces\RequestCredentialsInterface;
 
 /**
- * Class Service
+ * Class ScriptTagService
  *
  * @package Yaspa\AdminApi\Shop
  * @see https://help.shopify.com/api/reference/scripttag
@@ -21,10 +27,20 @@ class ScriptTagService
 {
     /** @var Client $httpClient */
     protected $httpClient;
+    /** @var Transformers\ScriptTag $scriptTagTransformer */
+    protected $scriptTagTransformer;
+    /** @var CountScriptTagsRequest $countScriptTagsRequestBuilder */
+    protected $countScriptTagsRequestBuilder;
+    /** @var CreateNewScriptTagRequest $createNewScriptTagRequestBuilder */
+    protected $createNewScriptTagRequestBuilder;
+    /** @var DeleteScriptTagRequest $deleteScriptTagRequestBuilder */
+    protected $deleteScriptTagRequestBuilder;
     /** @var GetScriptTagRequest $getScriptTagRequestBuilder */
     protected $getScriptTagRequestBuilder;
-    /** @var ScriptTagTransformer $scriptTagTransformer */
-    protected $scriptTagTransformer;
+    /** @var GetScriptTagsRequest $getScriptTagsRequestBuilder */
+    protected $getScriptTagsRequestBuilder;
+    /** @var ModifyExistingScriptTagRequest $modifyScriptTagRequestBuilder */
+    protected $modifyExistingScriptTagRequestBuilder;
     /** @var PagedResultsIterator $pagedResultsIteratorBuilder */
     protected $pagedResultsIteratorBuilder;
 
@@ -32,17 +48,35 @@ class ScriptTagService
      * Service constructor.
      *
      * @param Client $httpClient
-     * @param GetScriptTagRequest $getScriptTagRequestBuilder
-     * @param ScriptTagTransformer $scriptTagTransformer
+     * @param Transformers\ScriptTag $scriptTagTransformer
+     * @param CountScriptTagsRequest $countScriptTagsRequestBuilder
+     * @param CreateNewScriptTagRequest $createNewScriptTagRequestBuilder
+     * @param DeleteScriptTagRequest $deleteScriptTagRequestBuilder
+     * @param GetScriptTagRequest $getScriptTagRequestBuilder,
+     * @param GetScriptTagsRequest $getScriptTagsRequestBuilder,
+     * @param ModifyExistingScriptTagRequest $modifyExistingScriptTagRequestBuilder
+     * @param PagedResultsIterator $pagedResultsIteratorBuilder
      */
     public function __construct(
         Client $httpClient,
+        Transformers\ScriptTag $scriptTagTransformer,
+        CountScriptTagsRequest $countScriptTagsRequestBuilder,
+        CreateNewScriptTagRequest $createNewScriptTagRequestBuilder,
+        DeleteScriptTagRequest $deleteScriptTagRequestBuilder,
         GetScriptTagRequest $getScriptTagRequestBuilder,
-        ScriptTagTransformer $scriptTagTransformer
+        GetScriptTagsRequest $getScriptTagsRequestBuilder,
+        ModifyExistingScriptTagRequest $modifyExistingScriptTagRequestBuilder,
+        PagedResultsIterator $pagedResultsIteratorBuilder
     ) {
         $this->httpClient = $httpClient;
-        $this->getScriptTagRequestBuilder = $getScriptTagRequestBuilder;
         $this->scriptTagTransformer = $scriptTagTransformer;
+        $this->countScriptTagsRequestBuilder = $countScriptTagsRequestBuilder;
+        $this->createNewScriptTagRequestBuilder = $createNewScriptTagRequestBuilder;
+        $this->deleteScriptTagRequestBuilder = $deleteScriptTagRequestBuilder;
+        $this->getScriptTagRequestBuilder = $getScriptTagRequestBuilder;
+        $this->getScriptTagsRequestBuilder = $getScriptTagsRequestBuilder;
+        $this->modifyExistingScriptTagRequestBuilder = $modifyExistingScriptTagRequestBuilder;
+        $this->pagedResultsIteratorBuilder = $pagedResultsIteratorBuilder;
     }
 
     /**
@@ -50,7 +84,7 @@ class ScriptTagService
      *
      * @see https://help.shopify.com/api/reference/scripttag#index
      * @param GetScriptTagsRequest $request
-     * @return PagedResultsIterator|Product[]
+     * @return PagedResultsIterator|ScriptTag[]
      */
     public function getScriptTags(GetScriptTagsRequest $request): PagedResultsIterator
     {
@@ -124,7 +158,7 @@ class ScriptTagService
         RequestCredentialsInterface $credentials,
         int $scriptTagId,
         ?ScriptTagFields $scriptTagFields = null
-    ): Product {
+    ): ScriptTag {
         $response = $this->asyncGetScriptTag($credentials, $scriptTagId, $scriptTagFields)->wait();
 
         return $this->scriptTagTransformer->fromResponse($response);
@@ -151,6 +185,87 @@ class ScriptTagService
         if ($scriptTagFields) {
             $request = $request->withScriptTagFields($scriptTagFields);
         }
+
+        return $this->httpClient->sendAsync(
+            $request->toResourceRequest(),
+            $request->toRequestOptions()
+        );
+    }
+
+    /**
+     * Create a new scripttag
+     *
+     * @see https://help.shopify.com/api/reference/scripttag#create
+     * @param RequestCredentialsInterface $credentials
+     * @param Models\ScriptTag $scriptTag
+     * @return Models\ScriptTag
+     */
+    public function createNewScriptTag(
+        RequestCredentialsInterface $credentials,
+        Models\ScriptTag $scriptTag
+    ): Models\ScriptTag {
+        $response = $this->asyncCreateNewScriptTag($credentials, $scriptTag)->wait();
+
+        return $this->scriptTagTransformer->fromResponse($response);
+    }
+
+    /**
+     * Async version of self::createNewScriptTag
+     *
+     * @see https://help.shopify.com/api/reference/scripttag#create
+     * @param RequestCredentialsInterface $credentials
+     * @param Models\ScriptTag $scriptTag
+     * @return PromiseInterface
+     */
+    public function asyncCreateNewScriptTag(
+        RequestCredentialsInterface $credentials,
+        Models\ScriptTag $scriptTag
+    ): PromiseInterface {
+        $request = $this->createNewScriptTagRequestBuilder
+            ->withCredentials($credentials)
+            ->withScriptTag($scriptTag);
+
+        return $this->httpClient->sendAsync(
+            $request->toRequest(),
+            $request->toRequestOptions()
+        );
+    }
+
+    /**
+     * Delete scripttag.
+     *
+     * Returns an empty object with no properties if successful.
+     *
+     * @see https://help.shopify.com/api/reference/scripttag#destroy
+     * @param RequestCredentialsInterface $credentials
+     * @param int $scriptTagId
+     * @return object
+     */
+    public function deleteScriptTag(
+        RequestCredentialsInterface $credentials,
+        int $scriptTagId
+    ) {
+        $response = $this->asyncDeleteScriptTag($credentials, $scriptTagId)->wait();
+
+        return json_decode($response->getBody()->getContents());
+    }
+
+    /**
+     * Async version of self::deleteScriptTag
+     *
+     * @see https://help.shopify.com/api/reference/scripttag#destroy
+     * @param RequestCredentialsInterface $credentials
+     * @param int $scriptTagId
+     * @return PromiseInterface
+     */
+    public function asyncDeleteScriptTag(
+        RequestCredentialsInterface $credentials,
+        int $scriptTagId
+    ): PromiseInterface {
+        $scriptTag = (new Models\ScriptTag())->setId($scriptTagId);
+        $request = $this->deleteScriptTagRequestBuilder
+            ->withCredentials($credentials)
+            ->withScriptTag($scriptTag);
 
         return $this->httpClient->sendAsync(
             $request->toResourceRequest(),
