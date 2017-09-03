@@ -25,54 +25,44 @@ class ScriptTagFactoryProvider implements FactoryProviderInterface
             Builders\CountScriptTagsRequest::class => function () {
                 return new Builders\CountScriptTagsRequest();
             },
-            Builders\CreateNewProductRequest::class => function () use ($factory) {
-                return new Builders\CreateNewProductRequest(
-                    $factory::make(Transformers\Product::class)
+            Builders\CreateNewScriptTagRequest::class => function () use ($factory) {
+                return new Builders\CreateNewScriptTagRequest(
+                    $factory::make(Transformers\ScriptTag::class)
                 );
             },
-            Builders\DeleteProductRequest::class => function () {
-                return new Builders\DeleteProductRequest();
+            Builders\DeleteScriptTagRequest::class => function () {
+                return new Builders\DeleteScriptTagRequest();
             },
-            Builders\GetProductRequest::class => function () {
-                return new Builders\GetProductRequest();
+            Builders\GetScriptTagRequest::class => function () {
+                return new Builders\GetScriptTagRequest();
             },
-            Builders\GetProductsRequest::class => function () {
-                return new Builders\GetProductsRequest();
+            Builders\GetScriptTagsRequest::class => function () {
+                return new Builders\GetScriptTagsRequest();
             },
-            Builders\ModifyExistingProductRequest::class => function () use ($factory) {
-                return new Builders\ModifyExistingProductRequest(
-                    $factory::make(Transformers\Product::class),
-                    $factory::make(Metafield\Transformers\Metafield::class),
+            Builders\ModifyExistingScriptTagRequest::class => function () use ($factory) {
+                return new Builders\ModifyExistingScriptTagRequest(
+                    $factory::make(Transformers\ScriptTag::class),
                     $factory::make(ArrayFilters::class)
                 );
             },
-            Builders\ProductFields::class => function () {
-                return new Builders\ProductFields();
+            Builders\ScriptTagFields::class => function () {
+                return new Builders\ScriptTagFields();
             },
-            ProductService::class => function () use ($factory) {
-                return new ProductService(
+            ScriptTagService::class => function () use ($factory) {
+                return new ScriptTagService(
                     $factory::make(GuzzleHttp\Client::class),
-                    $factory::make(Transformers\Product::class),
-                    $factory::make(Metafield\Transformers\Metafield::class),
-                    $factory::make(Builders\CreateNewProductRequest::class),
-                    $factory::make(Builders\GetProductRequest::class),
-                    $factory::make(Builders\DeleteProductRequest::class),
-                    $factory::make(Metafield\Builders\GetResourceMetafieldsRequest::class),
+                    $factory::make(Transformers\ScriptTag::class),
+                    $factory::make(Builders\CountScriptTagsRequest::class),
+                    $factory::make(Builders\CreateNewScriptTagRequest::class),
+                    $factory::make(Builders\DeleteScriptTagRequest::class),
+                    $factory::make(Builders\GetScriptTagRequest::class),
+                    $factory::make(Builders\GetScriptTagsRequest::class),
+                    $factory::make(Builders\ModifyExistingScriptTagRequest::class),
                     $factory::make(PagedResultsIterator::class)
                 );
             },
-            Transformers\Product::class => function () use ($factory) {
-                return new Transformers\Product(
-                    $factory::make(Transformers\Variant::class),
-                    $factory::make(Transformers\Image::class),
-                    $factory::make(Metafield\Transformers\Metafield::class)
-                );
-            },
-            Transformers\Image::class => function () {
-                return new Transformers\Image();
-            },
-            Transformers\Variant::class => function () {
-                return new Transformers\Variant();
+            Transformers\ScriptTag::class => function () use ($factory) {
+                return new Transformers\ScriptTag();
             },
         ];
     }
