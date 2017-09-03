@@ -4,7 +4,7 @@ namespace Yaspa\AdminApi\ScriptTag\Transformers;
 
 use DateTime;
 use Psr\Http\Message\ResponseInterface;
-use Yaspa\AdminApi\Product\Models\ScriptTag as ScriptTagModel;
+use Yaspa\AdminApi\ScriptTag\Models\ScriptTag as ScriptTagModel;
 use Yaspa\Exceptions\MissingExpectedAttributeException;
 use Yaspa\Interfaces\ArrayResponseTransformerInterface;
 use stdClass;
@@ -17,16 +17,8 @@ use stdClass;
  *
  * Transform Shopify scripttag(s) deeply.
  */
-class ScriptTags implements ArrayResponseTransformerInterface
+class ScriptTag implements ArrayResponseTransformerInterface
 {
-    /**
-     * ScriptTag constructor.
-     */
-    public function __construct()
-    {
-
-    }
-
     /**
      * @param ResponseInterface $response
      * @return ScriptTagModel
@@ -40,7 +32,7 @@ class ScriptTags implements ArrayResponseTransformerInterface
             throw new MissingExpectedAttributeException('script_tag');
         }
 
-        return $this->fromShopifyJsonScriptTag($stdClass->scriptTag);
+        return $this->fromShopifyJsonScriptTag($stdClass->script_tag);
     }
 
     /**
@@ -52,11 +44,11 @@ class ScriptTags implements ArrayResponseTransformerInterface
     {
         $stdClass = json_decode($response->getBody()->getContents());
 
-        if (!property_exists($stdClass, 'script_tags')) {
-            throw new MissingExpectedAttributeException('script_tags');
+        if (!property_exists($stdClass, 'script_tag')) {
+            throw new MissingExpectedAttributeException('script_tag');
         }
 
-        return array_map([$this, 'fromShopifyJsonScriptTag'], $stdClass->script_tags);
+        return array_map([$this, 'fromShopifyJsonScriptTag'], $stdClass->script_tag);
     }
 
     /**
