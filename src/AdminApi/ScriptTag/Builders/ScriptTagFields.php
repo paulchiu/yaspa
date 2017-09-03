@@ -17,7 +17,7 @@ class ScriptTagFields
     const EVENT = 'event';
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'updated_at';
-    const DISPAY_SCOPE = 'display_scope';
+    const DISPLAY_SCOPE = 'display_scope';
 
     /** @var string $fields */
     protected $fields;
