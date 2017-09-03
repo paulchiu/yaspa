@@ -42,6 +42,7 @@ class ModifyExistingScriptTagRequest implements RequestBuilderInterface
      * ModifyExistingScriptTagRequest constructor.
      *
      * @param ScriptTagTransformer $scriptTagTransformer
+     * @param ArrayFilters $arrayFilters
      */
     public function __construct(
         ScriptTagTransformer $scriptTagTransformer,
