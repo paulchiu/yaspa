@@ -19,7 +19,7 @@ class CountScriptTagsRequest
 
     const URI_TEMPLATE = 'https://%s.myshopify.com/admin/scripttags/count.json';
 
-    /** @var string $vendor */
+    /** @var string $src */
     protected $src;
 
     /**
@@ -57,7 +57,7 @@ class CountScriptTagsRequest
      * @param string $src
      * @return CountScriptTagsRequest
      */
-    public function withSrc(string $vendor): CountScriptTagsRequest
+    public function withSrc(string $src): CountScriptTagsRequest
     {
         $new = clone $this;
         $new->src = $src;
