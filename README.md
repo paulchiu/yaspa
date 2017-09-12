@@ -26,7 +26,7 @@ Please note that all examples utilise private authentication.
 
 ### Create private authentication credentials
 
-Credentials are stored in a POPO model.
+Credentials are stored in a POPO (Plain Old PHP Object) model.
 
 All other examples assume the presence of the following code.
 
