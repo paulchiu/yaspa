@@ -138,7 +138,10 @@ For full documentation, please see https://paulchiu.gitbooks.io/yaspa/content/
 
 ## To do
 
-- [ ] Document endpoints (in progress)
+- [ ] Refactor *breaking* change of use models by default, this means methods such as
+      `Yaspa\AdminApi\Customer\CustomerService::getCustomer` will be broken to accept
+      a customer model with new method `Yaspa\AdminApi\Customer\CustomerService::getCustomerById`
+      working like the older version.
 - [ ] Begin working with the admin api
     - [ ] Abandoned checkouts
     - [ ] ApplicationCharge
@@ -193,6 +196,10 @@ For full documentation, please see https://paulchiu.gitbooks.io/yaspa/content/
     - [ ] User SHOPIFY PLUS
     - [ ] Webhook
     - [ ] ShopifyQL
+- [ ] Document endpoints (in progress)
+    - [x] Customer
+    - [ ] Product
+    - [x] Shop
 - [ ] Implement [api call limit throtling][acl] through custom pool [pool][gpool]
 - [ ] Implement [webhooks][whs]
 
