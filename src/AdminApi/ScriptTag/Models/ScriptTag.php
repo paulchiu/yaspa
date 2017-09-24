@@ -23,6 +23,8 @@ class ScriptTag
     protected $createdAt;
     /** @var DateTime $updatedAt */
     protected $updatedAt;
+    /** @var string $displayScope */
+    protected $displayScope;
 
     /**
      * @return int
