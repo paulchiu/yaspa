@@ -25,6 +25,9 @@ class MetafieldFactoryProvider implements FactoryProviderInterface
                     $factory::make(Transformers\Metafield::class)
                 );
             },
+            Builders\GetMetafieldRequest::class => function () {
+                return new Builders\GetMetafieldRequest();
+            },
             Builders\GetMetafieldsRequest::class => function () {
                 return new Builders\GetMetafieldsRequest();
             },
@@ -38,7 +41,8 @@ class MetafieldFactoryProvider implements FactoryProviderInterface
                 return new MetafieldService(
                     $factory::make(GuzzleHttp\Client::class),
                     $factory::make(Transformers\Metafield::class),
-                    $factory::make(Builders\CreateNewMetafieldRequest::class)
+                    $factory::make(Builders\CreateNewMetafieldRequest::class),
+                    $factory::make(Builders\GetMetafieldRequest::class)
                 );
             },
             Transformers\Metafield::class => function () {

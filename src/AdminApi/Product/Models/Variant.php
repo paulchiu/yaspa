@@ -147,7 +147,7 @@ class Variant
      * @param string $sku
      * @return Variant
      */
-    public function setSku(string $sku): Variant
+    public function setSku(?string $sku): Variant
     {
         $this->sku = $sku;
         return $this;

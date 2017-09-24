@@ -4,6 +4,7 @@ namespace Yaspa\AdminApi\Metafield;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
+use Yaspa\AdminApi\Metafield\Builders\GetMetafieldRequest;
 use Yaspa\AdminApi\Metafield\Builders\GetMetafieldsRequest;
 use Yaspa\AdminApi\Metafield\Builders\CreateNewMetafieldRequest;
 use Yaspa\AdminApi\Metafield\Models\Metafield;
@@ -24,6 +25,8 @@ class MetafieldService
     protected $metafieldTransformer;
     /** @var CreateNewMetafieldRequest $createNewMetafieldRequestBuilder */
     protected $createNewMetafieldRequestBuilder;
+    /** @var GetMetafieldRequest $getMetafieldRequestBuilder */
+    protected $getMetafieldRequestBuilder;
 
     /**
      * MetafieldService constructor.
@@ -31,15 +34,18 @@ class MetafieldService
      * @param Client $httpClient
      * @param Transformers\Metafield $metafieldTransformer
      * @param CreateNewMetafieldRequest $createNewMetafieldRequestBuilder
+     * @param GetMetafieldRequest $getMetafieldRequestBuilder
      */
     public function __construct(
         Client $httpClient,
         Transformers\Metafield $metafieldTransformer,
-        CreateNewMetafieldRequest $createNewMetafieldRequestBuilder
+        CreateNewMetafieldRequest $createNewMetafieldRequestBuilder,
+        GetMetafieldRequest $getMetafieldRequestBuilder
     ) {
         $this->httpClient = $httpClient;
         $this->metafieldTransformer = $metafieldTransformer;
         $this->createNewMetafieldRequestBuilder = $createNewMetafieldRequestBuilder;
+        $this->getMetafieldRequestBuilder = $getMetafieldRequestBuilder;
     }
 
     /**
@@ -71,6 +77,73 @@ class MetafieldService
             $request->toRequest(),
             $request->toRequestOptions()
         );
+    }
+
+    /**
+     * Get a metafield belonging to the store
+     *
+     * @param RequestCredentialsInterface $credentials
+     * @param Metafield $metafield
+     * @return Metafield
+     */
+    public function getMetafield(
+        RequestCredentialsInterface $credentials,
+        Models\Metafield $metafield
+    ): Models\Metafield {
+        $response = $this->asyncGetMetafield($credentials, $metafield)->wait();
+
+        return $this->metafieldTransformer->fromResponse($response);
+    }
+
+    /**
+     * @param RequestCredentialsInterface $credentials
+     * @param Metafield $metafield
+     * @return PromiseInterface
+     */
+    public function asyncGetMetafield(
+        RequestCredentialsInterface $credentials,
+        Models\Metafield $metafield
+    ): PromiseInterface {
+        $request = $this->getMetafieldRequestBuilder
+            ->withCredentials($credentials)
+            ->withMetafield($metafield);
+
+        return $this->httpClient->sendAsync(
+            $request->toResourceRequest(),
+            $request->toRequestOptions()
+        );
+    }
+
+    /**
+     * Convenience method for self::getMetafield
+     *
+     * @param RequestCredentialsInterface $credentials
+     * @param int $metafieldId
+     * @return Metafield
+     */
+    public function getMetafieldById(
+        RequestCredentialsInterface $credentials,
+        int $metafieldId
+    ): Models\Metafield {
+        $metafield = (new Models\Metafield())->setId($metafieldId);
+
+        return $this->getMetafield($credentials, $metafield);
+    }
+
+    /**
+     * Convenience method for self::asyncGetMetafield
+     *
+     * @param RequestCredentialsInterface $credentials
+     * @param int $metafieldId
+     * @return PromiseInterface
+     */
+    public function asyncGetMetafieldById(
+        RequestCredentialsInterface $credentials,
+        int $metafieldId
+    ): PromiseInterface {
+        $metafield = (new Models\Metafield())->setId($metafieldId);
+
+        return $this->asyncGetMetafield($credentials, $metafield);
     }
 
     /**
@@ -111,4 +184,9 @@ class MetafieldService
             $request->toRequestOptions()
         );
     }
+
+    /**
+     * @todo "Get all metafields that belong to the images of a product"; blocked by ProductImage endpoint
+     * @see https://help.shopify.com/api/reference/metafield
+     */
 }

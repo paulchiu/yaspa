@@ -78,7 +78,9 @@ class MetafieldServiceTest extends TestCase
 
         // Get and test results
         $service = Factory::make(MetafieldService::class);
-        $service->createNewMetafield($credentials, $metafield);
+        $newMetafield = $service->createNewMetafield($credentials, $metafield);
+
+        return $newMetafield;
     }
 
     /**
@@ -136,5 +138,37 @@ class MetafieldServiceTest extends TestCase
         $service = Factory::make(MetafieldService::class);
         $metafields = $service->getMetafields($request);
         $this->assertCount(1, $metafields);
+
+        return $metafields;
+    }
+
+    /**
+     * @todo Do unit test for testCanGetASingleStoreMetafieldById
+     * @todo Do "Get a single product metafield by its ID"
+     * @depends testCanCreateANewMetafieldForAStore
+     * @group integration
+     * @param Metafield $storeMetafield
+     */
+    public function testCanGetASingleStoreMetafieldById(Metafield $storeMetafield)
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Get and test results
+        $service = Factory::make(MetafieldService::class);
+        $metafield = $service->getMetafieldById($credentials, $storeMetafield->getId());
+        $this->assertEquals($storeMetafield->getId(), $metafield->getId());
+        $this->assertEquals($storeMetafield->getKey(), $metafield->getKey());
+        $this->assertEquals($storeMetafield->getValue(), $metafield->getValue());
     }
 }
