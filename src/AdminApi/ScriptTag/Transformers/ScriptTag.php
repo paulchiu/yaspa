@@ -15,7 +15,7 @@ use stdClass;
  * @package Yaspa\AdminApi\ScriptTag\Transformers
  * @see https://help.shopify.com/api/reference/scripttag#show
  *
- * Transform Shopify scripttag(s) deeply.
+ * Transform Shopify scripttag(s).
  */
 class ScriptTag implements ArrayResponseTransformerInterface
 {
@@ -116,10 +116,6 @@ class ScriptTag implements ArrayResponseTransformerInterface
 
         if ($scriptTag->getEvent() !== null) {
             $array['event'] = $scriptTag->getEvent();
-        }
-
-        if ($scriptTag->getDisplayScope() !== null) {
-            $array['display_scope'] = $scriptTag->getDisplayScope();
         }
 
         return $array;
