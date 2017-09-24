@@ -32,7 +32,6 @@ class CountScriptTagsRequest
         $this->httpMethod = RequestBuilder::GET_HTTP_METHOD;
         $this->headers = RequestBuilder::JSON_HEADERS;
         $this->bodyType = RequestBuilder::QUERY_BODY_TYPE;
-        $this->page = RequestBuilder::STARTING_PAGE;
     }
 
     /**
