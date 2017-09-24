@@ -2,7 +2,6 @@
 
 namespace Yaspa\Tests\Unit\AdminApi\ScriptTag;
 
-use DateTime;
 use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
 use Yaspa\AdminApi\ScriptTag\Builders\GetScriptTagsRequest;
@@ -19,15 +18,12 @@ class ScriptTagServiceTest extends TestCase
     {
         // Create mock client
         $mockClientUtil = new MockGuzzleClient();
-        $client = $mockClientUtil->makeWithResponses(
-            [
-                $mockClientUtil->makeWithJsonResponse(200, [
-                    'script_tag' => [
-                        'id' => 3,
-                        'src' => 'https:\/\/djavaskripped.org\/fancy.js',
-                        'event' => 'onload',
-                    ],
-                ]),
+        $client = $mockClientUtil->makeWithJsonResponse(200, [
+                'script_tag' => [
+                    'id' => 3,
+                    'src' => 'https:\/\/djavaskripped.org\/fancy.js',
+                    'event' => 'onload',
+                ],
             ]
         );
         Factory::inject(Client::class, $client);
@@ -68,14 +64,15 @@ class ScriptTagServiceTest extends TestCase
         $credentials = Factory::make(ApiCredentials::class)
             ->makeOAuth('foo', 'bar');
         $request = Factory::make(GetScriptTagsRequest::class)
-            ->withCreadentials($credentials);
+            ->withCredentials($credentials);
 
         // Test method
-        $service = Factory::make(GetScriptTagsRequest::class);
+        $service = Factory::make(ScriptTagService::class);
         $scriptTags = $service->getScriptTags($request);
-        $this->assetTrue(is_iterable($scriptTags));
+        $this->assertTrue(is_iterable($scriptTags));
+        var_dump($scriptTags);
         foreach ($scriptTags as $scriptTag) {
-            $this->assertInstanceOf(ScriptTags::class, $scriptTag);
+            $this->assertInstanceOf(ScriptTag::class, $scriptTag);
             $this->assertNotEmpty($scriptTag->getId());
         }
     }
@@ -100,7 +97,7 @@ class ScriptTagServiceTest extends TestCase
             ->withCredentials($credentials);
 
         // Test method
-        $service = Factory::make(ScriptTagsService::class);
+        $service = Factory::make(ScriptTagService::class);
         $scriptTagsCount = $service->countScriptTags($request);
         $this->assertEquals(3, $scriptTagsCount);
     }
