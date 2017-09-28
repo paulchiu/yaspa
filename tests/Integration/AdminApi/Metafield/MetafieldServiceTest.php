@@ -143,7 +143,6 @@ class MetafieldServiceTest extends TestCase
     }
 
     /**
-     * @todo Do unit test for testCanGetASingleStoreMetafieldById
      * @todo Do "Get a single product metafield by its ID"
      * @depends testCanCreateANewMetafieldForAStore
      * @group integration

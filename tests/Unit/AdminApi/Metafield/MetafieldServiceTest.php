@@ -88,4 +88,40 @@ class MetafieldServiceTest extends TestCase
         $metafields = $service->getMetafields($request);
         $this->assertNotEmpty($metafields);
     }
+
+    public function testCanGetASingleStoreMetafieldById()
+    {
+        // Create mock data
+        $storeMetafield = new Metafield();
+        $storeMetafield
+            ->setId(3)
+            ->setKey('foo')
+            ->setValue('bar');
+
+        // Create mock client
+        $mockClientUtil = new MockGuzzleClient();
+        $client = $mockClientUtil->makeWithResponses(
+            [
+                $mockClientUtil->makeJsonResponse(200, [
+                    'metafield' => [
+                        'id' => $storeMetafield->getId(),
+                        'key' => $storeMetafield->getKey(),
+                        'value' => $storeMetafield->getValue(),
+                    ],
+                ]),
+            ]
+        );
+        Factory::inject(Client::class, $client);
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makeOAuth('foo', 'bar');
+
+        // Get and test results
+        $service = Factory::make(MetafieldService::class);
+        $metafield = $service->getMetafieldById($credentials, $storeMetafield->getId());
+        $this->assertEquals($storeMetafield->getId(), $metafield->getId());
+        $this->assertEquals($storeMetafield->getKey(), $metafield->getKey());
+        $this->assertEquals($storeMetafield->getValue(), $metafield->getValue());
+    }
 }
