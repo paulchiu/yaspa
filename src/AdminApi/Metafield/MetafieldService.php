@@ -4,9 +4,10 @@ namespace Yaspa\AdminApi\Metafield;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
+use Yaspa\AdminApi\Metafield\Builders\CreateNewMetafieldRequest;
 use Yaspa\AdminApi\Metafield\Builders\GetMetafieldRequest;
 use Yaspa\AdminApi\Metafield\Builders\GetMetafieldsRequest;
-use Yaspa\AdminApi\Metafield\Builders\CreateNewMetafieldRequest;
+use Yaspa\AdminApi\Metafield\Builders\UpdateMetafieldRequest;
 use Yaspa\AdminApi\Metafield\Models\Metafield;
 use Yaspa\AdminApi\Metafield\Transformers;
 use Yaspa\Interfaces\RequestCredentialsInterface;
@@ -27,6 +28,8 @@ class MetafieldService
     protected $createNewMetafieldRequestBuilder;
     /** @var GetMetafieldRequest $getMetafieldRequestBuilder */
     protected $getMetafieldRequestBuilder;
+    /** @var UpdateMetafieldRequest $updateMetafieldRequestBuilder */
+    protected $updateMetafieldRequestBuilder;
 
     /**
      * MetafieldService constructor.
@@ -35,17 +38,20 @@ class MetafieldService
      * @param Transformers\Metafield $metafieldTransformer
      * @param CreateNewMetafieldRequest $createNewMetafieldRequestBuilder
      * @param GetMetafieldRequest $getMetafieldRequestBuilder
+     * @param UpdateMetafieldRequest $updateMetafieldRequestBuilder
      */
     public function __construct(
         Client $httpClient,
         Transformers\Metafield $metafieldTransformer,
         CreateNewMetafieldRequest $createNewMetafieldRequestBuilder,
-        GetMetafieldRequest $getMetafieldRequestBuilder
+        GetMetafieldRequest $getMetafieldRequestBuilder,
+        UpdateMetafieldRequest $updateMetafieldRequestBuilder
     ) {
         $this->httpClient = $httpClient;
         $this->metafieldTransformer = $metafieldTransformer;
         $this->createNewMetafieldRequestBuilder = $createNewMetafieldRequestBuilder;
         $this->getMetafieldRequestBuilder = $getMetafieldRequestBuilder;
+        $this->updateMetafieldRequestBuilder = $updateMetafieldRequestBuilder;
     }
 
     /**
@@ -181,6 +187,45 @@ class MetafieldService
 
         return $this->httpClient->sendAsync(
             $request->toRequest(),
+            $request->toRequestOptions()
+        );
+    }
+
+    /**
+     * Update a store metafield
+     *
+     * @see https://help.shopify.com/api/reference/metafield#update
+     * @param RequestCredentialsInterface $credentials
+     * @param Metafield $metafield
+     * @return Metafield
+     */
+    public function updateMetafield(
+        RequestCredentialsInterface $credentials,
+        Models\Metafield $metafield
+    ): Models\Metafield {
+        $response = $this->asyncUpdateMetafield($credentials, $metafield)->wait();
+
+        return $this->metafieldTransformer->fromResponse($response);
+    }
+
+    /**
+     * Async version of self::updateMetafield
+     *
+     * @see https://help.shopify.com/api/reference/metafield#update
+     * @param RequestCredentialsInterface $credentials
+     * @param Metafield $metafield
+     * @return PromiseInterface
+     */
+    public function asyncUpdateMetafield(
+        RequestCredentialsInterface $credentials,
+        Models\Metafield $metafield
+    ): PromiseInterface {
+        $request = $this->updateMetafieldRequestBuilder
+            ->withCredentials($credentials)
+            ->withMetafield($metafield);
+
+        return $this->httpClient->sendAsync(
+            $request->toResourceRequest(),
             $request->toRequestOptions()
         );
     }
