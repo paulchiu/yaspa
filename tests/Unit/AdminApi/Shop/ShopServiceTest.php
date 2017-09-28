@@ -17,8 +17,7 @@ class ShopServiceTest extends TestCase
     {
         // Create mock client
         $mockClientUtil = new MockGuzzleClient();
-        $client = $mockClientUtil->makeWithJsonResponse(
-            00,
+        $client = $mockClientUtil->makeWithJsonResponse(200,
             [
                 'shop' => [
                     'created_at' => '2017-07-16T10:29:53+10:00',
