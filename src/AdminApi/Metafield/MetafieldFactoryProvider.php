@@ -25,6 +25,9 @@ class MetafieldFactoryProvider implements FactoryProviderInterface
                     $factory::make(Transformers\Metafield::class)
                 );
             },
+            Builders\DeleteMetafieldRequest::class => function () {
+                return new Builders\DeleteMetafieldRequest();
+            },
             Builders\GetMetafieldRequest::class => function () {
                 return new Builders\GetMetafieldRequest();
             },
@@ -48,7 +51,8 @@ class MetafieldFactoryProvider implements FactoryProviderInterface
                     $factory::make(Transformers\Metafield::class),
                     $factory::make(Builders\CreateNewMetafieldRequest::class),
                     $factory::make(Builders\GetMetafieldRequest::class),
-                    $factory::make(Builders\UpdateMetafieldRequest::class)
+                    $factory::make(Builders\UpdateMetafieldRequest::class),
+                    $factory::make(Builders\DeleteMetafieldRequest::class)
                 );
             },
             Transformers\Metafield::class => function () {

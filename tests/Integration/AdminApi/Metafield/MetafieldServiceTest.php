@@ -205,8 +205,34 @@ class MetafieldServiceTest extends TestCase
     }
 
     /**
-     * @todo Do "Delete a store metafield"
+     * @depends testCanCreateANewMetafieldForAStore
+     * @group integration
+     * @param Metafield $originalMetafield
      */
+    public function testCanDeleteMetafieldById(Metafield $originalMetafield)
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Test pre-state
+        $this->assertNotEmpty($originalMetafield->getId());
+
+        // Test service method
+        $service = Factory::make(MetafieldService::class);
+        $result = $service->deleteMetafieldById($credentials, $originalMetafield->getId());
+        $this->assertTrue(is_object($result));
+        $this->assertEmpty(get_object_vars($result));
+    }
 
     /**
      * @todo Do "Create a new metafield for a product"

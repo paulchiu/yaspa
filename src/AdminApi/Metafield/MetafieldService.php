@@ -5,6 +5,7 @@ namespace Yaspa\AdminApi\Metafield;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
 use Yaspa\AdminApi\Metafield\Builders\CreateNewMetafieldRequest;
+use Yaspa\AdminApi\Metafield\Builders\DeleteMetafieldRequest;
 use Yaspa\AdminApi\Metafield\Builders\GetMetafieldRequest;
 use Yaspa\AdminApi\Metafield\Builders\GetMetafieldsRequest;
 use Yaspa\AdminApi\Metafield\Builders\UpdateMetafieldRequest;
@@ -30,6 +31,8 @@ class MetafieldService
     protected $getMetafieldRequestBuilder;
     /** @var UpdateMetafieldRequest $updateMetafieldRequestBuilder */
     protected $updateMetafieldRequestBuilder;
+    /** @var DeleteMetafieldRequest $deleteMetafieldRequestBuilder */
+    protected $deleteMetafieldRequestBuilder;
 
     /**
      * MetafieldService constructor.
@@ -39,19 +42,22 @@ class MetafieldService
      * @param CreateNewMetafieldRequest $createNewMetafieldRequestBuilder
      * @param GetMetafieldRequest $getMetafieldRequestBuilder
      * @param UpdateMetafieldRequest $updateMetafieldRequestBuilder
+     * @param DeleteMetafieldRequest $deleteMetafieldRequestBuilder
      */
     public function __construct(
         Client $httpClient,
         Transformers\Metafield $metafieldTransformer,
         CreateNewMetafieldRequest $createNewMetafieldRequestBuilder,
         GetMetafieldRequest $getMetafieldRequestBuilder,
-        UpdateMetafieldRequest $updateMetafieldRequestBuilder
+        UpdateMetafieldRequest $updateMetafieldRequestBuilder,
+        DeleteMetafieldRequest $deleteMetafieldRequestBuilder
     ) {
         $this->httpClient = $httpClient;
         $this->metafieldTransformer = $metafieldTransformer;
         $this->createNewMetafieldRequestBuilder = $createNewMetafieldRequestBuilder;
         $this->getMetafieldRequestBuilder = $getMetafieldRequestBuilder;
         $this->updateMetafieldRequestBuilder = $updateMetafieldRequestBuilder;
+        $this->deleteMetafieldRequestBuilder = $deleteMetafieldRequestBuilder;
     }
 
     /**
@@ -228,6 +234,79 @@ class MetafieldService
             $request->toResourceRequest(),
             $request->toRequestOptions()
         );
+    }
+
+    /**
+     * Delete metafield.
+     *
+     * Returns an empty object with no properties if successful.
+     *
+     * @see https://help.shopify.com/api/reference/metafield#destroy
+     * @param RequestCredentialsInterface $credentials
+     * @param Metafield $metafield
+     * @return object
+     */
+    public function deleteMetafield(
+        RequestCredentialsInterface $credentials,
+        Models\Metafield $metafield
+    ) {
+        $response = $this->asyncDeleteMetafield($credentials, $metafield)->wait();
+
+        return json_decode($response->getBody()->getContents());
+    }
+
+    /**
+     * Async version of self::deleteMetafield
+     *
+     * @see https://help.shopify.com/api/reference/metafield#destroy
+     * @param RequestCredentialsInterface $credentials
+     * @param Metafield $metafield
+     * @return PromiseInterface
+     */
+    public function asyncDeleteMetafield(
+        RequestCredentialsInterface $credentials,
+        Models\Metafield $metafield
+    ): PromiseInterface {
+        $request = $this->deleteMetafieldRequestBuilder
+            ->withCredentials($credentials)
+            ->withMetafield($metafield);
+
+        return $this->httpClient->sendAsync(
+            $request->toResourceRequest(),
+            $request->toRequestOptions()
+        );
+    }
+
+    /**
+     * Convenience method for self::deleteMetafield
+     *
+     * @param RequestCredentialsInterface $credentials
+     * @param int $metafieldId
+     * @return object
+     */
+    public function deleteMetafieldById(
+        RequestCredentialsInterface $credentials,
+        int $metafieldId
+    ) {
+        $metafield = (new Models\Metafield())->setId($metafieldId);
+
+        return $this->deleteMetafield($credentials, $metafield);
+    }
+
+    /**
+     * Convenience method for self::asyncDeleteMetafield
+     *
+     * @param RequestCredentialsInterface $credentials
+     * @param int $metafieldId
+     * @return PromiseInterface
+     */
+    public function asyncDeleteMetafieldById(
+        RequestCredentialsInterface $credentials,
+        int $metafieldId
+    ): PromiseInterface {
+        $metafield = (new Models\Metafield())->setId($metafieldId);
+
+        return $this->asyncDeleteMetafield($credentials, $metafield);
     }
 
     /**
