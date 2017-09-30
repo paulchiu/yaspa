@@ -160,4 +160,29 @@ class MetafieldServiceTest extends TestCase
         $this->assertEquals($storeMetafield->getKey(), $metafield->getKey());
         $this->assertEquals($storeMetafield->getValue(), $metafield->getValue());
     }
+
+    public function testCanDeleteMetafieldById()
+    {
+        // Create mock client
+        $mockClientUtil = new MockGuzzleClient();
+        $client = $mockClientUtil->makeWithResponses(
+            [
+                $mockClientUtil->makeEmptyJsonResponse(200),
+            ]
+        );
+        Factory::inject(Client::class, $client);
+
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makeOAuth('foo', 'bar');
+
+        // Test service method
+        $service = Factory::make(MetafieldService::class);
+        $result = $service->deleteMetafieldById($credentials, 3);
+
+        // Test results
+        $this->assertTrue(is_object($result));
+        $this->assertEmpty(get_object_vars($result));
+    }
 }
