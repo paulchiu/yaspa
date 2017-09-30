@@ -171,7 +171,6 @@ class MetafieldServiceTest extends TestCase
     }
 
     /**
-     * @todo Do unit test for testCanUpdateAStoreMetafield
      * @depends testCanCreateANewMetafieldForAStore
      * @group integration
      * @param Metafield $storeMetafield
