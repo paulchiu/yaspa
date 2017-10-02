@@ -98,7 +98,7 @@ class ScriptTagService
      *
      * Please note that results will have to be manually transformed.
      *
-     * @see hhttps://help.shopify.com/api/reference/scripttag#index
+     * @see https://help.shopify.com/api/reference/scripttag#index
      * @param GetScriptTagsRequest $request
      * @return PromiseInterface
      */
@@ -267,6 +267,35 @@ class ScriptTagService
             ->withCredentials($credentials)
             ->withScriptTag($scriptTag);
 
+        return $this->httpClient->sendAsync(
+            $request->toResourceRequest(),
+            $request->toRequestOptions()
+        );
+    }
+
+    /**
+     * Modify an existing script tag.
+     *
+     * @see https://help.shopify.com/api/reference/scripttag#update
+     * @param ModifyExistingScriptTagRequest $request
+     * @return Models\ScriptTag
+     */
+    public function modifyExistingScriptTag(ModifyExistingScriptTagRequest $request): Models\ScriptTag
+    {
+        $response = $this->asyncModifyExistingScriptTag($request)->wait();
+
+        return $this->scriptTagTransformer->fromResponse($response);
+    }
+
+    /**
+     * Async version of self::modifyExistingScriptTag
+     *
+     * @see https://help.shopify.com/api/reference/scripttag#update
+     * @param ModifyExistingScriptTagRequest $request
+     * @return PromiseInterface
+     */
+    public function asyncModifyExistingScriptTag(ModifyExistingScriptTagRequest $request): PromiseInterface
+    {
         return $this->httpClient->sendAsync(
             $request->toResourceRequest(),
             $request->toRequestOptions()
