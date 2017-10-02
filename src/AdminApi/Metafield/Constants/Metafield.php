@@ -24,6 +24,7 @@ class Metafield
     const RESOURCE_LOCATION_URI_TEMPLATE_ORDERS = '/admin/orders/%s/metafields.json';
     const RESOURCE_LOCATION_URI_TEMPLATE_PAGES = '/admin/pages/%s/metafields.json';
     const RESOURCE_LOCATION_URI_TEMPLATE_PRODUCTS = '/admin/products/%s/metafields.json';
+    const RESOURCE_LOCATION_URI_TEMPLATE_PRODUCT_METAFIELD = '/admin/products/%s/metafields/%s.json';
     const RESOURCE_LOCATION_URI_TEMPLATE_PRODUCT_VARIANTS = '/admin/products/%s/variants/%s/metafields.json';
     const RESOURCE_LOCATION_URI_TEMPLATE_SHOP = '/admin/metafields.json';
     const RESOURCE_LOCATION_URI_TEMPLATE_SMART_COLLECTIONS = '/admin/collections/%s/metafields.json';
