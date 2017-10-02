@@ -214,41 +214,6 @@ class ScriptTagServiceTest extends TestCase
     /**
      * @depends testCanCreateNewScriptTag
      * @group integration
-     * @param ScriptTag $newScriptTag
-     */
-    public function testCanGetAListOfSpecificScriptTags(ScriptTag $newScriptTag)
-    {
-        // Get config
-        $config = new TestConfig();
-        $shop = $config->get('shopifyShop');
-        $privateApp = $config->get('shopifyShopApp');
-
-        // Create parameters
-        $credentials = Factory::make(ApiCredentials::class)
-            ->makePrivate(
-                $shop->myShopifySubdomainName,
-                $privateApp->apiKey,
-                $privateApp->password
-            );
-
-        // Create request
-        $request = Factory::make(GetScriptTagsRequest::class)
-            ->withCredentials($credentials)
-            ->withIds([$newScriptTag->getId()]);
-
-        // Get and test results
-        $service = Factory::make(ScriptTagService::class);
-        $scriptTags = $service->getScriptTags($request);
-        $this->assertTrue(is_iterable($scriptTags));
-        foreach ($scriptTags as $scriptTag) {
-            $this->assertInstanceOf(ScriptTag::class, $scriptTag);
-            $this->assertEquals($newScriptTag->getId(), $scriptTag->getId());
-        }
-    }
-
-    /**
-     * @depends testCanCreateNewScriptTag
-     * @group integration
      */
     public function testCanCountAllScriptTags()
     {
