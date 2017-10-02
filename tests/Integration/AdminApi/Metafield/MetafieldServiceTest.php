@@ -143,8 +143,6 @@ class MetafieldServiceTest extends TestCase
     }
 
     /**
-     * @todo Do unit test for testCanGetASingleStoreMetafieldById
-     * @todo Do "Get a single product metafield by its ID"
      * @depends testCanCreateANewMetafieldForAStore
      * @group integration
      * @param Metafield $storeMetafield
@@ -171,4 +169,75 @@ class MetafieldServiceTest extends TestCase
         $this->assertEquals($storeMetafield->getKey(), $metafield->getKey());
         $this->assertEquals($storeMetafield->getValue(), $metafield->getValue());
     }
+
+    /**
+     * @depends testCanCreateANewMetafieldForAStore
+     * @group integration
+     * @param Metafield $storeMetafield
+     */
+    public function testCanUpdateAStoreMetafield(Metafield $storeMetafield)
+    {
+        // Create fixture and confirm uniqueness
+        $newValue = 3;
+        $this->assertNotEquals($storeMetafield->getValue(), $newValue);
+
+
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+        $storeMetafield->setValue($newValue);
+
+        // Test method and results
+        $service = Factory::make(MetafieldService::class);
+        $updatedMetafield = $service->updateMetafield($credentials, $storeMetafield);
+        $this->assertEquals($storeMetafield->getId(), $updatedMetafield->getId());
+        $this->assertEquals($storeMetafield->getKey(), $updatedMetafield->getKey());
+        $this->assertEquals($storeMetafield->getValue(), $updatedMetafield->getValue());
+    }
+
+    /**
+     * @depends testCanCreateANewMetafieldForAStore
+     * @group integration
+     * @param Metafield $originalMetafield
+     */
+    public function testCanDeleteMetafieldById(Metafield $originalMetafield)
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Test pre-state
+        $this->assertNotEmpty($originalMetafield->getId());
+
+        // Test service method
+        $service = Factory::make(MetafieldService::class);
+        $result = $service->deleteMetafieldById($credentials, $originalMetafield->getId());
+        $this->assertTrue(is_object($result));
+        $this->assertEmpty(get_object_vars($result));
+    }
+
+    /**
+     * @todo Do "Create a new metafield for a product"
+     * @todo Do "Get a single product metafield by its ID"
+     * @todo Do "Update a product metafield"
+     * @todo Do "Delete a product metafield"
+     */
 }
