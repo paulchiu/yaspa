@@ -3,17 +3,18 @@
 namespace Yaspa\Tests\Unit\AdminApi\ScriptTag;
 
 use GuzzleHttp\Client;
-use PHPUnit\Framework\TestCase;
+use Yaspa\AdminApi\ScriptTag\Builders\CountScriptTagsRequest;
 use Yaspa\AdminApi\ScriptTag\Builders\GetScriptTagsRequest;
+use Yaspa\AdminApi\ScriptTag\Builders\ModifyExistingScriptTagRequest;
 use Yaspa\AdminApi\ScriptTag\Models\ScriptTag;
 use Yaspa\AdminApi\ScriptTag\ScriptTagService;
 use Yaspa\Authentication\Factory\ApiCredentials;
+use PHPUnit\Framework\TestCase;
 use Yaspa\Factory;
 use Yaspa\Tests\Utils\MockGuzzleClient;
 
 class ScriptTagServiceTest extends TestCase
 {
-
     public function testCanCreateScriptTag()
     {
         // Create mock client
@@ -21,7 +22,7 @@ class ScriptTagServiceTest extends TestCase
         $client = $mockClientUtil->makeWithJsonResponse(200, [
                 'script_tag' => [
                     'id' => 3,
-                    'src' => 'https:\/\/djavaskripped.org\/fancy.js',
+                    'src' => 'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.0/moment.js',
                     'event' => 'onload',
                 ],
             ]
@@ -29,7 +30,8 @@ class ScriptTagServiceTest extends TestCase
         Factory::inject(Client::class, $client);
 
         // Create parameters
-        $scriptTag = (new ScriptTag())->setSrc('https:\/\/djavaskripped.org\/fancy.js')
+        $scriptTag = (new ScriptTag())
+            ->setSrc('https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.0/moment.js')
             ->setEvent('onload');
         $credentials = Factory::make(ApiCredentials::class)
             ->makeOAuth('foo', 'bar');
@@ -49,7 +51,7 @@ class ScriptTagServiceTest extends TestCase
                 $mockClientUtil->makeJsonResponse(200, [
                     'script_tags' => [
                         'id'  => 3,
-                        'src' => 'https:\/\/djavaskripped.org\/fancy.js',
+                        'src' => 'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.0/moment.js',
                         'event' => 'onload',
                     ],
                 ]),
@@ -70,7 +72,6 @@ class ScriptTagServiceTest extends TestCase
         $service = Factory::make(ScriptTagService::class);
         $scriptTags = $service->getScriptTags($request);
         $this->assertTrue(is_iterable($scriptTags));
-        var_dump($scriptTags);
         foreach ($scriptTags as $scriptTag) {
             $this->assertInstanceOf(ScriptTag::class, $scriptTag);
             $this->assertNotEmpty($scriptTag->getId());
@@ -98,8 +99,8 @@ class ScriptTagServiceTest extends TestCase
 
         // Test method
         $service = Factory::make(ScriptTagService::class);
-        $scriptTagsCount = $service->countScriptTags($request);
-        $this->assertEquals(3, $scriptTagsCount);
+        $scriptTagCount = $service->countScriptTag($request);
+        $this->assertEquals(3, $scriptTagCount);
     }
 
     public function testCanGetScriptTagById()
@@ -111,7 +112,7 @@ class ScriptTagServiceTest extends TestCase
                 $mockClientUtil->makeJsonResponse(200, [
                     'script_tag' => [
                         'id' => 3,
-                        'src' => 'https:\/\/djavaskripped.org\/fancy.js',
+                        'src' => 'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.0/moment.js',
                         'event' => 'onload',
                     ],
                 ]),
@@ -126,7 +127,8 @@ class ScriptTagServiceTest extends TestCase
         // Test method
         $service = Factory::make(ScriptTagService::class);
         $scriptTag = $service->getScriptTag($credentials, 3);
-        $this->assertEquals('https:\/\/djavaskripped.org\/fancy.js', $scriptTag->getSrc());
+        $this->assertEquals(3, $scriptTag->getId());
+        $this->assertEquals('https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.0/moment.js', $scriptTag->getSrc());
         $this->assertEquals('onload', $scriptTag->getEvent());
     }
 
@@ -139,7 +141,8 @@ class ScriptTagServiceTest extends TestCase
                 $mockClientUtil->makeJsonResponse(200, [
                     'script_tag' => [
                         'id' => 3,
-                        'title' => 'foo',
+                        'src' => 'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.0/moment.js',
+                        'event' => 'onload',
                     ],
                 ]),
             ]
@@ -147,11 +150,12 @@ class ScriptTagServiceTest extends TestCase
         Factory::inject(Client::class, $client);
 
         // Create parameters
-        $scriptTag = (new ScriptTag())->setSrc('https:\/\/djavaskripped.org\/fancy.js')
+        $scriptTag = (new ScriptTag())
+            ->setSrc('https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.0/moment.js')
             ->setEvent('onload');
         $credentials = Factory::make(ApiCredentials::class)
             ->makeOAuth('foo', 'bar');
-        $request = Factory::make(ModifyScriptTagRequest::class)
+        $request = Factory::make(ModifyExistingScriptTagRequest::class)
             ->withCredentials($credentials)
             ->withScriptTag($scriptTag);
 
