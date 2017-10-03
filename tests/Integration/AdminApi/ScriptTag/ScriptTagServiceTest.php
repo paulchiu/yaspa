@@ -300,7 +300,6 @@ class ScriptTagServiceTest extends TestCase
         $this->assertNotEmpty($retrievedScriptTag->getSrc());
     }
 
-
     /**
      * @depends testCanCreateNewScriptTag
      * @group integration
