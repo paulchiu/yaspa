@@ -50,9 +50,11 @@ class ScriptTagServiceTest extends TestCase
             [
                 $mockClientUtil->makeJsonResponse(200, [
                     'script_tags' => [
-                        'id'  => 3,
-                        'src' => 'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.0/moment.js',
-                        'event' => 'onload',
+                        [
+                            'id'  => 3,
+                            'src' => 'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.0/moment.js',
+                            'event' => 'onload',
+                        ],
                     ],
                 ]),
                 $mockClientUtil->makeJsonResponse(200, [
@@ -99,7 +101,7 @@ class ScriptTagServiceTest extends TestCase
 
         // Test method
         $service = Factory::make(ScriptTagService::class);
-        $scriptTagCount = $service->countScriptTag($request);
+        $scriptTagCount = $service->countScriptTags($request);
         $this->assertEquals(3, $scriptTagCount);
     }
 
