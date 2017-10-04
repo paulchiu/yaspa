@@ -291,6 +291,42 @@ class ProductServiceTest extends TestCase
      * @depends testCanCreateProductWithMetafield
      * @group integration
      * @param Product $product
+     * @return Product
+     */
+    public function testCanCreateNewProductMetafield(Product $product)
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+        $metafield = (new Metafield())
+            ->setNamespace('inventory')
+            ->setKey('warehouse')
+            ->setValue(25)
+            ->setValueType('integer');
+
+        // Test method
+        $service = Factory::make(ProductService::class);
+        $metafield = $service->createNewProductMetafield($credentials, $product, $metafield);
+        $this->assertNotEmpty($metafield->getId());
+        $this->assertNotEmpty($metafield->getKey());
+        $this->assertNotEmpty($metafield->getValue());
+        $this->assertInstanceOf(Metafield::class, $metafield);
+        return $product;
+    }
+
+    /**
+     * @depends testCanCreateNewProductMetafield
+     * @group integration
+     * @param Product $product
      */
     public function testCanGetProductMetafields(Product $product)
     {
@@ -307,12 +343,22 @@ class ProductServiceTest extends TestCase
                 $privateApp->password
             );
 
+        // Set expectations
+        $expectedMetafieldValues = [
+            'new' => 'newvalue',
+            'warehouse' => 25,
+        ];
+
         // Test method
         $service = Factory::make(ProductService::class);
         $metafields = $service->getProductMetafields($credentials, $product->getId());
         foreach ($metafields as $metafield) {
             $this->assertNotEmpty($metafield->getId());
+            $this->assertNotEmpty($metafield->getKey());
+            $this->assertNotEmpty($metafield->getValue());
             $this->assertInstanceOf(Metafield::class, $metafield);
+            $expectedValue = $expectedMetafieldValues[$metafield->getKey()];
+            $this->assertEquals($expectedValue, $metafield->getValue());
         }
     }
 

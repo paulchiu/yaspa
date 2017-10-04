@@ -235,9 +235,8 @@ class MetafieldServiceTest extends TestCase
     }
 
     /**
-     * @todo Do "Create a new metafield for a product"
-     * @todo Do "Get a single product metafield by its ID"
      * @todo Do "Update a product metafield"
      * @todo Do "Delete a product metafield"
+     * @todo Do "Get a single product metafield by its ID"
      */
 }
