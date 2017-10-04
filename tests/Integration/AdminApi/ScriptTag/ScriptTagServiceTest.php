@@ -295,7 +295,7 @@ class ScriptTagServiceTest extends TestCase
 
         // Get and test results
         $service = Factory::make(ScriptTagService::class);
-        $retrievedScriptTag = $service->getScriptTag($credentials, $scriptTag->getId());
+        $retrievedScriptTag = $service->getScriptTagById($credentials, $scriptTag->getId());
         $this->assertEquals($scriptTag->getId(), $retrievedScriptTag->getId());
         $this->assertNotEmpty($retrievedScriptTag->getSrc());
     }
@@ -325,7 +325,7 @@ class ScriptTagServiceTest extends TestCase
 
         // Test service method
         $service = Factory::make(ScriptTagService::class);
-        $result = $service->deleteScriptTag($credentials, $scriptTag->getId());
+        $result = $service->deleteScriptTagById($credentials, $scriptTag->getId());
         $this->assertTrue(is_object($result));
         $this->assertEmpty(get_object_vars($result));
     }

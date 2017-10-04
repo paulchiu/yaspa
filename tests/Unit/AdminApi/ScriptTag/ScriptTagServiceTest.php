@@ -128,7 +128,7 @@ class ScriptTagServiceTest extends TestCase
 
         // Test method
         $service = Factory::make(ScriptTagService::class);
-        $scriptTag = $service->getScriptTag($credentials, 3);
+        $scriptTag = $service->getScriptTagById($credentials, 3);
         $this->assertEquals(3, $scriptTag->getId());
         $this->assertEquals('https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.0/moment.js', $scriptTag->getSrc());
         $this->assertEquals('onload', $scriptTag->getEvent());
@@ -184,7 +184,7 @@ class ScriptTagServiceTest extends TestCase
 
         // Test service method
         $service = Factory::make(ScriptTagService::class);
-        $result = $service->deleteScriptTag($credentials, 3);
+        $result = $service->deleteScriptTagById($credentials, 3);
 
         // Test results
         $this->assertTrue(is_object($result));
