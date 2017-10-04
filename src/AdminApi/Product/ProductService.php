@@ -308,6 +308,9 @@ class ProductService
     }
 
     /**
+     * Convenience version of self::asyncGetProductMetafields
+     *
+     * @see https://help.shopify.com/api/reference/metafield#index
      * @param RequestCredentialsInterface $credentials
      * @param int $productId
      * @return array|Metafield[]
@@ -320,6 +323,9 @@ class ProductService
     }
 
     /**
+     * Get metafields that belong to a product
+     *
+     * @see https://help.shopify.com/api/reference/metafield#index
      * @param RequestCredentialsInterface $credentials
      * @param int $productId
      * @return PromiseInterface
@@ -339,6 +345,7 @@ class ProductService
     /**
      * Convenience method for self::asyncCreateNewProductMetafield
      *
+     * @see https://help.shopify.com/api/reference/metafield#create
      * @param RequestCredentialsInterface $credentials
      * @param Product $product
      * @param Metafield $metafield
@@ -355,8 +362,9 @@ class ProductService
     }
 
     /**
-     * Async version of self::createNewProductRequestBuilder
+     * Create a new metafield for a product
      *
+     * @see https://help.shopify.com/api/reference/metafield#create
      * @param RequestCredentialsInterface $credentials
      * @param Product $product
      * @param Metafield $metafield
