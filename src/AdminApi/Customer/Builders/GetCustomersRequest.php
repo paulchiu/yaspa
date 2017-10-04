@@ -39,7 +39,7 @@ class GetCustomersRequest implements PagingRequestBuilderInterface
     protected $customerFields;
 
     /**
-     * GetShopRequest constructor.
+     * GetCustomersRequest constructor.
      */
     public function __construct()
     {
