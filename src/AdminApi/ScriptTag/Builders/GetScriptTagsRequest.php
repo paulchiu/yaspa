@@ -19,8 +19,6 @@ class GetScriptTagsRequest implements PagingRequestBuilderInterface
 
     const URI_TEMPLATE = 'https://%s.myshopify.com/admin/script_tags.json';
 
-    /** @var array|int[] $ids */
-    protected $ids;
     /** @var int $limit */
     protected $limit;
     /** @var int $page */
@@ -29,8 +27,6 @@ class GetScriptTagsRequest implements PagingRequestBuilderInterface
     protected $sinceId;
     /** @var string $src */
     protected $src;
-    /** @var string $event */
-    protected $event;
     /** @var DateTime $createdAtMin */
     protected $createdAtMin;
     /** @var DateTime $createdAtMax */
@@ -39,8 +35,6 @@ class GetScriptTagsRequest implements PagingRequestBuilderInterface
     protected $updatedAtMin;
     /** @var DateTime $updatedAtMax */
     protected $updatedAtMax;
-    /** @var string $displayScope */
-    protected $displayScope;
     /** @var ScriptTagFields $scriptTagFields */
     protected $scriptTagFields;
 
@@ -64,10 +58,6 @@ class GetScriptTagsRequest implements PagingRequestBuilderInterface
     {
         $array = [];
 
-        if (!empty($this->ids)) {
-            $array['ids'] = implode(',', $this->ids);
-        }
-
         if (!is_null($this->limit)) {
             $array['limit'] = $this->limit;
         }
@@ -82,14 +72,6 @@ class GetScriptTagsRequest implements PagingRequestBuilderInterface
 
         if (!is_null($this->src)) {
             $array['src'] = $this->src;
-        }
-
-        if (!is_null($this->event)) {
-            $array['event'] = $this->event;
-        }
-
-        if (!is_null($this->displayScope)) {
-            $array['display_scope'] = $this->displayScope;
         }
 
         if (!is_null($this->createdAtMin)) {
@@ -121,18 +103,6 @@ class GetScriptTagsRequest implements PagingRequestBuilderInterface
     public function getPage():? int
     {
         return $this->page;
-    }
-
-    /**
-     * @param array|int[] $ids
-     * @return GetScriptTagsRequest
-     */
-    public function withIds(array $ids): GetScriptTagsRequest
-    {
-        $new = clone $this;
-        $new->ids = $ids;
-
-        return $new;
     }
 
     /**
@@ -179,30 +149,6 @@ class GetScriptTagsRequest implements PagingRequestBuilderInterface
     {
         $new = clone $this;
         $new->src = $src;
-
-        return $new;
-    }
-
-    /**
-     * @param string $event
-     * @return GetScriptTagsRequest
-     */
-    public function withEvent(string $event): GetScriptTagsRequest
-    {
-        $new = clone $this;
-        $new->event = $event;
-
-        return $new;
-    }
-
-    /**
-     * @param string $displayScope
-     * @return GetScriptTagsRequest
-     */
-    public function withDisplayScope(string $displayScope): GetScriptTagsRequest
-    {
-        $new = clone $this;
-        $new->displayScope = $displayScope;
 
         return $new;
     }

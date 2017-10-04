@@ -41,10 +41,6 @@ class CountScriptTagsRequest
     {
         $array = [];
 
-        if (!empty($this->ids)) {
-            $array['ids'] = implode(',', $this->ids);
-        }
-
         if (!is_null($this->src)) {
             $array['src'] = $this->src;
         }
