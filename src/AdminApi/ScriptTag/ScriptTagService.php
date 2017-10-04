@@ -111,7 +111,7 @@ class ScriptTagService
     }
 
     /**
-     * Count scripttags for a search criteria.
+     * Count script tags for a search criteria.
      *
      * @see https://help.shopify.com/api/reference/scripttag#count
      * @param CountScriptTagsRequest $request
@@ -147,32 +147,32 @@ class ScriptTagService
     }
 
     /**
-     * Get an individual scripttag.
+     * Get an individual script tag.
      *
      * @param RequestCredentialsInterface $credentials
      * @param int $scriptTagId
      * @param null|ScriptTagFields $scriptTagFields
      * @return ScriptTag
      */
-    public function getScriptTag(
+    public function getScriptTagById(
         RequestCredentialsInterface $credentials,
         int $scriptTagId,
         ?ScriptTagFields $scriptTagFields = null
     ): ScriptTag {
-        $response = $this->asyncGetScriptTag($credentials, $scriptTagId, $scriptTagFields)->wait();
+        $response = $this->asyncGetScriptTagById($credentials, $scriptTagId, $scriptTagFields)->wait();
 
         return $this->scriptTagTransformer->fromResponse($response);
     }
 
     /**
-     * Async version of self::getScriptTag
+     * Async version of self::getScriptTagById
      *
      * @param RequestCredentialsInterface $credentials
      * @param int $scriptTagId
      * @param null|ScriptTagFields $scriptTagFields
      * @return PromiseInterface
      */
-    public function asyncGetScriptTag(
+    public function asyncGetScriptTagById(
         RequestCredentialsInterface $credentials,
         int $scriptTagId,
         ?ScriptTagFields $scriptTagFields = null
@@ -193,7 +193,7 @@ class ScriptTagService
     }
 
     /**
-     * Create a new scripttag
+     * Create a new script tag.
      *
      * @see https://help.shopify.com/api/reference/scripttag#create
      * @param RequestCredentialsInterface $credentials
@@ -232,7 +232,7 @@ class ScriptTagService
     }
 
     /**
-     * Delete scripttag.
+     * Delete script tag.
      *
      * Returns an empty object with no properties if successful.
      *
@@ -241,24 +241,24 @@ class ScriptTagService
      * @param int $scriptTagId
      * @return object
      */
-    public function deleteScriptTag(
+    public function deleteScriptTagById(
         RequestCredentialsInterface $credentials,
         int $scriptTagId
     ) {
-        $response = $this->asyncDeleteScriptTag($credentials, $scriptTagId)->wait();
+        $response = $this->asyncDeleteScriptTagById($credentials, $scriptTagId)->wait();
 
         return json_decode($response->getBody()->getContents());
     }
 
     /**
-     * Async version of self::deleteScriptTag
+     * Async version of self::deleteScriptTagById
      *
      * @see https://help.shopify.com/api/reference/scripttag#destroy
      * @param RequestCredentialsInterface $credentials
      * @param int $scriptTagId
      * @return PromiseInterface
      */
-    public function asyncDeleteScriptTag(
+    public function asyncDeleteScriptTagById(
         RequestCredentialsInterface $credentials,
         int $scriptTagId
     ): PromiseInterface {
