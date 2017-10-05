@@ -291,7 +291,7 @@ class ProductServiceTest extends TestCase
      * @depends testCanCreateProductWithMetafield
      * @group integration
      * @param Product $product
-     * @return Product
+     * @return array
      */
     public function testCanCreateNewProductMetafield(Product $product)
     {
@@ -320,11 +320,51 @@ class ProductServiceTest extends TestCase
         $this->assertNotEmpty($metafield->getKey());
         $this->assertNotEmpty($metafield->getValue());
         $this->assertInstanceOf(Metafield::class, $metafield);
-        return $product;
+        return [$product, $metafield];
     }
 
     /**
      * @depends testCanCreateNewProductMetafield
+     * @group integration
+     * @param array $newProductMetafield
+     * @return Product
+     */
+    public function testCanUpdateProductMetafield(array $newProductMetafield)
+    {
+        // Destructure dependent parameters
+        /** @var Product $product */
+        /** @var Metafield $metafield */
+        [$product, $metafield] = $newProductMetafield;
+        $this->assertEquals(25, $metafield->getValue());
+
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Update metafield
+        $metafield->setValue(27);
+
+        // Test method
+        $service = Factory::make(ProductService::class);
+        $updatedMetafield = $service->updateProductMetafield($credentials, $product, $metafield);
+        $this->assertInstanceOf(Metafield::class, $updatedMetafield);
+        $this->assertEquals($metafield->getId(), $updatedMetafield->getId());
+        $this->assertEquals($metafield->getKey(), $updatedMetafield->getKey());
+        $this->assertEquals($metafield->getValue(), $updatedMetafield->getValue());
+        return $product;
+    }
+
+    /**
+     * @depends testCanUpdateProductMetafield
      * @group integration
      * @param Product $product
      */
@@ -346,7 +386,7 @@ class ProductServiceTest extends TestCase
         // Set expectations
         $expectedMetafieldValues = [
             'new' => 'newvalue',
-            'warehouse' => 25,
+            'warehouse' => 27,
         ];
 
         // Test method

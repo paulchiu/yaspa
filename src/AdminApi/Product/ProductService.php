@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
 use Yaspa\AdminApi\Metafield\Builders\CreateNewResourceMetafieldRequest;
 use Yaspa\AdminApi\Metafield\Builders\GetResourceMetafieldsRequest;
+use Yaspa\AdminApi\Metafield\Builders\UpdateResourceMetafieldRequest;
 use Yaspa\AdminApi\Metafield\Transformers\Metafield as MetafieldTransformer;
 use Yaspa\AdminApi\Metafield\Models\Metafield;
 use Yaspa\AdminApi\Product\Builders\CountProductsRequest;
@@ -46,6 +47,8 @@ class ProductService
     protected $createNewResourceMetafieldRequestBuilder;
     /** @var GetResourceMetafieldsRequest $getResourceMetafieldsBuilder */
     protected $getResourceMetafieldsBuilder;
+    /** @var UpdateResourceMetafieldRequest $updateResourceMetafieldRequestBuilder */
+    protected $updateResourceMetafieldRequestBuilder;
     /** @var PagedResultsIterator $pagedResultsIteratorBuilder */
     protected $pagedResultsIteratorBuilder;
 
@@ -54,33 +57,36 @@ class ProductService
      *
      * @param Client $httpClient
      * @param Transformers\Product $productTransformer
-     * @param MetafieldTransformer $metafieldsTransformer
+     * @param MetafieldTransformer $metafieldTransformer
      * @param CreateNewProductRequest $createNewProductRequestBuilder
      * @param GetProductRequest $getProductRequestBuilder
      * @param DeleteProductRequest $deleteProductRequestBuilder
      * @param CreateNewResourceMetafieldRequest $createNewResourceMetafieldRequestBuilder
      * @param GetResourceMetafieldsRequest $getResourceMetafieldsBuilder
+     * @param UpdateResourceMetafieldRequest $updateResourceMetafieldRequestBuilder
      * @param PagedResultsIterator $pagedResultsIteratorBuilder
      */
     public function __construct(
         Client $httpClient,
         Transformers\Product $productTransformer,
-        MetafieldTransformer $metafieldsTransformer,
+        MetafieldTransformer $metafieldTransformer,
         CreateNewProductRequest $createNewProductRequestBuilder,
         GetProductRequest $getProductRequestBuilder,
         DeleteProductRequest $deleteProductRequestBuilder,
         CreateNewResourceMetafieldRequest $createNewResourceMetafieldRequestBuilder,
         GetResourceMetafieldsRequest $getResourceMetafieldsBuilder,
+        UpdateResourceMetafieldRequest $updateResourceMetafieldRequestBuilder,
         PagedResultsIterator $pagedResultsIteratorBuilder
     ) {
         $this->httpClient = $httpClient;
         $this->productTransformer = $productTransformer;
-        $this->metafieldTransformer = $metafieldsTransformer;
+        $this->metafieldTransformer = $metafieldTransformer;
         $this->createNewProductRequestBuilder = $createNewProductRequestBuilder;
         $this->getProductRequestBuilder = $getProductRequestBuilder;
         $this->deleteProductRequestBuilder = $deleteProductRequestBuilder;
         $this->createNewResourceMetafieldRequestBuilder = $createNewResourceMetafieldRequestBuilder;
         $this->getResourceMetafieldsBuilder = $getResourceMetafieldsBuilder;
+        $this->updateResourceMetafieldRequestBuilder = $updateResourceMetafieldRequestBuilder;
         $this->pagedResultsIteratorBuilder = $pagedResultsIteratorBuilder;
     }
 
@@ -382,6 +388,50 @@ class ProductService
 
         return $this->httpClient->sendAsync(
             $request->toRequest(),
+            $request->toRequestOptions()
+        );
+    }
+
+    /**
+     * Convenience method for self::asyncUpdateProductMetafield
+     *
+     * @see https://help.shopify.com/api/reference/metafield#update
+     * @param RequestCredentialsInterface $credentials
+     * @param Product $product
+     * @param Metafield $metafield
+     * @return Metafield
+     */
+    public function updateProductMetafield(
+        RequestCredentialsInterface $credentials,
+        Product $product,
+        Metafield $metafield
+    ): Metafield {
+        $response = $this->asyncUpdateProductMetafield($credentials, $product, $metafield)->wait();
+
+        return $this->metafieldTransformer->fromResponse($response);
+    }
+
+    /**
+     * Update a product metafield
+     *
+     * @see https://help.shopify.com/api/reference/metafield#updateProduct
+     * @param RequestCredentialsInterface $credentials
+     * @param Product $product
+     * @param Metafield $metafield
+     * @return PromiseInterface
+     */
+    public function asyncUpdateProductMetafield(
+        RequestCredentialsInterface $credentials,
+        Product $product,
+        Metafield $metafield
+    ): PromiseInterface {
+        $request = $this->updateResourceMetafieldRequestBuilder
+            ->forProduct($product)
+            ->withCredentials($credentials)
+            ->withMetafield($metafield);
+
+        return $this->httpClient->sendAsync(
+            $request->toResourceRequest(),
             $request->toRequestOptions()
         );
     }

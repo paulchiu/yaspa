@@ -50,6 +50,11 @@ class MetafieldFactoryProvider implements FactoryProviderInterface
                     $factory::make(Transformers\Metafield::class)
                 );
             },
+            Builders\UpdateResourceMetafieldRequest::class => function () use ($factory) {
+                return new Builders\UpdateResourceMetafieldRequest(
+                    $factory::make(Transformers\Metafield::class)
+                );
+            },
             MetafieldService::class => function () use ($factory) {
                 return new MetafieldService(
                     $factory::make(GuzzleHttp\Client::class),
