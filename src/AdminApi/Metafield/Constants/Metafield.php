@@ -16,6 +16,11 @@ class Metafield
         self::VALUE_TYPE_INTEGER,
         self::VALUE_TYPE_STRING,
     ];
+
+    /**
+     * Note: The *_METAFIELD constants use '%%s' for the id field because the constant is expected to be used by
+     * two sprintf statements before being complete
+     */
     const RESOURCE_LOCATION_URI_TEMPLATE_ARTICLES = '/admin/blogs/%s/articles/%s/metafields.json';
     const RESOURCE_LOCATION_URI_TEMPLATE_ARTICLE_METAFIELD = '/admin/blogs/%s/articles/%s/metafields/%%s.json';
     const RESOURCE_LOCATION_URI_TEMPLATE_BLOGS = '/admin/blogs/%s/metafields.json';

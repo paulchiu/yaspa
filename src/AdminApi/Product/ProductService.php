@@ -5,6 +5,7 @@ namespace Yaspa\AdminApi\Product;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
 use Yaspa\AdminApi\Metafield\Builders\CreateNewResourceMetafieldRequest;
+use Yaspa\AdminApi\Metafield\Builders\DeleteResourceMetafieldRequest;
 use Yaspa\AdminApi\Metafield\Builders\GetResourceMetafieldsRequest;
 use Yaspa\AdminApi\Metafield\Builders\UpdateResourceMetafieldRequest;
 use Yaspa\AdminApi\Metafield\Transformers\Metafield as MetafieldTransformer;
@@ -49,6 +50,8 @@ class ProductService
     protected $getResourceMetafieldsBuilder;
     /** @var UpdateResourceMetafieldRequest $updateResourceMetafieldRequestBuilder */
     protected $updateResourceMetafieldRequestBuilder;
+    /** @var DeleteResourceMetafieldRequest $deleteResourceMetafieldRequestBuilder */
+    protected $deleteResourceMetafieldRequestBuilder;
     /** @var PagedResultsIterator $pagedResultsIteratorBuilder */
     protected $pagedResultsIteratorBuilder;
 
@@ -64,6 +67,7 @@ class ProductService
      * @param CreateNewResourceMetafieldRequest $createNewResourceMetafieldRequestBuilder
      * @param GetResourceMetafieldsRequest $getResourceMetafieldsBuilder
      * @param UpdateResourceMetafieldRequest $updateResourceMetafieldRequestBuilder
+     * @param DeleteResourceMetafieldRequest $deleteResourceMetafieldRequestBuilder
      * @param PagedResultsIterator $pagedResultsIteratorBuilder
      */
     public function __construct(
@@ -76,6 +80,7 @@ class ProductService
         CreateNewResourceMetafieldRequest $createNewResourceMetafieldRequestBuilder,
         GetResourceMetafieldsRequest $getResourceMetafieldsBuilder,
         UpdateResourceMetafieldRequest $updateResourceMetafieldRequestBuilder,
+        DeleteResourceMetafieldRequest $deleteResourceMetafieldRequestBuilder,
         PagedResultsIterator $pagedResultsIteratorBuilder
     ) {
         $this->httpClient = $httpClient;
@@ -87,6 +92,7 @@ class ProductService
         $this->createNewResourceMetafieldRequestBuilder = $createNewResourceMetafieldRequestBuilder;
         $this->getResourceMetafieldsBuilder = $getResourceMetafieldsBuilder;
         $this->updateResourceMetafieldRequestBuilder = $updateResourceMetafieldRequestBuilder;
+        $this->deleteResourceMetafieldRequestBuilder = $deleteResourceMetafieldRequestBuilder;
         $this->pagedResultsIteratorBuilder = $pagedResultsIteratorBuilder;
     }
 
@@ -426,6 +432,52 @@ class ProductService
         Metafield $metafield
     ): PromiseInterface {
         $request = $this->updateResourceMetafieldRequestBuilder
+            ->forProduct($product)
+            ->withCredentials($credentials)
+            ->withMetafield($metafield);
+
+        return $this->httpClient->sendAsync(
+            $request->toResourceRequest(),
+            $request->toRequestOptions()
+        );
+    }
+
+    /**
+     * Convenience method for self::asyncDeleteProductMe
+     *
+     * @see https://help.shopify.com/api/reference/metafield#destroy
+     * @param RequestCredentialsInterface $credentials
+     * @param Product $product
+     * @param Metafield $metafield
+     * @return object
+     */
+    public function deleteProductMetafield(
+        RequestCredentialsInterface $credentials,
+        Product $product,
+        Metafield $metafield
+    ) {
+        $response = $this->asyncDeleteProductMetafield($credentials, $product, $metafield)->wait();
+
+        return json_decode($response->getBody()->getContents());
+    }
+
+    /**
+     * Delete a product metafield
+     *
+     * Returns an empty object with no properties if successful.
+     *
+     * @see https://help.shopify.com/api/reference/metafield#destroy
+     * @param RequestCredentialsInterface $credentials
+     * @param Product $product
+     * @param Metafield $metafield
+     * @return PromiseInterface
+     */
+    public function asyncDeleteProductMetafield(
+        RequestCredentialsInterface $credentials,
+        Product $product,
+        Metafield $metafield
+    ): PromiseInterface {
+        $request = $this->deleteResourceMetafieldRequestBuilder
             ->forProduct($product)
             ->withCredentials($credentials)
             ->withMetafield($metafield);

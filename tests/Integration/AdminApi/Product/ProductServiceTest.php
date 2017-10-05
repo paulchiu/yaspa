@@ -403,6 +403,41 @@ class ProductServiceTest extends TestCase
     }
 
     /**
+     * @depends testCanCreateNewProductMetafield
+     * @group integration
+     * @param array $newProductMetafield
+     */
+    public function testCanDeleteProductMetafield(array $newProductMetafield)
+    {
+        // Destructure dependent parameters
+        /** @var Product $product */
+        /** @var Metafield $metafield */
+        [$product, $metafield] = $newProductMetafield;
+
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Update metafield
+        $metafield->setValue(27);
+
+        // Test method
+        $service = Factory::make(ProductService::class);
+        $result = $service->deleteProductMetafield($credentials, $product, $metafield);
+        $this->assertTrue(is_object($result));
+        $this->assertEmpty(get_object_vars($result));
+    }
+
+    /**
      * @group integration
      */
     public function testCanCreateNewProductWithDefaultProductVariant()

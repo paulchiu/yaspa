@@ -315,4 +315,33 @@ class ProductServiceTest extends TestCase
         $result = $service->updateProductMetafield($credentials, $product, $metafield);
         $this->assertInstanceOf(Metafield::class, $result);
     }
+
+    public function testCanDeleteProductMetafield()
+    {
+        // Create mock client
+        $mockClientUtil = new MockGuzzleClient();
+        $client = $mockClientUtil->makeWithResponses(
+            [
+                $mockClientUtil->makeEmptyJsonResponse(200),
+            ]
+        );
+        Factory::inject(Client::class, $client);
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makeOAuth('foo', 'bar');
+        $product = (new Product())
+            ->setId(3);
+        $metafield = (new Metafield())
+            ->setNamespace('inventory')
+            ->setKey('warehouse')
+            ->setValue(25)
+            ->setValueType('integer');
+
+        // Test service method
+        $service = Factory::make(ProductService::class);
+        $result = $service->deleteProductMetafield($credentials, $product, $metafield);
+        $this->assertTrue(is_object($result));
+        $this->assertEmpty(get_object_vars($result));
+    }
 }

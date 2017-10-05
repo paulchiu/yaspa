@@ -33,6 +33,9 @@ class MetafieldFactoryProvider implements FactoryProviderInterface
             Builders\DeleteMetafieldRequest::class => function () {
                 return new Builders\DeleteMetafieldRequest();
             },
+            Builders\DeleteResourceMetafieldRequest::class => function () {
+                return new Builders\DeleteResourceMetafieldRequest();
+            },
             Builders\GetMetafieldRequest::class => function () {
                 return new Builders\GetMetafieldRequest();
             },
