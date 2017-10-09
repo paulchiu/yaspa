@@ -128,7 +128,7 @@ class ProductServiceTest extends TestCase
 
         // Test method
         $service = Factory::make(ProductService::class);
-        $product = $service->getProduct($credentials, 3);
+        $product = $service->getProductById($credentials, 3);
         $this->assertEquals(3, $product->getId());
         $this->assertEquals('foo', $product->getTitle());
     }
@@ -158,7 +158,7 @@ class ProductServiceTest extends TestCase
 
         // Test method
         $service = Factory::make(ProductService::class);
-        $product = $service->getProduct($credentials, 3, $fields);
+        $product = $service->getProductById($credentials, 3, $fields);
         $this->assertEquals(3, $product->getId());
         $this->assertEquals('foo', $product->getTitle());
     }
@@ -211,7 +211,7 @@ class ProductServiceTest extends TestCase
 
         // Test service method
         $service = Factory::make(ProductService::class);
-        $result = $service->deleteProduct($credentials, 3);
+        $result = $service->deleteProductById($credentials, 3);
 
         // Test results
         $this->assertTrue(is_object($result));
@@ -279,7 +279,7 @@ class ProductServiceTest extends TestCase
 
         // Get and test results
         $service = Factory::make(ProductService::class);
-        $metafields = $service->getProductMetafields($credentials, 7);
+        $metafields = $service->getProductMetafieldsById($credentials, 7);
         $this->assertNotEmpty($metafields);
     }
 

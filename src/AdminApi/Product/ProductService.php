@@ -173,16 +173,16 @@ class ProductService
      * Get an individual product.
      *
      * @param RequestCredentialsInterface $credentials
-     * @param int $productId
+     * @param Product $product
      * @param null|ProductFields $productFields
      * @return Product
      */
     public function getProduct(
         RequestCredentialsInterface $credentials,
-        int $productId,
+        Product $product,
         ?ProductFields $productFields = null
     ): Product {
-        $response = $this->asyncGetProduct($credentials, $productId, $productFields)->wait();
+        $response = $this->asyncGetProduct($credentials, $product, $productFields)->wait();
 
         return $this->productTransformer->fromResponse($response);
     }
@@ -191,16 +191,15 @@ class ProductService
      * Async version of self::getProduct
      *
      * @param RequestCredentialsInterface $credentials
-     * @param int $productId
+     * @param Product $product
      * @param null|ProductFields $productFields
      * @return PromiseInterface
      */
     public function asyncGetProduct(
         RequestCredentialsInterface $credentials,
-        int $productId,
+        Product $product,
         ?ProductFields $productFields = null
     ): PromiseInterface {
-        $product = (new Product())->setId($productId);
         $request = $this->getProductRequestBuilder
             ->withCredentials($credentials)
             ->withProduct($product);
@@ -213,6 +212,42 @@ class ProductService
             $request->toResourceRequest(),
             $request->toRequestOptions()
         );
+    }
+
+    /**
+     * Convenience method for self::getProduct
+     *
+     * @param RequestCredentialsInterface $credentials
+     * @param int $productId
+     * @param null|ProductFields $productFields
+     * @return Product
+     */
+    public function getProductById(
+        RequestCredentialsInterface $credentials,
+        int $productId,
+        ?ProductFields $productFields = null
+    ): Product {
+        $product = (new Product())->setId($productId);
+
+        return $this->getProduct($credentials, $product, $productFields);
+    }
+
+    /**
+     * Convenience method for self::asyncGetProduct
+     *
+     * @param RequestCredentialsInterface $credentials
+     * @param int $productId
+     * @param null|ProductFields $productFields
+     * @return PromiseInterface
+     */
+    public function asyncGetProductById(
+        RequestCredentialsInterface $credentials,
+        int $productId,
+        ?ProductFields $productFields = null
+    ): PromiseInterface {
+        $product = (new Product())->setId($productId);
+
+        return $this->asyncGetProduct($credentials, $product, $productFields);
     }
 
     /**
@@ -290,14 +325,14 @@ class ProductService
      *
      * @see https://help.shopify.com/api/reference/product#destroy
      * @param RequestCredentialsInterface $credentials
-     * @param int $productId
+     * @param Product $product
      * @return object
      */
     public function deleteProduct(
         RequestCredentialsInterface $credentials,
-        int $productId
+        Product $product
     ) {
-        $response = $this->asyncDeleteProduct($credentials, $productId)->wait();
+        $response = $this->asyncDeleteProduct($credentials, $product)->wait();
 
         return json_decode($response->getBody()->getContents());
     }
@@ -307,14 +342,13 @@ class ProductService
      *
      * @see https://help.shopify.com/api/reference/product#destroy
      * @param RequestCredentialsInterface $credentials
-     * @param int $productId
+     * @param Product $product
      * @return PromiseInterface
      */
     public function asyncDeleteProduct(
         RequestCredentialsInterface $credentials,
-        int $productId
+        Product $product
     ): PromiseInterface {
-        $product = (new Models\Product())->setId($productId);
         $request = $this->deleteProductRequestBuilder
             ->withCredentials($credentials)
             ->withProduct($product);
@@ -323,6 +357,40 @@ class ProductService
             $request->toResourceRequest(),
             $request->toRequestOptions()
         );
+    }
+
+    /**
+     * Convenience method for self::deleteProduct
+     *
+     * @see https://help.shopify.com/api/reference/product#destroy
+     * @param RequestCredentialsInterface $credentials
+     * @param int $productId
+     * @return object
+     */
+    public function deleteProductById(
+        RequestCredentialsInterface $credentials,
+        int $productId
+    ) {
+        $product = (new Models\Product())->setId($productId);
+
+        return $this->deleteProduct($credentials, $product);
+    }
+
+    /**
+     * Convenience method for self::asyncDeleteProduct
+     *
+     * @see https://help.shopify.com/api/reference/product#destroy
+     * @param RequestCredentialsInterface $credentials
+     * @param int $productId
+     * @return PromiseInterface
+     */
+    public function asyncDeleteProductById(
+        RequestCredentialsInterface $credentials,
+        int $productId
+    ): PromiseInterface {
+        $product = (new Models\Product())->setId($productId);
+
+        return $this->asyncDeleteProduct($credentials, $product);
     }
 
     /**
@@ -408,29 +476,55 @@ class ProductService
     }
 
     /**
-     * Convenience version of self::asyncGetProductMetafields
+     * Convenience version of self::getProductMetafieldsById
+     *
+     * @see https://help.shopify.com/api/reference/metafield#index
+     * @param RequestCredentialsInterface $credentials
+     * @param Product $product
+     * @return array|Metafield[]
+     */
+    public function getProductMetafields(RequestCredentialsInterface $credentials, Product $product): array
+    {
+        return $this->getProductMetafieldsById($credentials, $product->getId());
+    }
+
+    /**
+     * Convenience method for self::asyncGetProductMetafieldsById
+     *
+     * @see https://help.shopify.com/api/reference/metafield#index
+     * @param RequestCredentialsInterface $credentials
+     * @param Product $product
+     * @return PromiseInterface
+     */
+    public function asyncGetProductMetafields(RequestCredentialsInterface $credentials, Product $product): PromiseInterface
+    {
+        return $this->asyncGetProductMetafieldsById($credentials, $product->getId());
+    }
+
+    /**
+     * Convenience method for self::asyncGetProductMetafields
      *
      * @see https://help.shopify.com/api/reference/metafield#index
      * @param RequestCredentialsInterface $credentials
      * @param int $productId
      * @return array|Metafield[]
      */
-    public function getProductMetafields(RequestCredentialsInterface $credentials, int $productId): array
+    public function getProductMetafieldsById(RequestCredentialsInterface $credentials, int $productId): array
     {
-        $response = $this->asyncGetProductMetafields($credentials, $productId)->wait();
+        $response = $this->asyncGetProductMetafieldsById($credentials, $productId)->wait();
 
         return $this->metafieldTransformer->fromArrayResponse($response);
     }
 
     /**
-     * Get metafields that belong to a product
+     * Get metafieldsById that belong to a product
      *
      * @see https://help.shopify.com/api/reference/metafield#index
      * @param RequestCredentialsInterface $credentials
      * @param int $productId
      * @return PromiseInterface
      */
-    public function asyncGetProductMetafields(RequestCredentialsInterface $credentials, int $productId): PromiseInterface
+    public function asyncGetProductMetafieldsById(RequestCredentialsInterface $credentials, int $productId): PromiseInterface
     {
         $request = $this->getResourceMetafieldsBuilder
             ->withCredentials($credentials)
@@ -574,5 +668,45 @@ class ProductService
             $request->toResourceRequest(),
             $request->toRequestOptions()
         );
+    }
+
+    /**
+     * Convenience method for self::deleteProductMetafield
+     *
+     * @see https://help.shopify.com/api/reference/metafield#destroy
+     * @param RequestCredentialsInterface $credentials
+     * @param int $productId
+     * @param int $metafieldId
+     * @return object
+     */
+    public function deleteProductMetafieldById(
+        RequestCredentialsInterface $credentials,
+        int $productId,
+        int $metafieldId
+    ) {
+        $product = (new Product())->setId($productId);
+        $metafield = (new Metafield())->setId($metafieldId);
+
+        return $this->deleteProductMetafield($credentials, $product, $metafield);
+    }
+
+    /**
+     * Convenience method for self::asyncDeleteProductMetafield
+     *
+     * @see https://help.shopify.com/api/reference/metafieldById#destroy
+     * @param RequestCredentialsInterface $credentials
+     * @param int $productId
+     * @param int $metafieldId
+     * @return PromiseInterface
+     */
+    public function asyncDeleteProductMetafieldById(
+        RequestCredentialsInterface $credentials,
+        int $productId,
+        int $metafieldId
+    ): PromiseInterface {
+        $product = (new Product())->setId($productId);
+        $metafield = (new Metafield())->setId($metafieldId);
+
+        return $this->asyncDeleteProductMetafield($credentials, $product, $metafield);
     }
 }

@@ -430,7 +430,7 @@ class ProductServiceTest extends TestCase
 
         // Test method
         $service = Factory::make(ProductService::class);
-        $metafields = $service->getProductMetafields($credentials, $product->getId());
+        $metafields = $service->getProductMetafieldsById($credentials, $product->getId());
         foreach ($metafields as $metafield) {
             $this->assertNotEmpty($metafield->getId());
             $this->assertNotEmpty($metafield->getKey());
@@ -471,7 +471,7 @@ class ProductServiceTest extends TestCase
         // Get and test results
         $service = Factory::make(MetafieldService::class);
         $metafields = $service->getMetafields($request);
-        $this->assertCount(1, $metafields);
+        $this->assertGreaterThanOrEqual(1, $metafields);
     }
 
     /**
@@ -704,7 +704,7 @@ class ProductServiceTest extends TestCase
 
         // Get and test results
         $service = Factory::make(ProductService::class);
-        $retrievedProduct = $service->getProduct($credentials, $product->getId());
+        $retrievedProduct = $service->getProductById($credentials, $product->getId());
         $this->assertEquals($product->getId(), $retrievedProduct->getId());
         $this->assertNotEmpty($retrievedProduct->getVendor());
     }
@@ -734,7 +734,7 @@ class ProductServiceTest extends TestCase
 
         // Get and test results
         $service = Factory::make(ProductService::class);
-        $retrievedProduct = $service->getProduct($credentials, $product->getId(), $fields);
+        $retrievedProduct = $service->getProductById($credentials, $product->getId(), $fields);
         $this->assertEquals($product->getId(), $retrievedProduct->getId());
         $this->assertEmpty($retrievedProduct->getVendor());
     }
@@ -1125,7 +1125,7 @@ class ProductServiceTest extends TestCase
         $service = Factory::make(ProductService::class);
 
         // Get pre-update-state
-        $preUpdateMetafields = $service->getProductMetafields($credentials, $product->getId());
+        $preUpdateMetafields = $service->getProductMetafields($credentials, $product);
 
         // Create update parameters
         $metafield = (new Metafield())
@@ -1142,7 +1142,7 @@ class ProductServiceTest extends TestCase
 
         // Test update
         $updatedProduct = $service->modifyExistingProduct($request);
-        $postUpdateMetafields = $service->getProductMetafields($credentials, $updatedProduct->getId());
+        $postUpdateMetafields = $service->getProductMetafields($credentials, $updatedProduct);
         $this->assertEquals(count($preUpdateMetafields) + 1, count($postUpdateMetafields));
     }
 
@@ -1171,7 +1171,7 @@ class ProductServiceTest extends TestCase
 
         // Test service method
         $service = Factory::make(ProductService::class);
-        $result = $service->deleteProduct($credentials, $originalProduct->getId());
+        $result = $service->deleteProductById($credentials, $originalProduct->getId());
         $this->assertTrue(is_object($result));
         $this->assertEmpty(get_object_vars($result));
     }
