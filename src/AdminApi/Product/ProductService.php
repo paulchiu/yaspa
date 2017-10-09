@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
 use Yaspa\AdminApi\Metafield\Builders\CreateNewResourceMetafieldRequest;
 use Yaspa\AdminApi\Metafield\Builders\DeleteResourceMetafieldRequest;
+use Yaspa\AdminApi\Metafield\Builders\GetResourceMetafieldRequest;
 use Yaspa\AdminApi\Metafield\Builders\GetResourceMetafieldsRequest;
 use Yaspa\AdminApi\Metafield\Builders\UpdateResourceMetafieldRequest;
 use Yaspa\AdminApi\Metafield\Transformers\Metafield as MetafieldTransformer;
@@ -46,6 +47,8 @@ class ProductService
     protected $deleteProductRequestBuilder;
     /** @var CreateNewResourceMetafieldRequest $createNewResourceMetafieldRequestBuilder */
     protected $createNewResourceMetafieldRequestBuilder;
+    /** @var GetResourceMetafieldRequest $getResourceMetafieldBuilder */
+    protected $getResourceMetafieldBuilder;
     /** @var GetResourceMetafieldsRequest $getResourceMetafieldsBuilder */
     protected $getResourceMetafieldsBuilder;
     /** @var UpdateResourceMetafieldRequest $updateResourceMetafieldRequestBuilder */
@@ -65,6 +68,7 @@ class ProductService
      * @param GetProductRequest $getProductRequestBuilder
      * @param DeleteProductRequest $deleteProductRequestBuilder
      * @param CreateNewResourceMetafieldRequest $createNewResourceMetafieldRequestBuilder
+     * @param GetResourceMetafieldRequest $getResourceMetafieldBuilder
      * @param GetResourceMetafieldsRequest $getResourceMetafieldsBuilder
      * @param UpdateResourceMetafieldRequest $updateResourceMetafieldRequestBuilder
      * @param DeleteResourceMetafieldRequest $deleteResourceMetafieldRequestBuilder
@@ -78,6 +82,7 @@ class ProductService
         GetProductRequest $getProductRequestBuilder,
         DeleteProductRequest $deleteProductRequestBuilder,
         CreateNewResourceMetafieldRequest $createNewResourceMetafieldRequestBuilder,
+        GetResourceMetafieldRequest $getResourceMetafieldBuilder,
         GetResourceMetafieldsRequest $getResourceMetafieldsBuilder,
         UpdateResourceMetafieldRequest $updateResourceMetafieldRequestBuilder,
         DeleteResourceMetafieldRequest $deleteResourceMetafieldRequestBuilder,
@@ -90,6 +95,7 @@ class ProductService
         $this->getProductRequestBuilder = $getProductRequestBuilder;
         $this->deleteProductRequestBuilder = $deleteProductRequestBuilder;
         $this->createNewResourceMetafieldRequestBuilder = $createNewResourceMetafieldRequestBuilder;
+        $this->getResourceMetafieldBuilder = $getResourceMetafieldBuilder;
         $this->getResourceMetafieldsBuilder = $getResourceMetafieldsBuilder;
         $this->updateResourceMetafieldRequestBuilder = $updateResourceMetafieldRequestBuilder;
         $this->deleteResourceMetafieldRequestBuilder = $deleteResourceMetafieldRequestBuilder;
@@ -317,6 +323,88 @@ class ProductService
             $request->toResourceRequest(),
             $request->toRequestOptions()
         );
+    }
+
+    /**
+     * Convenience method for self::asyncGetProductMetafield
+     *
+     * @see https://help.shopify.com/api/reference/metafield#show
+     * @param RequestCredentialsInterface $credentials
+     * @param Product $product
+     * @param Metafield $metafield
+     * @return Metafield
+     */
+    public function getProductMetafield(
+        RequestCredentialsInterface $credentials,
+        Product $product,
+        Metafield $metafield
+    ): Metafield {
+        $response = $this->asyncGetProductMetafield($credentials, $product, $metafield)->wait();
+
+        return $this->metafieldTransformer->fromResponse($response);
+    }
+
+    /**
+     * Get a single product metafield
+     *
+     * @see https://help.shopify.com/api/reference/metafield#show
+     * @param RequestCredentialsInterface $credentials
+     * @param Product $product
+     * @param Metafield $metafield
+     * @return PromiseInterface
+     */
+    public function asyncGetProductMetafield(
+        RequestCredentialsInterface $credentials,
+        Product $product,
+        Metafield $metafield
+    ): PromiseInterface {
+        $request = $this->getResourceMetafieldBuilder
+            ->forProduct($product)
+            ->withCredentials($credentials)
+            ->withMetafield($metafield);
+
+        return $this->httpClient->sendAsync(
+            $request->toResourceRequest(),
+            $request->toRequestOptions()
+        );
+    }
+
+    /**
+     * Convenience method for self::getProductMetafield
+     *
+     * @param RequestCredentialsInterface $credentials
+     * @param int $productId
+     * @param int $metafieldId
+     * @return Metafield
+     */
+    public function getProductMetafieldById(
+        RequestCredentialsInterface $credentials,
+        int $productId,
+        int $metafieldId
+    ): Metafield {
+        $product = (new Product())->setId($productId);
+        $metafield = (new Metafield())->setId($metafieldId);
+
+        return $this->getProductMetafield($credentials, $product, $metafield);
+    }
+
+    /**
+     * Convenience method for self::asyncGetProductMetafield
+     *
+     * @param RequestCredentialsInterface $credentials
+     * @param int $productId
+     * @param int $metafieldId
+     * @return PromiseInterface
+     */
+    public function asyncGetProductMetafieldById(
+        RequestCredentialsInterface $credentials,
+        int $productId,
+        int $metafieldId
+    ): PromiseInterface {
+        $product = (new Product())->setId($productId);
+        $metafield = (new Metafield())->setId($metafieldId);
+
+        return $this->asyncGetProductMetafield($credentials, $product, $metafield);
     }
 
     /**

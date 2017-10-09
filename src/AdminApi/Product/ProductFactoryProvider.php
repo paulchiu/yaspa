@@ -59,6 +59,7 @@ class ProductFactoryProvider implements FactoryProviderInterface
                     $factory::make(Builders\GetProductRequest::class),
                     $factory::make(Builders\DeleteProductRequest::class),
                     $factory::make(Metafield\Builders\CreateNewResourceMetafieldRequest::class),
+                    $factory::make(Metafield\Builders\GetResourceMetafieldRequest::class),
                     $factory::make(Metafield\Builders\GetResourceMetafieldsRequest::class),
                     $factory::make(Metafield\Builders\UpdateResourceMetafieldRequest::class),
                     $factory::make(Metafield\Builders\DeleteResourceMetafieldRequest::class),

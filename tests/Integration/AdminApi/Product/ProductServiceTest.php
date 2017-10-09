@@ -329,6 +329,42 @@ class ProductServiceTest extends TestCase
      * @param array $newProductMetafield
      * @return Product
      */
+    public function testCanGetProductMetafield(array $newProductMetafield)
+    {
+        // Destructure dependent parameters
+        /** @var Product $product */
+        /** @var Metafield $metafield */
+        [$product, $metafield] = $newProductMetafield;
+
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Test method
+        $service = Factory::make(ProductService::class);
+        $retrievedMetafield = $service->getProductMetafieldById($credentials, $product->getId(), $metafield->getId());
+        $this->assertInstanceOf(Metafield::class, $retrievedMetafield);
+        $this->assertEquals($metafield->getId(), $retrievedMetafield->getId());
+        $this->assertEquals($metafield->getKey(), $retrievedMetafield->getKey());
+        $this->assertEquals($metafield->getValue(), $retrievedMetafield->getValue());
+        return $product;
+    }
+
+    /**
+     * @depends testCanCreateNewProductMetafield
+     * @group integration
+     * @param array $newProductMetafield
+     * @return Product
+     */
     public function testCanUpdateProductMetafield(array $newProductMetafield)
     {
         // Destructure dependent parameters

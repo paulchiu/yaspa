@@ -42,6 +42,9 @@ class MetafieldFactoryProvider implements FactoryProviderInterface
             Builders\GetMetafieldsRequest::class => function () {
                 return new Builders\GetMetafieldsRequest();
             },
+            Builders\GetResourceMetafieldRequest::class => function () {
+                return new Builders\GetResourceMetafieldRequest();
+            },
             Builders\GetResourceMetafieldsRequest::class => function () {
                 return new Builders\GetResourceMetafieldsRequest();
             },
