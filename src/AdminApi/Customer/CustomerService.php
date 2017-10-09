@@ -14,7 +14,8 @@ use Yaspa\AdminApi\Customer\Builders\GetCustomersRequest;
 use Yaspa\AdminApi\Customer\Builders\ModifyExistingCustomerRequest;
 use Yaspa\AdminApi\Customer\Builders\SearchCustomersRequest;
 use Yaspa\AdminApi\Customer\Builders\SendAccountInviteRequest;
-use Yaspa\AdminApi\Customer\Models;
+use Yaspa\AdminApi\Customer\Models\Customer;
+use Yaspa\AdminApi\Customer\Models\CustomerInvite;
 use Yaspa\AdminApi\Customer\Transformers;
 use Yaspa\Builders\PagedResultsIterator;
 use Yaspa\Exceptions\MissingExpectedAttributeException;
@@ -92,7 +93,7 @@ class CustomerService
      *
      * @see https://help.shopify.com/api/reference/customer#index
      * @param GetCustomersRequest $request
-     * @return Models\Customer[]|PagedResultsIterator
+     * @return Customer[]|PagedResultsIterator
      */
     public function getCustomers(GetCustomersRequest $request): PagedResultsIterator
     {
@@ -123,7 +124,7 @@ class CustomerService
      * @progress Just managed to get integration test working, there are issues with iterator
      * @see https://help.shopify.com/api/reference/customer#search
      * @param SearchCustomersRequest $request
-     * @return Models\Customer[]|PagedResultsIterator
+     * @return Customer[]|PagedResultsIterator
      */
     public function searchCustomers(SearchCustomersRequest $request): PagedResultsIterator
     {
@@ -151,9 +152,9 @@ class CustomerService
      *
      * @see https://help.shopify.com/api/reference/customer#create
      * @param CreateNewCustomerRequest $request
-     * @return Models\Customer
+     * @return Customer
      */
-    public function createNewCustomer(CreateNewCustomerRequest $request): Models\Customer
+    public function createNewCustomer(CreateNewCustomerRequest $request): Customer
     {
         $response = $this->asyncCreateNewCustomer($request)->wait();
 
@@ -180,9 +181,9 @@ class CustomerService
      *
      * @see https://help.shopify.com/api/reference/customer#update
      * @param ModifyExistingCustomerRequest $request
-     * @return Models\Customer
+     * @return Customer
      */
-    public function modifyExistingCustomer(ModifyExistingCustomerRequest $request): Models\Customer
+    public function modifyExistingCustomer(ModifyExistingCustomerRequest $request): Customer
     {
         $response = $this->asyncModifyExistingCustomer($request)->wait();
 
@@ -209,12 +210,12 @@ class CustomerService
      *
      * @see https://help.shopify.com/api/reference/customer#show
      * @param RequestCredentialsInterface $credentials
-     * @param int $customerId
-     * @return Models\Customer
+     * @param Customer $customer
+     * @return Customer
      */
-    public function getCustomer(RequestCredentialsInterface $credentials, int $customerId): Models\Customer
+    public function getCustomer(RequestCredentialsInterface $credentials, Customer $customer): Customer
     {
-        $response = $this->asyncGetCustomer($credentials, $customerId)->wait();
+        $response = $this->asyncGetCustomer($credentials, $customer)->wait();
 
         return $this->customerTransformer->fromResponse($response);
     }
@@ -224,12 +225,11 @@ class CustomerService
      *
      * @see https://help.shopify.com/api/reference/customer#show
      * @param RequestCredentialsInterface $credentials
-     * @param int $customerId
+     * @param Customer $customer
      * @return PromiseInterface
      */
-    public function asyncGetCustomer(RequestCredentialsInterface $credentials, int $customerId): PromiseInterface
+    public function asyncGetCustomer(RequestCredentialsInterface $credentials, Customer $customer): PromiseInterface
     {
-        $customer = (new Models\Customer())->setId($customerId);
         $request = $this->getCustomerRequestBuilder
             ->withCredentials($credentials)
             ->withCustomer($customer);
@@ -238,6 +238,36 @@ class CustomerService
             $request->toResourceRequest(),
             $request->toRequestOptions()
         );
+    }
+
+    /**
+     * Convenience method for self::getCustomer
+     *
+     * @see https://help.shopify.com/api/reference/customer#show
+     * @param RequestCredentialsInterface $credentials
+     * @param int $customerId
+     * @return Customer
+     */
+    public function getCustomerById(RequestCredentialsInterface $credentials, int $customerId): Customer
+    {
+        $customer = (new Customer())->setId($customerId);
+
+        return $this->getCustomer($credentials, $customer);
+    }
+
+    /**
+     * Convenience method for self::asyncGetCustomer
+     *
+     * @see https://help.shopify.com/api/reference/customer#show
+     * @param RequestCredentialsInterface $credentials
+     * @param int $customerId
+     * @return PromiseInterface
+     */
+    public function asyncGetCustomerById(RequestCredentialsInterface $credentials, int $customerId): PromiseInterface
+    {
+        $customer = (new Customer())->setId($customerId);
+
+        return $this->asyncGetCustomer($credentials, $customer);
     }
 
     /**
@@ -250,13 +280,15 @@ class CustomerService
      *
      * @see https://help.shopify.com/api/reference/customer#account_activation_url
      * @param RequestCredentialsInterface $credentials
-     * @param int $customerId
+     * @param Customer $customer
      * @return Uri
      * @throws MissingExpectedAttributeException
      */
-    public function createAccountActivationUrl(RequestCredentialsInterface $credentials, int $customerId): Uri
-    {
-        $response = $this->asyncCreateAccountActivationUrl($credentials, $customerId)->wait();
+    public function createAccountActivationUrl(
+        RequestCredentialsInterface $credentials,
+        Customer $customer
+    ): Uri {
+        $response = $this->asyncCreateAccountActivationUrl($credentials, $customer)->wait();
 
         return $this->accountActivationUrlTransformer->fromResponse($response);
     }
@@ -266,12 +298,13 @@ class CustomerService
      *
      * @see https://help.shopify.com/api/reference/customer#account_activation_url
      * @param RequestCredentialsInterface $credentials
-     * @param int $customerId
+     * @param Customer $customer
      * @return PromiseInterface
      */
-    public function asyncCreateAccountActivationUrl(RequestCredentialsInterface $credentials, int $customerId): PromiseInterface
-    {
-        $customer = (new Models\Customer())->setId($customerId);
+    public function asyncCreateAccountActivationUrl(
+        RequestCredentialsInterface $credentials,
+        Customer $customer
+    ): PromiseInterface {
         $request = $this->createAccountActivationUrlRequestBuilder
             ->withCredentials($credentials)
             ->withCustomer($customer);
@@ -283,20 +316,53 @@ class CustomerService
     }
 
     /**
+     * Convenience method for self::createAccountActivationUrl
+     *
+     * @param RequestCredentialsInterface $credentials
+     * @param int $customerId
+     * @return Uri
+     */
+    public function createAccountActivationUrlForCustomerId(
+        RequestCredentialsInterface $credentials,
+        int $customerId
+    ): Uri {
+        $customer = (new Customer())->setId($customerId);
+
+        return $this->createAccountActivationUrl($credentials, $customer);
+    }
+
+    /**
+     * Convenience method for self::asyncCreateAccountActivationUrl
+     *
+     * @see https://help.shopify.com/api/reference/customer#account_activation_url
+     * @param RequestCredentialsInterface $credentials
+     * @param int $customerId
+     * @return PromiseInterface
+     */
+    public function asyncCreateAccountActivationUrlForCustomerId(
+        RequestCredentialsInterface $credentials,
+        int $customerId
+    ): PromiseInterface {
+        $customer = (new Customer())->setId($customerId);
+
+        return $this->asyncCreateAccountActivationUrl($credentials, $customer);
+    }
+
+    /**
      * Send an invite email to a customer.
      *
      * @see https://help.shopify.com/api/reference/customer#send_invite
      * @param RequestCredentialsInterface $credentials
-     * @param int $customerId
-     * @param null|Models\CustomerInvite $customerInvite
-     * @return Models\CustomerInvite
+     * @param Customer $customer
+     * @param null|CustomerInvite $customerInvite
+     * @return CustomerInvite
      */
     public function sendAccountInvite(
         RequestCredentialsInterface $credentials,
-        int $customerId,
-        ?Models\CustomerInvite $customerInvite = null
-    ): Models\CustomerInvite {
-        $response = $this->asyncSendAccountInvite($credentials, $customerId, $customerInvite)->wait();
+        Customer $customer,
+        ?CustomerInvite $customerInvite = null
+    ): CustomerInvite {
+        $response = $this->asyncSendAccountInvite($credentials, $customer, $customerInvite)->wait();
 
         return $this->customerInviteTransformer->fromResponse($response);
     }
@@ -306,16 +372,15 @@ class CustomerService
      *
      * @see https://help.shopify.com/api/reference/customer#send_invite
      * @param RequestCredentialsInterface $credentials
-     * @param int $customerId
-     * @param null|Models\CustomerInvite $customerInvite
+     * @param Customer $customer
+     * @param null|CustomerInvite $customerInvite
      * @return PromiseInterface
      */
     public function asyncSendAccountInvite(
         RequestCredentialsInterface $credentials,
-        int $customerId,
-        ?Models\CustomerInvite $customerInvite = null
+        Customer $customer,
+        ?CustomerInvite $customerInvite = null
     ): PromiseInterface {
-        $customer = (new Models\Customer())->setId($customerId);
         $request = $this->sendAccountInviteRequestBuilder
             ->withCredentials($credentials)
             ->withCustomer($customer)
@@ -328,20 +393,58 @@ class CustomerService
     }
 
     /**
+     * Convenience method for self::sendAccountInvite
+     *
+     * @see https://help.shopify.com/api/reference/customer#send_invite
+     * @param RequestCredentialsInterface $credentials
+     * @param int $customerId
+     * @param null|CustomerInvite $customerInvite
+     * @return CustomerInvite
+     */
+    public function sendAccountInviteForCustomerId(
+        RequestCredentialsInterface $credentials,
+        int $customerId,
+        ?CustomerInvite $customerInvite = null
+    ): CustomerInvite {
+        $customer = (new Customer())->setId($customerId);
+
+        return $this->sendAccountInvite($credentials, $customer, $customerInvite);
+    }
+
+    /**
+     * Convenience method for self::asyncSendAccountInvite
+     *
+     * @see https://help.shopify.com/api/reference/customer#send_invite
+     * @param RequestCredentialsInterface $credentials
+     * @param int $customerId
+     * @param null|CustomerInvite $customerInvite
+     * @return PromiseInterface
+     */
+    public function asyncSendAccountInviteForCustomerId(
+        RequestCredentialsInterface $credentials,
+        int $customerId,
+        ?CustomerInvite $customerInvite = null
+    ): PromiseInterface {
+        $customer = (new Customer())->setId($customerId);
+
+        return $this->asyncSendAccountInvite($credentials, $customer, $customerInvite);
+    }
+
+    /**
      * Delete customer.
      *
      * Returns an empty object with no properties if successful.
      *
      * @see https://help.shopify.com/api/reference/customer#destroy
      * @param RequestCredentialsInterface $credentials
-     * @param int $customerId
+     * @param Customer $customer
      * @return object
      */
     public function deleteCustomer(
         RequestCredentialsInterface $credentials,
-        int $customerId
+        Customer $customer
     ) {
-        $response = $this->asyncDeleteCustomer($credentials, $customerId)->wait();
+        $response = $this->asyncDeleteCustomer($credentials, $customer)->wait();
 
         return json_decode($response->getBody()->getContents());
     }
@@ -351,14 +454,13 @@ class CustomerService
      *
      * @see https://help.shopify.com/api/reference/customer#destroy
      * @param RequestCredentialsInterface $credentials
-     * @param int $customerId
+     * @param Customer $customer
      * @return PromiseInterface
      */
     public function asyncDeleteCustomer(
         RequestCredentialsInterface $credentials,
-        int $customerId
+        Customer $customer
     ): PromiseInterface {
-        $customer = (new Models\Customer())->setId($customerId);
         $request = $this->deleteCustomerRequestBuilder
             ->withCredentials($credentials)
             ->withCustomer($customer);
@@ -367,6 +469,40 @@ class CustomerService
             $request->toResourceRequest(),
             $request->toRequestOptions()
         );
+    }
+
+    /**
+     * Convenience method for self::deleteCustomer
+     *
+     * @see https://help.shopify.com/api/reference/customer#destroy
+     * @param RequestCredentialsInterface $credentials
+     * @param int $customerId
+     * @return object
+     */
+    public function deleteCustomerById(
+        RequestCredentialsInterface $credentials,
+        int $customerId
+    ) {
+        $customer = (new Customer())->setId($customerId);
+
+        return $this->deleteCustomer($credentials, $customer);
+    }
+
+    /**
+     * Convenience method for self::asyncDeleteCustomer
+     *
+     * @see https://help.shopify.com/api/reference/customer#destroy
+     * @param RequestCredentialsInterface $credentials
+     * @param int $customerId
+     * @return PromiseInterface
+     */
+    public function asyncDeleteCustomerById(
+        RequestCredentialsInterface $credentials,
+        int $customerId
+    ): PromiseInterface {
+        $customer = (new Customer())->setId($customerId);
+
+        return $this->asyncDeleteCustomer($credentials, $customer);
     }
 
     /**
@@ -406,6 +542,11 @@ class CustomerService
     }
 
     /**
-     * @todo https://help.shopify.com/api/reference/customer#orders
+     * @todo "Get all orders belonging to this customer", blocked by Orders resource support
+     * @see https://help.shopify.com/api/reference/customer#orders
+     */
+
+    /**
+     * @todo Add metafields support to Customer resource
      */
 }

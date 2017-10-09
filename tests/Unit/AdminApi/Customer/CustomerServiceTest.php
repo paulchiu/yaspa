@@ -260,7 +260,7 @@ class CustomerServiceTest extends TestCase
 
         // Test service method
         $service = Factory::make(CustomerService::class);
-        $retrievedCustomer = $service->getCustomer($credentials, 3);
+        $retrievedCustomer = $service->getCustomerById($credentials, 3);
 
         // Test results
         $this->assertNotEmpty($retrievedCustomer->getId());
@@ -286,7 +286,7 @@ class CustomerServiceTest extends TestCase
 
         // Test service method
         $service = Factory::make(CustomerService::class);
-        $url = $service->createAccountActivationUrl($credentials, 3);
+        $url = $service->createAccountActivationUrlForCustomerId($credentials, 3);
 
         // Test results
         $this->assertNotEmpty($url->getHost());
@@ -319,7 +319,7 @@ class CustomerServiceTest extends TestCase
 
         // Test service method
         $service = Factory::make(CustomerService::class);
-        $invite = $service->sendAccountInvite($credentials, 3, $invite);
+        $invite = $service->sendAccountInviteForCustomerId($credentials, 3, $invite);
 
         // Test results
         $this->assertNotEmpty($invite->getFrom());
@@ -344,7 +344,7 @@ class CustomerServiceTest extends TestCase
 
         // Test service method
         $service = Factory::make(CustomerService::class);
-        $result = $service->deleteCustomer($credentials, 3);
+        $result = $service->deleteCustomerById($credentials, 3);
 
         // Test results
         $this->assertTrue(is_object($result));

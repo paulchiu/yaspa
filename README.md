@@ -120,7 +120,7 @@ use Yaspa\Factory;
 
 // Delete an existing customer
 $service = Factory::make(CustomerService::class);
-$service->deleteCustomer($credentials, 6820000675);
+$service->deleteCustomerById($credentials, 6820000675);
 ```
 
 ## Documentation

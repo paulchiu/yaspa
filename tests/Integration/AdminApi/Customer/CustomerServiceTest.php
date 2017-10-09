@@ -451,7 +451,7 @@ class CustomerServiceTest extends TestCase
      * @depends testCanCreateNewCustomer
      * @param Customer $customer
      */
-    public function testCanGetCustomer(Customer $customer)
+    public function testCanGetCustomerById(Customer $customer)
     {
         // Get config
         $config = new TestConfig();
@@ -471,7 +471,7 @@ class CustomerServiceTest extends TestCase
 
         // Test service method
         $service = Factory::make(CustomerService::class);
-        $retrievedCustomer = $service->getCustomer($credentials, $customer->getId());
+        $retrievedCustomer = $service->getCustomerById($credentials, $customer->getId());
 
         // Test results
         $this->assertEquals($customer->getId(), $retrievedCustomer->getId());
@@ -483,7 +483,7 @@ class CustomerServiceTest extends TestCase
      * @depends testCanCreateNewCustomer
      * @param Customer $customer
      */
-    public function testCanCreateAccountActivationUrl(Customer $customer)
+    public function testCanCreateAccountActivationUrlForCustomerId(Customer $customer)
     {
         // Get config
         $config = new TestConfig();
@@ -503,7 +503,7 @@ class CustomerServiceTest extends TestCase
 
         // Test service method
         $service = Factory::make(CustomerService::class);
-        $url = $service->createAccountActivationUrl($credentials, $customer->getId());
+        $url = $service->createAccountActivationUrlForCustomerId($credentials, $customer->getId());
 
         // Test results
         $this->assertNotEmpty($url->getHost());
@@ -514,7 +514,7 @@ class CustomerServiceTest extends TestCase
      * @group integration
      * @depends testCanCreateNewCustomer
      */
-    public function testCanSendDefaultAccountInvite()
+    public function testCanSendDefaultAccountInviteForCustomerId()
     {
         // Get config
         $config = new TestConfig();
@@ -548,7 +548,7 @@ class CustomerServiceTest extends TestCase
         $this->assertNotEmpty($customer->getId());
 
         // Test service method
-        $invite = $service->sendAccountInvite($credentials, $customer->getId());
+        $invite = $service->sendAccountInviteForCustomerId($credentials, $customer->getId());
 
         // Test results
         $this->assertNotEmpty($invite->getFrom());
@@ -560,7 +560,7 @@ class CustomerServiceTest extends TestCase
      * @group integration
      * @depends testCanCreateNewCustomer
      */
-    public function testCanSendCustomAccountInvite()
+    public function testCanSendCustomAccountInviteForCustomerId()
     {
         // Get config
         $config = new TestConfig();
@@ -597,7 +597,7 @@ class CustomerServiceTest extends TestCase
         $this->assertNotEmpty($customer->getId());
 
         // Test service method
-        $invite = $service->sendAccountInvite($credentials, $customer->getId(), $invite);
+        $invite = $service->sendAccountInviteForCustomerId($credentials, $customer->getId(), $invite);
 
         // Test results
         $this->assertNotEmpty($invite->getFrom());
@@ -610,7 +610,7 @@ class CustomerServiceTest extends TestCase
      * @depends testCanCreateNewCustomer
      * @param Customer $customer
      */
-    public function testCanDeleteCustomer(Customer $customer)
+    public function testCanDeleteCustomerById(Customer $customer)
     {
         // Get config
         $config = new TestConfig();
@@ -630,7 +630,7 @@ class CustomerServiceTest extends TestCase
 
         // Test service method
         $service = Factory::make(CustomerService::class);
-        $result = $service->deleteCustomer($credentials, $customer->getId());
+        $result = $service->deleteCustomerById($credentials, $customer->getId());
         $this->assertTrue(is_object($result));
         $this->assertEmpty(get_object_vars($result));
     }
