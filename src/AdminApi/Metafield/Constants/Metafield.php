@@ -43,4 +43,13 @@ class Metafield
     const RESOURCE_LOCATION_URI_TEMPLATE_SHOP_METAFIELD = '/admin/metafields/%%s.json';
     const RESOURCE_LOCATION_URI_TEMPLATE_SMART_COLLECTIONS = '/admin/collections/%s/metafields.json';
     const RESOURCE_LOCATION_URI_TEMPLATE_SMART_COLLECTION_METAFIELD = '/admin/collections/%s/metafields/%%s.json';
+
+    /**
+     * Note: These are assumed, can't find definitive list in docs. The pattern appears to be whatever
+     * resource URL is in the docs; for example Product Image can be found in
+     * https://help.shopify.com/api/reference/product_image therefore the resource is `product_image`.
+     * The documentation page itself has no reference to `product_image`.
+     */
+    const RESOURCE_PRODUCT = 'product';
+    const RESOURCE_PRODUCT_IMAGE = 'product_image';
 }

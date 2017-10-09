@@ -3,6 +3,9 @@
 namespace Yaspa\Tests\Integration\AdminApi\Product;
 
 use GuzzleHttp\Exception\ClientException;
+use Yaspa\AdminApi\Metafield\Builders\GetMetafieldsRequest;
+use Yaspa\AdminApi\Metafield\Constants\Metafield as MetafieldConstants;
+use Yaspa\AdminApi\Metafield\MetafieldService;
 use Yaspa\AdminApi\Metafield\Models\Metafield;
 use Yaspa\AdminApi\Product\Builders\CountProductsRequest;
 use Yaspa\AdminApi\Product\Builders\GetProductsRequest;
@@ -436,6 +439,39 @@ class ProductServiceTest extends TestCase
             $expectedValue = $expectedMetafieldValues[$metafield->getKey()];
             $this->assertEquals($expectedValue, $metafield->getValue());
         }
+    }
+
+    /**
+     * This test actually belongs in tests/Integration/AdminApi/Metafield/MetafieldServiceTest.php however
+     * it is placed here due to data dependencies on an existing resource.
+     *
+     * @depends testCanCreateProductWithMetafield
+     * @group integration
+     * @param Product $product
+     */
+    public function testCanGetProductMetafieldsByOwnerIdAndOwnerResource(Product $product)
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+        $request = Factory::make(GetMetafieldsRequest::class)
+            ->withCredentials($credentials)
+            ->withOwnerResource(MetafieldConstants::RESOURCE_PRODUCT)
+            ->withOwnerId($product->getId());
+
+        // Get and test results
+        $service = Factory::make(MetafieldService::class);
+        $metafields = $service->getMetafields($request);
+        $this->assertCount(1, $metafields);
     }
 
     /**

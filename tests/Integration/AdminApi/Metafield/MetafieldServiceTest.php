@@ -143,6 +143,12 @@ class MetafieldServiceTest extends TestCase
     }
 
     /**
+     * Test can get all metafields by owner id and owner resource is implemented
+     * in tests/Integration/AdminApi/Product/ProductServiceTest.php due to data
+     * dependencies
+     */
+
+    /**
      * @depends testCanCreateANewMetafieldForAStore
      * @group integration
      * @param Metafield $storeMetafield
@@ -233,8 +239,4 @@ class MetafieldServiceTest extends TestCase
         $this->assertTrue(is_object($result));
         $this->assertEmpty(get_object_vars($result));
     }
-
-    /**
-     * @todo Do "Get a single product metafield by its ID"
-     */
 }

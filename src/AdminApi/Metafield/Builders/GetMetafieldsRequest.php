@@ -20,13 +20,16 @@ class GetMetafieldsRequest
     const URI_TEMPLATE = 'https://%s.myshopify.com/admin/metafields.json';
 
     /**
-     * @todo Add support for owner id and owner resource id
      * @see "Get all metafields that belong to the images of a product"
      */
     /** @var int $limit */
     protected $limit;
     /** @var int $sinceId */
     protected $sinceId;
+    /** @var int $ownerId */
+    protected $ownerId;
+    /** @var string $ownerResource */
+    protected $ownerResource;
     /** @var DateTime $createdAtMin */
     protected $createdAtMin;
     /** @var DateTime $createdAtMax */
@@ -70,6 +73,14 @@ class GetMetafieldsRequest
 
         if (!is_null($this->sinceId)) {
             $array['since_id'] = $this->sinceId;
+        }
+
+        if (!is_null($this->ownerId)) {
+            $array['metafield[owner_id]'] = $this->ownerId;
+        }
+
+        if (!is_null($this->ownerResource)) {
+            $array['metafield[owner_resource]'] = $this->ownerResource;
         }
 
         if (!is_null($this->createdAtMin)) {
@@ -127,6 +138,30 @@ class GetMetafieldsRequest
     {
         $new = clone $this;
         $new->sinceId = $sinceId;
+
+        return $new;
+    }
+
+    /**
+     * @param int $ownerId
+     * @return GetMetafieldsRequest
+     */
+    public function withOwnerId(int $ownerId): GetMetafieldsRequest
+    {
+        $new = clone $this;
+        $new->ownerId = $ownerId;
+
+        return $new;
+    }
+
+    /**
+     * @param string $ownerResource
+     * @return GetMetafieldsRequest
+     */
+    public function withOwnerResource(string $ownerResource): GetMetafieldsRequest
+    {
+        $new = clone $this;
+        $new->ownerResource = $ownerResource;
 
         return $new;
     }

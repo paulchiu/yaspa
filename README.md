@@ -168,7 +168,7 @@ For full documentation, please see https://paulchiu.gitbooks.io/yaspa/content/
     - [ ] Gift Card SHOPIFY PLUS
     - [ ] Location
     - [ ] Marketing Event
-    - [ ] Metafield (in progress)
+    - [x] Metafield (90% complete; missing resource specific implementations)
     - [ ] Multipass SHOPIFY PLUS
     - [ ] Order
     - [ ] Order Risks
@@ -185,7 +185,7 @@ For full documentation, please see https://paulchiu.gitbooks.io/yaspa/content/
     - [ ] Refund
     - [ ] Report
     - [ ] ResourceFeedback BETA
-    - [ ] ScriptTag
+    - [x] ScriptTag
     - [ ] Shipping Zone
     - [x] Shop
     - [ ] SmartCollection
@@ -197,8 +197,10 @@ For full documentation, please see https://paulchiu.gitbooks.io/yaspa/content/
     - [ ] Webhook
     - [ ] ShopifyQL
 - [ ] Document endpoints (in progress)
-    - [x] Customer
+    - [ ] Metafield
     - [ ] Product
+    - [ ] ScriptTag
+    - [x] Customer
     - [x] Shop
 - [ ] Implement [api call limit throtling][acl] through custom pool [pool][gpool]
 - [ ] Implement [webhooks][whs]
