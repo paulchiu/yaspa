@@ -80,9 +80,6 @@ class Factory implements FactoryInterface
      *
      * This is effectively the master service definition list.
      *
-     * Remember to annotate in `.phpstorm.meta.php/Factory.meta.php` as well, although it seems
-     * largely automated.
-     *
      * @return callable[]
      */
     protected static function makeConstructors(): array
@@ -121,8 +118,8 @@ class Factory implements FactoryInterface
             AdminApi\Customer\CustomerFactoryProvider::makeConstructors($self),
             AdminApi\Metafield\MetafieldFactoryProvider::makeConstructors($self),
             AdminApi\Product\ProductFactoryProvider::makeConstructors($self),
-            AdminApi\Shop\ShopFactoryProvider::makeConstructors($self),
             AdminApi\ScriptTag\ScriptTagFactoryProvider::makeConstructors($self),
+            AdminApi\Shop\ShopFactoryProvider::makeConstructors($self),
             Authentication\AuthenticationFactoryProvider::makeConstructors($self)
         );
     }
