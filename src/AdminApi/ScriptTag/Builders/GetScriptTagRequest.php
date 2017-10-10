@@ -26,7 +26,7 @@ class GetScriptTagRequest implements RequestBuilderInterface
      */
     /** @var ScriptTagModel $scriptTagModel */
     protected $scriptTagModel;
-    /** @var ScriptTagsFields $scriptTagFields */
+    /** @var ScriptTagFields $scriptTagFields */
     protected $scriptTagFields;
 
     /**

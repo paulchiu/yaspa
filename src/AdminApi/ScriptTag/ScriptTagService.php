@@ -4,15 +4,17 @@ namespace Yaspa\AdminApi\ScriptTag;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
-use Yaspa\AdminApi\ScriptTag\Transformers;
 use Yaspa\AdminApi\ScriptTag\Builders\CountScriptTagsRequest;
 use Yaspa\AdminApi\ScriptTag\Builders\CreateNewScriptTagRequest;
 use Yaspa\AdminApi\ScriptTag\Builders\DeleteScriptTagRequest;
 use Yaspa\AdminApi\ScriptTag\Builders\GetScriptTagRequest;
 use Yaspa\AdminApi\ScriptTag\Builders\GetScriptTagsRequest;
 use Yaspa\AdminApi\ScriptTag\Builders\ModifyExistingScriptTagRequest;
-use Yaspa\Builders\PagedResultsIterator;
+use Yaspa\AdminApi\ScriptTag\Builders\ScriptTagFields;
 use Yaspa\AdminApi\ScriptTag\Models\ScriptTag;
+use Yaspa\AdminApi\ScriptTag\Transformers;
+use Yaspa\Builders\PagedResultsIterator;
+use Yaspa\Exceptions\MissingExpectedAttributeException;
 use Yaspa\Interfaces\RequestCredentialsInterface;
 
 /**
@@ -147,7 +149,52 @@ class ScriptTagService
     }
 
     /**
+     * Async version of self::asyncGetScriptTag
+     *
+     * @param RequestCredentialsInterface $credentials
+     * @param ScriptTag $scriptTag
+     * @param null|ScriptTagFields $scriptTagFields
+     * @return ScriptTag
+     */
+    public function getScriptTag(
+        RequestCredentialsInterface $credentials,
+        ScriptTag $scriptTag,
+        ?ScriptTagFields $scriptTagFields = null
+    ): ScriptTag {
+        $response = $this->asyncGetScriptTag($credentials, $scriptTag, $scriptTagFields)->wait();
+
+        return $this->scriptTagTransformer->fromResponse($response);
+    }
+
+    /**
      * Get an individual script tag.
+     *
+     * @param RequestCredentialsInterface $credentials
+     * @param ScriptTag $scriptTag
+     * @param null|ScriptTagFields $scriptTagFields
+     * @return PromiseInterface
+     */
+    public function asyncGetScriptTag(
+        RequestCredentialsInterface $credentials,
+        ScriptTag $scriptTag,
+        ?ScriptTagFields $scriptTagFields = null
+    ): PromiseInterface {
+        $request = $this->getScriptTagRequestBuilder
+            ->withCredentials($credentials)
+            ->withScriptTag($scriptTag);
+
+        if ($scriptTagFields) {
+            $request = $request->withScriptTagFields($scriptTagFields);
+        }
+
+        return $this->httpClient->sendAsync(
+            $request->toResourceRequest(),
+            $request->toRequestOptions()
+        );
+    }
+
+    /**
+     * Convenience method for self::getScriptTag
      *
      * @param RequestCredentialsInterface $credentials
      * @param int $scriptTagId
@@ -159,9 +206,9 @@ class ScriptTagService
         int $scriptTagId,
         ?ScriptTagFields $scriptTagFields = null
     ): ScriptTag {
-        $response = $this->asyncGetScriptTagById($credentials, $scriptTagId, $scriptTagFields)->wait();
+        $scriptTag = (new ScriptTag())->setId($scriptTagId);
 
-        return $this->scriptTagTransformer->fromResponse($response);
+        return $this->getScriptTag($credentials, $scriptTag, $scriptTagFields);
     }
 
     /**
@@ -178,18 +225,8 @@ class ScriptTagService
         ?ScriptTagFields $scriptTagFields = null
     ): PromiseInterface {
         $scriptTag = (new ScriptTag())->setId($scriptTagId);
-        $request = $this->getScriptTagRequestBuilder
-            ->withCredentials($credentials)
-            ->withScriptTag($scriptTag);
 
-        if ($scriptTagFields) {
-            $request = $request->withScriptTagFields($scriptTagFields);
-        }
-
-        return $this->httpClient->sendAsync(
-            $request->toResourceRequest(),
-            $request->toRequestOptions()
-        );
+        return $this->asyncGetScriptTag($credentials, $scriptTag, $scriptTagFields);
     }
 
     /**
@@ -232,9 +269,48 @@ class ScriptTagService
     }
 
     /**
+     * Async version of self::asyncDeleteScriptTag
+     *
+     * @see https://help.shopify.com/api/reference/scripttag#destroy
+     * @param RequestCredentialsInterface $credentials
+     * @param ScriptTag $scriptTag
+     * @return object
+     */
+    public function deleteScriptTag(
+        RequestCredentialsInterface $credentials,
+        ScriptTag $scriptTag
+    ) {
+        $response = $this->asyncDeleteScriptTag($credentials, $scriptTag)->wait();
+
+        return json_decode($response->getBody()->getContents());
+    }
+
+    /**
      * Delete script tag.
      *
      * Returns an empty object with no properties if successful.
+     *
+     * @see https://help.shopify.com/api/reference/scripttag#destroy
+     * @param RequestCredentialsInterface $credentials
+     * @param ScriptTag $scriptTag
+     * @return PromiseInterface
+     */
+    public function asyncDeleteScriptTag(
+        RequestCredentialsInterface $credentials,
+        ScriptTag $scriptTag
+    ): PromiseInterface {
+        $request = $this->deleteScriptTagRequestBuilder
+            ->withCredentials($credentials)
+            ->withScriptTag($scriptTag);
+
+        return $this->httpClient->sendAsync(
+            $request->toResourceRequest(),
+            $request->toRequestOptions()
+        );
+    }
+
+    /**
+     * Convenience method for self::deleteScriptTag
      *
      * @see https://help.shopify.com/api/reference/scripttag#destroy
      * @param RequestCredentialsInterface $credentials
@@ -245,13 +321,13 @@ class ScriptTagService
         RequestCredentialsInterface $credentials,
         int $scriptTagId
     ) {
-        $response = $this->asyncDeleteScriptTagById($credentials, $scriptTagId)->wait();
+        $scriptTag = (new Models\ScriptTag())->setId($scriptTagId);
 
-        return json_decode($response->getBody()->getContents());
+        return $this->deleteScriptTag($credentials, $scriptTag);
     }
 
     /**
-     * Async version of self::deleteScriptTagById
+     * Convenience method for self::asyncDeleteScriptTag
      *
      * @see https://help.shopify.com/api/reference/scripttag#destroy
      * @param RequestCredentialsInterface $credentials
@@ -263,14 +339,8 @@ class ScriptTagService
         int $scriptTagId
     ): PromiseInterface {
         $scriptTag = (new Models\ScriptTag())->setId($scriptTagId);
-        $request = $this->deleteScriptTagRequestBuilder
-            ->withCredentials($credentials)
-            ->withScriptTag($scriptTag);
 
-        return $this->httpClient->sendAsync(
-            $request->toResourceRequest(),
-            $request->toRequestOptions()
-        );
+        return $this->asyncDeleteScriptTag($credentials, $scriptTag);
     }
 
     /**

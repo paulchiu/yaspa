@@ -3,7 +3,6 @@
 namespace Yaspa\AdminApi\ScriptTag\Models;
 
 use DateTime;
-use stdClass;
 
 /**
  * Class ScriptTag

@@ -305,7 +305,7 @@ class ScriptTagServiceTest extends TestCase
      * @group integration
      * @param ScriptTag $scriptTag
      */
-    public function testCanDeleteScriptTag(ScriptTag $scriptTag)
+    public function testCanDeleteScriptTagById(ScriptTag $scriptTag)
     {
         // Get config
         $config = new TestConfig();
