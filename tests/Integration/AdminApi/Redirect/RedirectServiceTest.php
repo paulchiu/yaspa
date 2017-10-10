@@ -3,7 +3,6 @@
 namespace Yaspa\Tests\Integration\AdminApi\Redirect;
 
 use GuzzleHttp\Exception\ClientException;
-use DateTime;
 use PHPUnit\Framework\TestCase;
 use Yaspa\AdminApi\Redirect\Builders\CountAllRedirectsRequest;
 use Yaspa\AdminApi\Redirect\Builders\GetRedirectsRequest;

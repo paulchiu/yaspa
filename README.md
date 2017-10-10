@@ -177,7 +177,7 @@ For full documentation, please see https://paulchiu.gitbooks.io/yaspa/content/
     - [ ] ProductListing
     - [ ] Province
     - [ ] RecurringApplicationCharge
-    - [ ] Redirect (in progress)
+    - [x] Redirect
     - [ ] Refund
     - [ ] Report
     - [ ] ResourceFeedback BETA
