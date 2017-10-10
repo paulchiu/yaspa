@@ -91,7 +91,7 @@ class GetCustomersRequest implements PagingRequestBuilderInterface
         }
 
         if (!is_null($this->customerFields)) {
-            $array['customer_fields'] = implode(',', $this->customerFields->getFields());
+            $array['fields'] = implode(',', $this->customerFields->getFields());
         }
 
         return $array;

@@ -116,8 +116,6 @@ class RedirectServiceTest extends TestCase
     }
 
     /**
-     * Note: Shopify doesn't appear to respect field filters here.
-     *
      * @depends testCanCreateNewRedirect
      * @group integration
      */
@@ -153,7 +151,7 @@ class RedirectServiceTest extends TestCase
             $this->assertInstanceOf(Redirect::class, $redirect);
             $this->assertNotEmpty($redirect->getId());
             $this->assertNotEmpty($redirect->getPath());
-            $this->assertNotEmpty($redirect->getTarget());
+            $this->assertEmpty($redirect->getTarget());
             break;
         }
     }

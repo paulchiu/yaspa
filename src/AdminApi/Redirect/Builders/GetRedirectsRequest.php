@@ -78,7 +78,7 @@ class GetRedirectsRequest implements PagingRequestBuilderInterface
         }
 
         if (!is_null($this->redirectFields)) {
-            $array['redirect_fields'] = implode(',', $this->redirectFields->getFields());
+            $array['fields'] = implode(',', $this->redirectFields->getFields());
         }
 
         return $array;

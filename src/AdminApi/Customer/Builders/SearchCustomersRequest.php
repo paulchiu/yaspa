@@ -69,7 +69,7 @@ class SearchCustomersRequest implements PagingRequestBuilderInterface
         }
 
         if (!is_null($this->customerFields)) {
-            $array['customer_fields'] = $this->customerFields;
+            $array['fields'] = $this->customerFields;
         }
 
         return $array;
