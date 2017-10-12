@@ -53,10 +53,6 @@ class GetRedirectsRequest implements PagingRequestBuilderInterface
     {
         $array = [];
 
-        if (!empty($this->ids)) {
-            $array['ids'] = implode(',', $this->ids);
-        }
-
         if (!is_null($this->sinceId)) {
             $array['since_id'] = $this->sinceId;
         }
@@ -90,18 +86,6 @@ class GetRedirectsRequest implements PagingRequestBuilderInterface
     public function getPage():? int
     {
         return $this->page;
-    }
-
-    /**
-     * @param array|int[] $ids
-     * @return GetRedirectsRequest
-     */
-    public function withIds(array $ids): GetRedirectsRequest
-    {
-        $new = clone $this;
-        $new->ids = $ids;
-
-        return $new;
     }
 
     /**
