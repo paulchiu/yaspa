@@ -118,6 +118,7 @@ class Factory implements FactoryInterface
             AdminApi\Customer\CustomerFactoryProvider::makeConstructors($self),
             AdminApi\Metafield\MetafieldFactoryProvider::makeConstructors($self),
             AdminApi\Product\ProductFactoryProvider::makeConstructors($self),
+            AdminApi\Redirect\RedirectFactoryProvider::makeConstructors($self),
             AdminApi\ScriptTag\ScriptTagFactoryProvider::makeConstructors($self),
             AdminApi\Shop\ShopFactoryProvider::makeConstructors($self),
             Authentication\AuthenticationFactoryProvider::makeConstructors($self)
