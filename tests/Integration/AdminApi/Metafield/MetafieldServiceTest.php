@@ -195,12 +195,10 @@ class MetafieldServiceTest extends TestCase
                 $privateApp->apiKey,
                 $privateApp->password
             );
-        $request = Factory::make(CountMetafieldsRequest::class)
-            ->withCredentials($credentials);
 
         // Get and test results
         $service = Factory::make(MetafieldService::class);
-        $metafieldsCount = $service->countMetafields($request);
+        $metafieldsCount = $service->countMetafields($credentials);
         $this->assertGreaterThan(0, $metafieldsCount);
     }
 

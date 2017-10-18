@@ -142,12 +142,10 @@ class MetafieldServiceTest extends TestCase
         // Create parameters
         $credentials = Factory::make(ApiCredentials::class)
             ->makeOAuth('foo', 'bar');
-        $request = Factory::make(CountMetafieldsRequest::class)
-            ->withCredentials($credentials);
 
         // Test method
         $service = Factory::make(MetafieldService::class);
-        $metafieldsCount = $service->countMetafields($request);
+        $metafieldsCount = $service->countMetafields($credentials);
         $this->assertEquals(3, $metafieldsCount);
     }
 

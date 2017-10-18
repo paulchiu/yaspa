@@ -166,16 +166,15 @@ class MetafieldService
     }
 
     /**
-     * Convenience method for self::asyncCountMetafields
+     * Count all customers in a store.
      *
-     * @see https://help.shopify.com/api/reference/metafield#count
-     * @param CountMetafieldsRequest $request
+     * @param RequestCredentialsInterface $credentials
      * @return int
      * @throws MissingExpectedAttributeException
      */
-    public function countMetafields(CountMetafieldsRequest $request): int
+    public function countMetafields(RequestCredentialsInterface $credentials): int
     {
-        $response = $this->asyncCountMetafields($request)->wait();
+        $response = $this->asyncCountMetafields($credentials)->wait();
 
         $count = json_decode($response->getBody()->getContents());
 
@@ -187,14 +186,15 @@ class MetafieldService
     }
 
     /**
-     * Get a count of all metafields for a store
+     * Async version of self::countMetafields
      *
-     * @see https://help.shopify.com/api/reference/metafield#count
-     * @param CountMetafieldsRequest $request
+     * @param RequestCredentialsInterface $credentials
      * @return PromiseInterface
      */
-    public function asyncCountMetafields(CountMetafieldsRequest $request): PromiseInterface
+    public function asyncCountMetafields(RequestCredentialsInterface $credentials): PromiseInterface
     {
+        $request = $this->countMetafieldsRequestBuilder->withCredentials($credentials);
+
         return $this->httpClient->sendAsync(
             $request->toRequest(),
             $request->toRequestOptions()
