@@ -11,7 +11,7 @@ use Yaspa\Traits\AuthorizedRequestBuilderTrait;
  * Class CountResourceMetafieldsRequest
  *
  * @package Yaspa\AdminApi\Product\Builders
- * @see https://help.shopify.com/api/reference/metafield#index
+ * @see https://help.shopify.com/api/reference/metafield#count
  * @todo Follow objective of "Work with native models where possible", add model methods as resource integrations are done
  */
 class CountResourceMetafieldsRequest

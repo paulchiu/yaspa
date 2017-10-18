@@ -9,7 +9,7 @@ use Yaspa\Traits\AuthorizedRequestBuilderTrait;
  * Class CountMetafieldsRequest
  *
  * @package Yaspa\AdminApi\Metafield\Builders
- * @see https://help.shopify.com/api/reference/scripttag#count
+ * @see https://help.shopify.com/api/reference/metafield#count
  */
 class CountMetafieldsRequest
 {
