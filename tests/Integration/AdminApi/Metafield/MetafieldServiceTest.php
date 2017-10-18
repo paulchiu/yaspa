@@ -3,6 +3,7 @@
 namespace Yaspa\Tests\Integration\AdminApi\Metafield;
 
 use GuzzleHttp\Exception\ClientException;
+use Yaspa\AdminApi\Metafield\Builders\CountMetafieldsRequest;
 use Yaspa\AdminApi\Metafield\MetafieldService;
 use Yaspa\AdminApi\Metafield\Builders\GetMetafieldsRequest;
 use Yaspa\AdminApi\Metafield\Models\Metafield;
@@ -174,6 +175,33 @@ class MetafieldServiceTest extends TestCase
         $this->assertEquals($storeMetafield->getId(), $metafield->getId());
         $this->assertEquals($storeMetafield->getKey(), $metafield->getKey());
         $this->assertEquals($storeMetafield->getValue(), $metafield->getValue());
+    }
+
+    /**
+     * @depends testCanCreateANewMetafieldForAStore
+     * @group integration
+     */
+    public function testCanCountAllMetafieldsForAStore()
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+        $request = Factory::make(CountMetafieldsRequest::class)
+            ->withCredentials($credentials);
+
+        // Get and test results
+        $service = Factory::make(MetafieldService::class);
+        $metafieldsCount = $service->countMetafields($request);
+        $this->assertGreaterThan(0, $metafieldsCount);
     }
 
     /**

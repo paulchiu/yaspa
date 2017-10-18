@@ -193,8 +193,9 @@ For full documentation, please see https://paulchiu.gitbooks.io/yaspa/content/
     - [ ] Webhook
     - [ ] ShopifyQL
 - [ ] Document endpoints (in progress)
-    - [ ] Metafield
+    - [ ] Metafield (in progress)
     - [ ] Product
+    - [ ] Redirect
     - [ ] ScriptTag
     - [x] Customer
     - [x] Shop

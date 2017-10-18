@@ -20,6 +20,9 @@ class MetafieldFactoryProvider implements FactoryProviderInterface
     public static function makeConstructors(FactoryInterface $factory): array
     {
         return [
+            Builders\CountMetafieldsRequest::class => function () {
+                return new Builders\CountMetafieldsRequest();
+            },
             Builders\CreateNewMetafieldRequest::class => function () use ($factory) {
                 return new Builders\CreateNewMetafieldRequest(
                     $factory::make(Transformers\Metafield::class)
@@ -67,6 +70,7 @@ class MetafieldFactoryProvider implements FactoryProviderInterface
                     $factory::make(Transformers\Metafield::class),
                     $factory::make(Builders\CreateNewMetafieldRequest::class),
                     $factory::make(Builders\GetMetafieldRequest::class),
+                    $factory::make(Builders\CountMetafieldsRequest::class),
                     $factory::make(Builders\UpdateMetafieldRequest::class),
                     $factory::make(Builders\DeleteMetafieldRequest::class)
                 );
