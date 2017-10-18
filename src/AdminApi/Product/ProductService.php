@@ -4,6 +4,7 @@ namespace Yaspa\AdminApi\Product;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
+use Yaspa\AdminApi\Metafield\Builders\CountResourceMetafieldsRequest;
 use Yaspa\AdminApi\Metafield\Builders\CreateNewResourceMetafieldRequest;
 use Yaspa\AdminApi\Metafield\Builders\DeleteResourceMetafieldRequest;
 use Yaspa\AdminApi\Metafield\Builders\GetResourceMetafieldRequest;
@@ -51,6 +52,8 @@ class ProductService
     protected $getResourceMetafieldBuilder;
     /** @var GetResourceMetafieldsRequest $getResourceMetafieldsBuilder */
     protected $getResourceMetafieldsBuilder;
+    /** @var CountResourceMetafieldsRequest $countResourceMetafieldsBuilder */
+    protected $countResourceMetafieldsBuilder;
     /** @var UpdateResourceMetafieldRequest $updateResourceMetafieldRequestBuilder */
     protected $updateResourceMetafieldRequestBuilder;
     /** @var DeleteResourceMetafieldRequest $deleteResourceMetafieldRequestBuilder */
@@ -70,6 +73,7 @@ class ProductService
      * @param CreateNewResourceMetafieldRequest $createNewResourceMetafieldRequestBuilder
      * @param GetResourceMetafieldRequest $getResourceMetafieldBuilder
      * @param GetResourceMetafieldsRequest $getResourceMetafieldsBuilder
+     * @param CountResourceMetafieldsRequest $countResourceMetafieldsBuilder
      * @param UpdateResourceMetafieldRequest $updateResourceMetafieldRequestBuilder
      * @param DeleteResourceMetafieldRequest $deleteResourceMetafieldRequestBuilder
      * @param PagedResultsIterator $pagedResultsIteratorBuilder
@@ -84,6 +88,7 @@ class ProductService
         CreateNewResourceMetafieldRequest $createNewResourceMetafieldRequestBuilder,
         GetResourceMetafieldRequest $getResourceMetafieldBuilder,
         GetResourceMetafieldsRequest $getResourceMetafieldsBuilder,
+        CountResourceMetafieldsRequest $countResourceMetafieldsBuilder,
         UpdateResourceMetafieldRequest $updateResourceMetafieldRequestBuilder,
         DeleteResourceMetafieldRequest $deleteResourceMetafieldRequestBuilder,
         PagedResultsIterator $pagedResultsIteratorBuilder
@@ -97,6 +102,7 @@ class ProductService
         $this->createNewResourceMetafieldRequestBuilder = $createNewResourceMetafieldRequestBuilder;
         $this->getResourceMetafieldBuilder = $getResourceMetafieldBuilder;
         $this->getResourceMetafieldsBuilder = $getResourceMetafieldsBuilder;
+        $this->countResourceMetafieldsBuilder = $countResourceMetafieldsBuilder;
         $this->updateResourceMetafieldRequestBuilder = $updateResourceMetafieldRequestBuilder;
         $this->deleteResourceMetafieldRequestBuilder = $deleteResourceMetafieldRequestBuilder;
         $this->pagedResultsIteratorBuilder = $pagedResultsIteratorBuilder;
@@ -527,6 +533,74 @@ class ProductService
     public function asyncGetProductMetafieldsById(RequestCredentialsInterface $credentials, int $productId): PromiseInterface
     {
         $request = $this->getResourceMetafieldsBuilder
+            ->withCredentials($credentials)
+            ->forProductId($productId);
+
+        return $this->httpClient->sendAsync(
+            $request->toRequest(),
+            $request->toRequestOptions()
+        );
+    }
+
+    /**
+     * Convenience version of self::countProductMetafieldsById
+     *
+     * @see https://help.shopify.com/api/reference/metafield#index
+     * @param RequestCredentialsInterface $credentials
+     * @param Product $product
+     * @return int
+     */
+    public function countProductMetafields(RequestCredentialsInterface $credentials, Product $product): int
+    {
+        return $this->countProductMetafieldsById($credentials, $product->getId());
+    }
+
+    /**
+     * Convenience method for self::asyncCountProductMetafieldsById
+     *
+     * @see https://help.shopify.com/api/reference/metafield#index
+     * @param RequestCredentialsInterface $credentials
+     * @param Product $product
+     * @return PromiseInterface
+     */
+    public function asyncCountProductMetafields(RequestCredentialsInterface $credentials, Product $product): PromiseInterface
+    {
+        return $this->asyncCountProductMetafieldsById($credentials, $product->getId());
+    }
+
+    /**
+     * Convenience method for self::asyncCountProductMetafields
+     *
+     * @see https://help.shopify.com/api/reference/metafield#index
+     * @param RequestCredentialsInterface $credentials
+     * @param int $productId
+     * @return int
+     * @throws MissingExpectedAttributeException
+     */
+    public function countProductMetafieldsById(RequestCredentialsInterface $credentials, int $productId): int
+    {
+        $response = $this->asyncCountProductMetafieldsById($credentials, $productId)->wait();
+
+        $count = json_decode($response->getBody()->getContents());
+
+        if (!property_exists($count, 'count')) {
+            throw new MissingExpectedAttributeException('count');
+        }
+
+        return intval($count->count);
+    }
+
+    /**
+     * Get a count of all metafields that belong to a product
+     *
+     * @see https://help.shopify.com/api/reference/metafield#index
+     * @param RequestCredentialsInterface $credentials
+     * @param int $productId
+     * @return PromiseInterface
+     */
+    public function asyncCountProductMetafieldsById(RequestCredentialsInterface $credentials, int $productId): PromiseInterface
+    {
+        $request = $this->countResourceMetafieldsBuilder
             ->withCredentials($credentials)
             ->forProductId($productId);
 

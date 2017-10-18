@@ -442,6 +442,32 @@ class ProductServiceTest extends TestCase
     }
 
     /**
+     * @depends testCanCreateProductWithMetafield
+     * @group integration
+     * @param Product $product
+     */
+    public function testCanCountAllMetafieldsThatBelongToAProduct(Product $product)
+    {
+        // Get config
+        $config = new TestConfig();
+        $shop = $config->get('shopifyShop');
+        $privateApp = $config->get('shopifyShopApp');
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makePrivate(
+                $shop->myShopifySubdomainName,
+                $privateApp->apiKey,
+                $privateApp->password
+            );
+
+        // Test method
+        $service = Factory::make(ProductService::class);
+        $metafields = $service->countProductMetafieldsById($credentials, $product->getId());
+        $this->assertGreaterThan(0, $metafields);
+    }
+
+    /**
      * This test actually belongs in tests/Integration/AdminApi/Metafield/MetafieldServiceTest.php however
      * it is placed here due to data dependencies on an existing resource.
      *

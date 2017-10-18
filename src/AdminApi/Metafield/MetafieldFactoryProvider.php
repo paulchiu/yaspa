@@ -23,6 +23,9 @@ class MetafieldFactoryProvider implements FactoryProviderInterface
             Builders\CountMetafieldsRequest::class => function () {
                 return new Builders\CountMetafieldsRequest();
             },
+            Builders\CountResourceMetafieldsRequest::class => function () {
+                return new Builders\CountResourceMetafieldsRequest();
+            },
             Builders\CreateNewMetafieldRequest::class => function () use ($factory) {
                 return new Builders\CreateNewMetafieldRequest(
                     $factory::make(Transformers\Metafield::class)
