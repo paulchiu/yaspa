@@ -131,4 +131,6 @@ For full documentation, please see https://paulchiu.gitbooks.io/yaspa/content/
 
 ## Roadmap
 
-See issue #1 for the project road map and to do list.
+See [issue 10][iten] for the project roadmap and to do list.
+
+[iten]: https://github.com/paulchiu/yaspa/issues/10
