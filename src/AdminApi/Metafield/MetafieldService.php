@@ -4,6 +4,7 @@ namespace Yaspa\AdminApi\Metafield;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
+use Yaspa\AdminApi\Metafield\Builders\CountMetafieldsRequest;
 use Yaspa\AdminApi\Metafield\Builders\CreateNewMetafieldRequest;
 use Yaspa\AdminApi\Metafield\Builders\DeleteMetafieldRequest;
 use Yaspa\AdminApi\Metafield\Builders\GetMetafieldRequest;
@@ -11,6 +12,7 @@ use Yaspa\AdminApi\Metafield\Builders\GetMetafieldsRequest;
 use Yaspa\AdminApi\Metafield\Builders\UpdateMetafieldRequest;
 use Yaspa\AdminApi\Metafield\Models\Metafield;
 use Yaspa\AdminApi\Metafield\Transformers;
+use Yaspa\Exceptions\MissingExpectedAttributeException;
 use Yaspa\Interfaces\RequestCredentialsInterface;
 
 /**
@@ -29,6 +31,8 @@ class MetafieldService
     protected $createNewMetafieldRequestBuilder;
     /** @var GetMetafieldRequest $getMetafieldRequestBuilder */
     protected $getMetafieldRequestBuilder;
+    /** @var CountMetafieldsRequest $countMetafieldsRequestBuilder */
+    protected $countMetafieldsRequestBuilder;
     /** @var UpdateMetafieldRequest $updateMetafieldRequestBuilder */
     protected $updateMetafieldRequestBuilder;
     /** @var DeleteMetafieldRequest $deleteMetafieldRequestBuilder */
@@ -41,6 +45,7 @@ class MetafieldService
      * @param Transformers\Metafield $metafieldTransformer
      * @param CreateNewMetafieldRequest $createNewMetafieldRequestBuilder
      * @param GetMetafieldRequest $getMetafieldRequestBuilder
+     * @param CountMetafieldsRequest $countMetafieldsRequestBuilder
      * @param UpdateMetafieldRequest $updateMetafieldRequestBuilder
      * @param DeleteMetafieldRequest $deleteMetafieldRequestBuilder
      */
@@ -49,6 +54,7 @@ class MetafieldService
         Transformers\Metafield $metafieldTransformer,
         CreateNewMetafieldRequest $createNewMetafieldRequestBuilder,
         GetMetafieldRequest $getMetafieldRequestBuilder,
+        CountMetafieldsRequest $countMetafieldsRequestBuilder,
         UpdateMetafieldRequest $updateMetafieldRequestBuilder,
         DeleteMetafieldRequest $deleteMetafieldRequestBuilder
     ) {
@@ -56,6 +62,7 @@ class MetafieldService
         $this->metafieldTransformer = $metafieldTransformer;
         $this->createNewMetafieldRequestBuilder = $createNewMetafieldRequestBuilder;
         $this->getMetafieldRequestBuilder = $getMetafieldRequestBuilder;
+        $this->countMetafieldsRequestBuilder = $countMetafieldsRequestBuilder;
         $this->updateMetafieldRequestBuilder = $updateMetafieldRequestBuilder;
         $this->deleteMetafieldRequestBuilder = $deleteMetafieldRequestBuilder;
     }
@@ -156,6 +163,42 @@ class MetafieldService
         $metafield = (new Models\Metafield())->setId($metafieldId);
 
         return $this->asyncGetMetafield($credentials, $metafield);
+    }
+
+    /**
+     * Count all customers in a store.
+     *
+     * @param RequestCredentialsInterface $credentials
+     * @return int
+     * @throws MissingExpectedAttributeException
+     */
+    public function countMetafields(RequestCredentialsInterface $credentials): int
+    {
+        $response = $this->asyncCountMetafields($credentials)->wait();
+
+        $count = json_decode($response->getBody()->getContents());
+
+        if (!property_exists($count, 'count')) {
+            throw new MissingExpectedAttributeException('count');
+        }
+
+        return intval($count->count);
+    }
+
+    /**
+     * Async version of self::countMetafields
+     *
+     * @param RequestCredentialsInterface $credentials
+     * @return PromiseInterface
+     */
+    public function asyncCountMetafields(RequestCredentialsInterface $credentials): PromiseInterface
+    {
+        $request = $this->countMetafieldsRequestBuilder->withCredentials($credentials);
+
+        return $this->httpClient->sendAsync(
+            $request->toRequest(),
+            $request->toRequestOptions()
+        );
     }
 
     /**

@@ -283,6 +283,29 @@ class ProductServiceTest extends TestCase
         $this->assertNotEmpty($metafields);
     }
 
+    public function testCanCountAllMetafieldsThatBelongToAProduct()
+    {
+        // Create mock client
+        $mockClientUtil = new MockGuzzleClient();
+        $client = $mockClientUtil->makeWithResponses(
+            [
+                $mockClientUtil->makeJsonResponse(200, [
+                    'count' => 3,
+                ]),
+            ]
+        );
+        Factory::inject(Client::class, $client);
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makeOAuth('foo', 'bar');
+
+        // Test method
+        $service = Factory::make(ProductService::class);
+        $productsCount = $service->countProductMetafieldsById($credentials, 7);
+        $this->assertEquals(3, $productsCount);
+    }
+
     public function testCanGetProductMetafieldById()
     {
         // Create mock client

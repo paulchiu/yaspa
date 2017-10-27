@@ -40,7 +40,7 @@ class RedirectServiceTest extends TestCase
             ->setPath(uniqid('/ipod-'))
             ->setTarget('/pages/itunes');
 
-        // Create new script tag
+        // Create new redirect
         $service = Factory::make(RedirectService::class);
         $newRedirect = $service->createNewRedirect($credentials, $redirect);
         $this->assertInstanceOf(Redirect::class, $newRedirect);
@@ -75,7 +75,7 @@ class RedirectServiceTest extends TestCase
             ->setPath(uniqid('http://www.apple.com/forums/'))
             ->setTarget('http://forums.apple.com');
 
-        // Create new script tag
+        // Create new redirect
         $service = Factory::make(RedirectService::class);
         $newRedirect = $service->createNewRedirect($credentials, $redirect);
         $this->assertInstanceOf(Redirect::class, $newRedirect);

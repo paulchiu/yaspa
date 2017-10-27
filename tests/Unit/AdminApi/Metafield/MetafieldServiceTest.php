@@ -4,6 +4,7 @@ namespace Yaspa\Tests\Unit\AdminApi\Metafield;
 
 use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
+use Yaspa\AdminApi\Metafield\Builders\CountMetafieldsRequest;
 use Yaspa\AdminApi\Metafield\Builders\GetMetafieldsRequest;
 use Yaspa\AdminApi\Metafield\MetafieldService;
 use Yaspa\AdminApi\Metafield\Models\Metafield;
@@ -123,6 +124,29 @@ class MetafieldServiceTest extends TestCase
         $this->assertEquals($storeMetafield->getId(), $metafield->getId());
         $this->assertEquals($storeMetafield->getKey(), $metafield->getKey());
         $this->assertEquals($storeMetafield->getValue(), $metafield->getValue());
+    }
+
+    public function testCanCountMetafields()
+    {
+        // Create mock client
+        $mockClientUtil = new MockGuzzleClient();
+        $client = $mockClientUtil->makeWithResponses(
+            [
+                $mockClientUtil->makeJsonResponse(200, [
+                    'count' => 3,
+                ]),
+            ]
+        );
+        Factory::inject(Client::class, $client);
+
+        // Create parameters
+        $credentials = Factory::make(ApiCredentials::class)
+            ->makeOAuth('foo', 'bar');
+
+        // Test method
+        $service = Factory::make(MetafieldService::class);
+        $metafieldsCount = $service->countMetafields($credentials);
+        $this->assertEquals(3, $metafieldsCount);
     }
 
     public function testCanUpdateAStoreMetafield()

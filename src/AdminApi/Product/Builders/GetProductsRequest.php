@@ -13,6 +13,7 @@ use Yaspa\Traits\AuthorizedRequestBuilderTrait;
  *
  * @package Yaspa\AdminApi\Product\Builders
  * @see https://help.shopify.com/api/reference/product#index
+ * @todo Add support for models for fields like collectionId
  */
 class GetProductsRequest implements PagingRequestBuilderInterface
 {
