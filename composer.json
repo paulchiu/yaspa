@@ -16,6 +16,10 @@
         {
             "name": "Paul Chiu",
             "email": "paulchiu@gmail.com"
+        },
+        {
+            "name": "Joe Refoy",
+            "homepage": "https://github.com/jore"
         }
     ],
     "minimum-stability": "dev",
