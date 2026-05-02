@@ -1,3 +1,6 @@
+> [!WARNING]
+> This project is abandoned and has been archived in 2026. It is no longer maintained.
+
 # Yet Another Shopify PHP API (yaspa)
 
 [![CircleCI](https://circleci.com/gh/paulchiu/yaspa/tree/master.svg?style=svg)](https://circleci.com/gh/paulchiu/yaspa/tree/master)
